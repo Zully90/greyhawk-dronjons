@@ -519,6 +519,44 @@ button:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
 
 const AON = 'https://2e.aonprd.com';
 
+// Pool condivisi — ordinati per livello crescente
+const POOL = {
+  ombra: [
+    { nome: "Shadow",       livello: 4,  aonUrl: `${AON}/Monsters.aspx?ID=363` },
+    { nome: "Greater Shadow", livello: 7, aonUrl: `${AON}/Monsters.aspx?ID=364` },
+    { nome: "Wraith",       livello: 9,  aonUrl: `${AON}/Monsters.aspx?ID=416` },
+    { nome: "Bodak",        livello: 12, aonUrl: `${AON}/Search.aspx?q=bodak` },
+    { nome: "Dread Wraith", livello: 16, aonUrl: `${AON}/Monsters.aspx?ID=417` },
+    { nome: "Nightwing",    livello: 16, aonUrl: `${AON}/Search.aspx?q=nightwing` },
+    { nome: "Nightwave",    livello: 20, aonUrl: `${AON}/Search.aspx?q=nightwave` },
+  ],
+  spettro: [
+    { nome: "Ghost",        livello: 4,  aonUrl: `${AON}/Search.aspx?q=ghost+commoner` },
+    { nome: "Attic Whisperer", livello: 5, aonUrl: `${AON}/Search.aspx?q=attic+whisperer` },
+    { nome: "Will-o'-Wisp", livello: 6,  aonUrl: `${AON}/Monsters.aspx?ID=414` },
+    { nome: "Specter",      livello: 7,  aonUrl: `${AON}/Monsters.aspx?ID=373` },
+    { nome: "Allip",        livello: 8,  aonUrl: `${AON}/Search.aspx?q=allip` },
+    { nome: "Wraith",       livello: 9,  aonUrl: `${AON}/Monsters.aspx?ID=416` },
+    { nome: "Mohrg",        livello: 10, aonUrl: `${AON}/Search.aspx?q=mohrg` },
+    { nome: "Banshee",      livello: 12, aonUrl: `${AON}/Monsters.aspx?ID=38` },
+    { nome: "Dybbuk",       livello: 14, aonUrl: `${AON}/Search.aspx?q=dybbuk` },
+    { nome: "Nightwing",    livello: 16, aonUrl: `${AON}/Search.aspx?q=nightwing` },
+    { nome: "Lich",         livello: 17, aonUrl: `${AON}/Search.aspx?q=lich` },
+    { nome: "Nightwave",    livello: 20, aonUrl: `${AON}/Search.aspx?q=nightwave` },
+  ],
+  guerriero: [
+    { nome: "Specter",      livello: 7,  aonUrl: `${AON}/Monsters.aspx?ID=373` },
+    { nome: "Wraith",       livello: 9,  aonUrl: `${AON}/Monsters.aspx?ID=416` },
+    { nome: "Mohrg",        livello: 10, aonUrl: `${AON}/Search.aspx?q=mohrg` },
+    { nome: "Graveknight",  livello: 13, aonUrl: `${AON}/Search.aspx?q=graveknight` },
+    { nome: "Thanadaemon",  livello: 13, aonUrl: `${AON}/Search.aspx?q=thanadaemon` },
+    { nome: "Dread Wraith", livello: 16, aonUrl: `${AON}/Monsters.aspx?ID=417` },
+    { nome: "Nightwing",    livello: 16, aonUrl: `${AON}/Search.aspx?q=nightwing` },
+    { nome: "Lich",         livello: 17, aonUrl: `${AON}/Search.aspx?q=lich` },
+    { nome: "Nightwave",    livello: 20, aonUrl: `${AON}/Search.aspx?q=nightwave` },
+  ],
+};
+
 const MANIFESTAZIONI = [
   null, // 0 (1-indexed)
   {
@@ -541,10 +579,7 @@ const MANIFESTAZIONI = [
     d20: 3, nome: "Wisp solitario", hazard: false,
     desc: "Un frammento confuso di coscienza si materializza, si guarda attorno e si dissolve se ignorato.",
     hint: "Se i PG non interagiscono, sparisce. Se attaccato, combatte brevemente poi svanisce.",
-    creature: [
-      { nome: "Will-o'-Wisp", livello: 6, aonUrl: `${AON}/Monsters.aspx?ID=414` },
-      { nome: "Soulbound Doll", livello: 2, aonUrl: `${AON}/Search.aspx?q=soulbound+doll` },
-    ],
+    creature: POOL.spettro,
     reskin: "Un frammento di Sospiro fuggito dall'Artiglio — troppo piccolo per essere catturato, troppo confuso per essere pericoloso.",
     ambientale: "Una luce pallida rimbalza tra le superfici senza provenire da nessuna direzione precisa. Fa freddo dove non dovrebbe."
   },
@@ -552,63 +587,52 @@ const MANIFESTAZIONI = [
     d20: 4, nome: "Wisp solitario", hazard: false,
     desc: "Un frammento confuso di coscienza si materializza, si guarda attorno e si dissolve se ignorato.",
     hint: "Se i PG non interagiscono, sparisce. Se attaccato, combatte brevemente poi svanisce.",
-    creature: [
-      { nome: "Will-o'-Wisp", livello: 6, aonUrl: `${AON}/Monsters.aspx?ID=414` },
-      { nome: "Soulbound Doll", livello: 2, aonUrl: `${AON}/Search.aspx?q=soulbound+doll` },
-    ],
+    creature: POOL.spettro,
     reskin: "Un frammento di Sospiro fuggito dall'Artiglio — troppo piccolo per essere catturato, troppo confuso per essere pericoloso.",
     ambientale: "La luce sembra seguire il calore dei corpi. Dove qualcuno si è fermato a lungo, rimane un alone tiepido che non si disperde."
   },
   {
     d20: 5, nome: "Ombra ×1", hazard: false,
     desc: "Una singola ombra strappata dal suo portatore emerge dall'oscurità, affamata di forza vitale.",
-    hint: "Incontro standard. Un'ombra solitaria, gestibile.",
-    creature: [
-      { nome: "Shadow", livello: 4, aonUrl: `${AON}/Monsters.aspx?ID=363` },
-      { nome: "Greater Shadow", livello: 7, aonUrl: `${AON}/Monsters.aspx?ID=364` },
-    ],
+    hint: "Incontro singolo. Scala il tipo di non-morto al livello del gruppo.",
+    creature: POOL.ombra,
     reskin: "L'ombra di un soldato keolandese caduto — il suo nome era inciso su uno scudo, ma il metallo è arrugginito e il nome illeggibile.",
     ambientale: "Le ombre di tutti i presenti si muovono un mezzo passo in ritardo. Non succede mai quando si guarda direttamente — solo fuori angolo."
   },
   {
     d20: 6, nome: "Ombra ×1", hazard: false,
     desc: "Una singola ombra strappata dal suo portatore emerge dall'oscurità, affamata di forza vitale.",
-    hint: "Incontro standard. Un'ombra solitaria, gestibile.",
-    creature: [
-      { nome: "Shadow", livello: 4, aonUrl: `${AON}/Monsters.aspx?ID=363` },
-      { nome: "Greater Shadow", livello: 7, aonUrl: `${AON}/Monsters.aspx?ID=364` },
-    ],
+    hint: "Incontro singolo. Scala il tipo di non-morto al livello del gruppo.",
+    creature: POOL.ombra,
     reskin: "L'ombra di un ladro impiccato — porta ancora il gesto finale, le mani che stringono qualcosa che non c'è più.",
     ambientale: "Il fuoco non si spegne, ma smette di proiettare luce per qualche secondo. Tutti lo vedono. Nessuno lo dice ad alta voce."
   },
   {
     d20: 7, nome: "Ombre ×2", hazard: false,
     desc: "Due ombre emergono in sincronia — a quanto pare legate in vita, indissolubili anche nella morte.",
-    hint: "Più pressione. Considera la loro sinergia tattica.",
-    creature: [
-      { nome: "Shadow", livello: 4, aonUrl: `${AON}/Monsters.aspx?ID=363` },
-      { nome: "Greater Shadow", livello: 7, aonUrl: `${AON}/Monsters.aspx?ID=364` },
-    ],
-    reskin: "Due fratelli morti nello stesso istante — le loro ombre si cercano ancora nell'oscurità, come se cercassero di ritrovarsi.",
+    hint: "Due creature identiche. Scala il tipo al livello del gruppo — anche 2 Wraith o 2 Bodak.",
+    creature: POOL.ombra,
+    reskin: "Due fratelli morti nello stesso istante — le loro ombre si cercano ancora nell'oscurità.",
     ambientale: "Due punti freddi nel buio, separati di tre metri esatti. Non si muovono finché non li guardi direttamente."
   },
   {
     d20: 8, nome: "Ombre ×2", hazard: false,
     desc: "Due ombre emergono in sincronia — a quanto pare legate in vita, indissolubili anche nella morte.",
-    hint: "Più pressione. Considera la loro sinergia tattica.",
-    creature: [
-      { nome: "Shadow", livello: 4, aonUrl: `${AON}/Monsters.aspx?ID=363` },
-      { nome: "Greater Shadow", livello: 7, aonUrl: `${AON}/Monsters.aspx?ID=364` },
-    ],
+    hint: "Due creature identiche. Scala il tipo al livello del gruppo — anche 2 Wraith o 2 Bodak.",
+    creature: POOL.ombra,
     reskin: "Guardie del corpo di un nobile morto per tradimento — continuano a proteggersi a vicenda anche nell'oltretomba.",
     ambientale: "Si sente il suono di passi che non appartengono a nessuno dei presenti. Poi si sente un secondo set di passi, sfasato."
   },
   {
     d20: 9, nome: "Poltergeist", hazard: true, hazardForzato: true,
     desc: "Nessuna forma visibile — solo oggetti scagliati nell'aria con furia cieca. Non ha corpo da bersagliare.",
-    hint: "HAZARD puro: usa la tabella hazard. Non è un'entità bersagliabile con attacchi normali.",
+    hint: "HAZARD puro: usa la tabella hazard. A livelli alti considera Dybbuk o Mohrg come versione corporea.",
     creature: [
-      { nome: "Poltergeist", livello: 4, aonUrl: `${AON}/Monsters.aspx?ID=330` },
+      { nome: "Poltergeist",  livello: 4,  aonUrl: `${AON}/Monsters.aspx?ID=330` },
+      { nome: "Specter",      livello: 7,  aonUrl: `${AON}/Monsters.aspx?ID=373` },
+      { nome: "Mohrg",        livello: 10, aonUrl: `${AON}/Search.aspx?q=mohrg` },
+      { nome: "Dybbuk",       livello: 14, aonUrl: `${AON}/Search.aspx?q=dybbuk` },
+      { nome: "Nightwing",    livello: 16, aonUrl: `${AON}/Search.aspx?q=nightwing` },
     ],
     reskin: "La rabbia residua di qualcuno morto senza essere creduto — ogni oggetto che vola è una parola che non fu ascoltata.",
     ambientale: "Prima del primo oggetto che vola c'è un secondo di silenzio totale. Come se l'aria trattenesse il respiro."
@@ -617,10 +641,7 @@ const MANIFESTAZIONI = [
     d20: 10, nome: "Spettro", hazard: false,
     desc: "Ricorda il momento della propria morte nei minimi dettagli. Non vuole combattere — vuole testimoni.",
     hint: "Può essere non ostile. Se i PG ascoltano, potrebbe rivelare informazioni sulla zona.",
-    creature: [
-      { nome: "Specter", livello: 7, aonUrl: `${AON}/Monsters.aspx?ID=373` },
-      { nome: "Ghost Commoner", livello: 4, aonUrl: `${AON}/Search.aspx?q=ghost+commoner` },
-    ],
+    creature: POOL.spettro,
     reskin: "Una testimone di guerra — ha visto qualcosa che non doveva vedere e non riesce a smettere di vederlo, in loop eterno.",
     ambientale: "Odore di cera bruciata. La temperatura scende di tre gradi in meno di un round. Poi la figura appare, ferma."
   },
@@ -628,30 +649,40 @@ const MANIFESTAZIONI = [
     d20: 11, nome: "Spettro + Zona di Morte", hazard: true, hazardFisso: 3,
     desc: "Uno spettro emerge portando con sé un'aura di morte — la magia curativa si congela nell'aria.",
     hint: "Spettro + Hazard 3 (Zona di Morte) automatico. Tre round senza recupero PF.",
-    creature: [
-      { nome: "Specter", livello: 7, aonUrl: `${AON}/Monsters.aspx?ID=373` },
-      { nome: "Ghost Warrior", livello: 6, aonUrl: `${AON}/Search.aspx?q=ghost` },
-    ],
+    creature: POOL.spettro,
     reskin: "Un sacerdote morto mentre officiava un rituale di morte — il suo corpo porta ancora i segni della cerimonia.",
     ambientale: "L'aria si rapprende visibilmente. Chi tenta di lanciare magie curative sente la formula sfaldarsi tra le dita prima ancora di completarla."
   },
   {
     d20: 12, nome: "Apparizione ancorata", hazard: false,
     desc: "Un'entità legata a questo luogo specifico — potrebbe non essere ostile, dipende da cosa le hanno fatto.",
-    hint: "Valuta se è ostile in base al luogo. Forse vuole qualcosa dai PG.",
+    hint: "Valuta se è ostile in base al luogo. A livelli alti potrebbe essere un Graveknight o un Dybbuk.",
     creature: [
-      { nome: "Ghost", livello: 4, aonUrl: `${AON}/Search.aspx?q=ghost` },
-      { nome: "Specter", livello: 7, aonUrl: `${AON}/Monsters.aspx?ID=373` },
+      { nome: "Ghost",        livello: 4,  aonUrl: `${AON}/Search.aspx?q=ghost+commoner` },
+      { nome: "Specter",      livello: 7,  aonUrl: `${AON}/Monsters.aspx?ID=373` },
+      { nome: "Allip",        livello: 8,  aonUrl: `${AON}/Search.aspx?q=allip` },
+      { nome: "Wraith",       livello: 9,  aonUrl: `${AON}/Monsters.aspx?ID=416` },
+      { nome: "Penanggalen",  livello: 12, aonUrl: `${AON}/Search.aspx?q=penanggalen` },
+      { nome: "Graveknight",  livello: 13, aonUrl: `${AON}/Search.aspx?q=graveknight` },
+      { nome: "Dybbuk",       livello: 14, aonUrl: `${AON}/Search.aspx?q=dybbuk` },
+      { nome: "Nightwing",    livello: 16, aonUrl: `${AON}/Search.aspx?q=nightwing` },
+      { nome: "Lich",         livello: 17, aonUrl: `${AON}/Search.aspx?q=lich` },
     ],
     reskin: "L'eco di chi è morto qui senza capire perché. Non sa di essere morto — o lo sa e non lo accetta.",
-    ambientale: "Un punto preciso della stanza è sempre più freddo degli altri. Oggetti trovati spostati di notte: libri aperti a pagine vuote, sedie girate verso il muro."
+    ambientale: "Un punto preciso della stanza è sempre più freddo degli altri. Oggetti trovati spostati: libri aperti a pagine vuote, sedie girate verso il muro."
   },
   {
     d20: 13, nome: "Allip", hazard: false,
     desc: "Irradia follia come un'aura — non attacca fisicamente, ma la sua presenza corrode la mente.",
-    hint: "Non attacca fisicamente. La follia è il pericolo. CD Volontà ogni round in zona.",
+    hint: "Non attacca fisicamente. La follia è il pericolo. A livelli alti usa Dybbuk o Mohrg.",
     creature: [
-      { nome: "Allip", livello: 8, aonUrl: `${AON}/Search.aspx?q=allip` },
+      { nome: "Allip",        livello: 8,  aonUrl: `${AON}/Search.aspx?q=allip` },
+      { nome: "Wraith",       livello: 9,  aonUrl: `${AON}/Monsters.aspx?ID=416` },
+      { nome: "Mohrg",        livello: 10, aonUrl: `${AON}/Search.aspx?q=mohrg` },
+      { nome: "Banshee",      livello: 12, aonUrl: `${AON}/Monsters.aspx?ID=38` },
+      { nome: "Dybbuk",       livello: 14, aonUrl: `${AON}/Search.aspx?q=dybbuk` },
+      { nome: "Nightwing",    livello: 16, aonUrl: `${AON}/Search.aspx?q=nightwing` },
+      { nome: "Lich",         livello: 17, aonUrl: `${AON}/Search.aspx?q=lich` },
     ],
     reskin: "Il residuo di una mente spezzata da segreti troppo grandi — i sussurri che emana sono frammenti di Sapere Proibito di Vecna.",
     ambientale: "Un ronzio sottile, quasi fuori dalla soglia dell'udibile. Chi lo sente non è sicuro di averlo sentito davvero — ma non riesce a pensare ad altro."
@@ -659,31 +690,47 @@ const MANIFESTAZIONI = [
   {
     d20: 14, nome: "Ombre ×3 + Poltergeist", hazard: true, hazardFisso: 2,
     desc: "Un'orda di ombre sfreccia nell'oscurità mentre oggetti prendono vita tutto attorno. Caos puro.",
-    hint: "Tre ombre simultanee + Hazard Poltergeist (2). Combattimento + pericolo ambientale.",
+    hint: "Tre creature + hazard ambientale. Scala il tipo: 3 Wraith, 3 Bodak o Nightwing + Graveknight.",
     creature: [
-      { nome: "Shadow ×3", livello: 4, aonUrl: `${AON}/Monsters.aspx?ID=363` },
-      { nome: "Poltergeist", livello: 4, aonUrl: `${AON}/Monsters.aspx?ID=330` },
+      { nome: "Shadow ×3",      livello: 4,  aonUrl: `${AON}/Monsters.aspx?ID=363` },
+      { nome: "Greater Shadow ×3", livello: 7, aonUrl: `${AON}/Monsters.aspx?ID=364` },
+      { nome: "Wraith ×3",      livello: 9,  aonUrl: `${AON}/Monsters.aspx?ID=416` },
+      { nome: "Bodak ×2",       livello: 12, aonUrl: `${AON}/Search.aspx?q=bodak` },
+      { nome: "Graveknight + Nightwing", livello: 14, aonUrl: `${AON}/Search.aspx?q=graveknight` },
+      { nome: "Nightwing ×2",   livello: 16, aonUrl: `${AON}/Search.aspx?q=nightwing` },
     ],
-    reskin: "Le ombre di tre mercanti assassinati in questa locanda — il poltergeist è la loro rabbia collettiva fatta materia.",
-    ambientale: "Le torce si spengono nell'ordine sbagliato. Poi i muri iniziano a tremare, piano. Poi arrivano le ombre — e con loro, i proiettili."
+    reskin: "Le ombre di tre mercanti assassinati — il poltergeist è la loro rabbia collettiva fatta materia.",
+    ambientale: "Le torce si spengono nell'ordine sbagliato. Poi i muri iniziano a tremare. Poi arrivano le ombre — e con loro, i proiettili."
   },
   {
     d20: 15, nome: "Apparizione del Marchio", hazard: false,
     desc: "Riconosce il Marchio di Rui Jin — ignorando completamente gli altri, punta diritto a lui.",
-    hint: "Questa entità attacca Rui Jin direttamente, ignorando il resto del gruppo. Priorità assoluta.",
+    hint: "Attacca solo Rui Jin. A livelli alti usa Thanadaemon o Dybbuk — entità legate a Vecna.",
     creature: [
-      { nome: "Specter", livello: 7, aonUrl: `${AON}/Monsters.aspx?ID=373` },
-      { nome: "Ghost", livello: 4, aonUrl: `${AON}/Search.aspx?q=ghost` },
+      { nome: "Specter",      livello: 7,  aonUrl: `${AON}/Monsters.aspx?ID=373` },
+      { nome: "Allip",        livello: 8,  aonUrl: `${AON}/Search.aspx?q=allip` },
+      { nome: "Wraith",       livello: 9,  aonUrl: `${AON}/Monsters.aspx?ID=416` },
+      { nome: "Banshee",      livello: 12, aonUrl: `${AON}/Monsters.aspx?ID=38` },
+      { nome: "Thanadaemon",  livello: 13, aonUrl: `${AON}/Search.aspx?q=thanadaemon` },
+      { nome: "Dybbuk",       livello: 14, aonUrl: `${AON}/Search.aspx?q=dybbuk` },
+      { nome: "Nightwing",    livello: 16, aonUrl: `${AON}/Search.aspx?q=nightwing` },
+      { nome: "Lich",         livello: 17, aonUrl: `${AON}/Search.aspx?q=lich` },
     ],
-    reskin: "Un'anima attratta dal Marchio di Vecna come falena verso la fiamma — non vuole Dronjons, non vuole il gruppo. Vuole il bambino.",
-    ambientale: "Rui Jin sente la pressione prima degli altri. Qualcosa lo fissa da dentro il buio — solo lui, non il gruppo. Poi la forma prende consistenza."
+    reskin: "Un'anima attratta dal Marchio di Vecna come falena verso la fiamma — non vuole Dronjons. Vuole il bambino.",
+    ambientale: "Rui Jin sente la pressione prima degli altri. Qualcosa lo fissa da dentro il buio — solo lui. Poi la forma prende consistenza."
   },
   {
     d20: 16, nome: "Banshee", hazard: false,
     desc: "Il grido lacera l'aria come una lama — chi lo sente porta il lamento dentro di sé per ore.",
-    hint: "Incontro serio. La banshee può uccidere con il grido. Attenzione alle immunità sonore.",
+    hint: "Incontro serio. Il grido può essere letale. A livelli alti usa Nightwing o Lich.",
     creature: [
-      { nome: "Banshee", livello: 12, aonUrl: `${AON}/Monsters.aspx?ID=38` },
+      { nome: "Wraith",       livello: 9,  aonUrl: `${AON}/Monsters.aspx?ID=416` },
+      { nome: "Banshee",      livello: 12, aonUrl: `${AON}/Monsters.aspx?ID=38` },
+      { nome: "Dybbuk",       livello: 14, aonUrl: `${AON}/Search.aspx?q=dybbuk` },
+      { nome: "Dread Wraith", livello: 16, aonUrl: `${AON}/Monsters.aspx?ID=417` },
+      { nome: "Nightwing",    livello: 16, aonUrl: `${AON}/Search.aspx?q=nightwing` },
+      { nome: "Lich",         livello: 17, aonUrl: `${AON}/Search.aspx?q=lich` },
+      { nome: "Nightwave",    livello: 20, aonUrl: `${AON}/Search.aspx?q=nightwave` },
     ],
     reskin: "Una nobile di Geoff morta durante le invasioni dei giganti — il suo grido è il suono dell'intera provincia che piange.",
     ambientale: "Prima del grido c'è una nota. Una sola nota, perfetta, immobile nell'aria. Chi la sente smette di muoversi. Poi tutto si rompe."
@@ -691,22 +738,16 @@ const MANIFESTAZIONI = [
   {
     d20: 17, nome: "Wraith", hazard: false,
     desc: "Ha un obiettivo preciso: assorbire l'Artiglio e i Sospiri che contiene. Vuole ciò che Dronjons ha.",
-    hint: "Va diretto all'Artiglio. Priorità su Dronjons. Potrebbe ignorare chi non lo difende.",
-    creature: [
-      { nome: "Wraith", livello: 9, aonUrl: `${AON}/Monsters.aspx?ID=416` },
-      { nome: "Dread Wraith", livello: 16, aonUrl: `${AON}/Monsters.aspx?ID=417` },
-    ],
+    hint: "Va diretto all'Artiglio. A livelli alti usa Dread Wraith, Nightwing o Nightwave.",
+    creature: POOL.guerriero,
     reskin: "Un cacciatore di reliquie che ha toccato troppi oggetti proibiti — ora vuole aggiungere l'Artiglio alla propria collezione postuma.",
-    ambientale: "Entra attraverso il pavimento senza rumore. L'unica cosa che tradisce la sua presenza: le monete nelle borse diventano fredde."
+    ambientale: "Entra attraverso il pavimento senza rumore. L'unica cosa che lo tradisce: le monete nelle borse diventano fredde."
   },
   {
     d20: 18, nome: "Spettro guerriero", hazard: true, hazardFisso: 5,
     desc: "Un combattente in vita, ora guerriero della morte — porta con sé il tentativo di una possessione.",
-    hint: "Spettro + Hazard 5 (Possessione) automatico. Doppia minaccia: combattimento e possessione.",
-    creature: [
-      { nome: "Specter", livello: 7, aonUrl: `${AON}/Monsters.aspx?ID=373` },
-      { nome: "Graveknight", livello: 13, aonUrl: `${AON}/Search.aspx?q=graveknight` },
-    ],
+    hint: "Doppia minaccia: combattimento + Possessione. A livelli alti Graveknight, Thanadaemon o Lich.",
+    creature: POOL.guerriero,
     reskin: "Un veterano delle Guerre Greyhawk, morto tradito — porta ancora la tecnica di combattimento che lo rendeva letale in vita.",
     ambientale: "Si forma dalla nebbia con la postura di chi è abituato a combattere. Non è agitato. È metodico. Ha tutto il tempo che vuole."
   },
@@ -721,10 +762,16 @@ const MANIFESTAZIONI = [
   {
     d20: 20, nome: "Il Collezionista Precedente", hazard: false,
     desc: "Un altro cacciatore di spiriti, morto con l'Artiglio in pugno. Parla. Contratta. Combatte solo se attaccato.",
-    hint: "Trattativa prima della violenza. Sa cose sull'Artiglio. Potrebbe diventare alleato o nemico.",
+    hint: "Trattativa prima della violenza. A livelli alti era potente in vita: Graveknight, Lich.",
     creature: [
-      { nome: "Revenant", livello: 6, aonUrl: `${AON}/Monsters.aspx?ID=350` },
-      { nome: "Ghost", livello: 4, aonUrl: `${AON}/Search.aspx?q=ghost` },
+      { nome: "Revenant",     livello: 6,  aonUrl: `${AON}/Monsters.aspx?ID=350` },
+      { nome: "Ghost",        livello: 4,  aonUrl: `${AON}/Search.aspx?q=ghost+commoner` },
+      { nome: "Specter",      livello: 7,  aonUrl: `${AON}/Monsters.aspx?ID=373` },
+      { nome: "Wraith",       livello: 9,  aonUrl: `${AON}/Monsters.aspx?ID=416` },
+      { nome: "Graveknight",  livello: 13, aonUrl: `${AON}/Search.aspx?q=graveknight` },
+      { nome: "Thanadaemon",  livello: 13, aonUrl: `${AON}/Search.aspx?q=thanadaemon` },
+      { nome: "Dread Wraith", livello: 16, aonUrl: `${AON}/Monsters.aspx?ID=417` },
+      { nome: "Lich",         livello: 17, aonUrl: `${AON}/Search.aspx?q=lich` },
     ],
     reskin: "Ha avuto l'Artiglio prima di Dronjons. Lo conosce meglio di chiunque. Vuole sapere chi lo ha ammazzato — o vuole l'oggetto indietro.",
     ambientale: "Arriva vestito da cacciatore. Capisce le lingue che parlate. Aspetta che qualcuno parli per primo. Non attacca per primo."
@@ -743,11 +790,11 @@ const HAZARDS = [
 
 const GRADI = [
   { max: 3,   id: "eco",          label: "Eco",          cls: "grade-eco",          desc: "Atmosfera e presagi — nessun combattimento", livOffset: null },
-  { max: 6,   id: "banale",       label: "Banale",       cls: "grade-banale",       desc: "Fastidioso ma non pericoloso",               livOffset: -2 },
-  { max: 9,   id: "minore",       label: "Minore",       cls: "grade-minore",       desc: "Vero incontro, gestibile",                   livOffset: -1 },
-  { max: 12,  id: "grave",        label: "Grave",        cls: "grade-grave",        desc: "Richiede strategia",                         livOffset: 0  },
-  { max: 15,  id: "letale",       label: "Letale",       cls: "grade-letale",       desc: "Qualcuno può morire",                        livOffset: 2  },
-  { max: 999, id: "catastrofico", label: "Catastrofico", cls: "grade-catastrofico", desc: "Tiro su tabella speciale",                   livOffset: 3  },
+  { max: 6,   id: "banale",       label: "Banale",       cls: "grade-banale",       desc: "Fastidioso ma non pericoloso",               livOffset: -1 },
+  { max: 9,   id: "minore",       label: "Minore",       cls: "grade-minore",       desc: "Vero incontro, gestibile",                   livOffset: 0  },
+  { max: 12,  id: "grave",        label: "Grave",        cls: "grade-grave",        desc: "Richiede strategia",                         livOffset: 1  },
+  { max: 15,  id: "letale",       label: "Letale",       cls: "grade-letale",       desc: "Qualcuno può morire",                        livOffset: 3  },
+  { max: 999, id: "catastrofico", label: "Catastrofico", cls: "grade-catastrofico", desc: "Tiro su tabella speciale",                   livOffset: 4  },
 ];
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
@@ -980,7 +1027,7 @@ function buildCreatureBlock(creature, grado, livelloPG) {
     ? `Lv ${target} (PG ${livelloPG} +${grado.livOffset})`
     : `Lv ${target} (PG ${livelloPG} ${grado.livOffset})`;
 
-  const rows = creature.map((c, i) => {
+  const rows = creature.slice(0, 3).map((c, i) => {
     const isBest = i === 0;
     return `
       <div class="creature-row">
