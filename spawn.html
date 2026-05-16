@@ -301,6 +301,101 @@ button:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
   line-height: 1.5;
 }
 
+/* Creature suggerite */
+.creature-block {
+  background: #0d1a0d;
+  border: 0.5px solid #2a5a2a;
+  border-radius: 7px;
+  padding: 12px 14px;
+  margin-top: 12px;
+}
+.creature-block-title {
+  font-size: 10px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: #6fcf6f;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.creature-target {
+  font-size: 11px;
+  color: var(--t3);
+  margin-left: auto;
+  font-style: italic;
+  text-transform: none;
+  letter-spacing: 0;
+}
+.creature-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 0;
+  border-bottom: 0.5px solid rgba(255,255,255,0.05);
+  font-size: 14px;
+}
+.creature-row:last-of-type { border-bottom: none; }
+.creature-lv {
+  font-size: 10px;
+  background: rgba(111,207,111,0.10);
+  border: 0.5px solid #2a5a2a;
+  color: #6fcf6f;
+  border-radius: 4px;
+  padding: 1px 7px;
+  flex-shrink: 0;
+  letter-spacing: .04em;
+}
+.creature-best { color: var(--t1); }
+.creature-alt  { color: var(--t2); }
+.creature-star { color: #6fcf6f; font-size: 11px; flex-shrink: 0; }
+.creature-aon {
+  font-size: 11px;
+  color: var(--info-fg);
+  text-decoration: none;
+  margin-left: auto;
+  padding: 2px 7px;
+  border: 0.5px solid rgba(122,184,240,0.22);
+  border-radius: 4px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.creature-aon:hover { background: rgba(122,184,240,0.08); }
+.creature-reskin {
+  margin-top: 8px;
+  padding-top: 7px;
+  border-top: 0.5px solid rgba(255,255,255,0.05);
+  font-size: 12px;
+  font-style: italic;
+  color: var(--t3);
+  line-height: 1.5;
+}
+
+/* Dettaglio ambientale */
+.ambientale-block {
+  background: var(--bg2);
+  border: 0.5px solid var(--border);
+  border-radius: 7px;
+  padding: 11px 14px;
+  margin-top: 12px;
+}
+.ambientale-block-title {
+  font-size: 10px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--t3);
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.ambientale-block-text {
+  font-size: 14px;
+  font-style: italic;
+  color: var(--t2);
+  line-height: 1.55;
+}
+
 /* Tranquillo result */
 .tranquillo {
   text-align: center;
@@ -352,7 +447,6 @@ button:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
 }
 .anim-in { animation: fadeSlide .35s ease forwards; }
 
-/* Spinner */
 @keyframes spin { to { transform: rotate(360deg); } }
 .spinning { display: inline-block; animation: spin .7s linear infinite; }
 </style>
@@ -423,47 +517,237 @@ button:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
 <script>
 // ── Data tables ────────────────────────────────────────────────────────────
 
+const AON = 'https://2e.aonprd.com';
+
 const MANIFESTAZIONI = [
   null, // 0 (1-indexed)
-  { d20: 1,  nome: "Eco visivo",           desc: "Sogni disturbanti, ombre fuggevoli — nessun combattimento. Il Velo trema ma non cede.", hint: "Descrivi presagi e rumori. Nessun incontro, solo atmosfera.", hazard: false },
-  { d20: 2,  nome: "Eco visivo",           desc: "Sogni disturbanti, ombre fuggevoli — nessun combattimento. Il Velo trema ma non cede.", hint: "Descrivi presagi e rumori. Nessun incontro, solo atmosfera.", hazard: false },
-  { d20: 3,  nome: "Wisp solitario",       desc: "Un frammento confuso di coscienza si materializza, si guarda attorno e si dissolve se ignorato.", hint: "Se i PG non interagiscono, sparisce. Se attaccato, combatte brevemente poi svanisce.", hazard: false },
-  { d20: 4,  nome: "Wisp solitario",       desc: "Un frammento confuso di coscienza si materializza, si guarda attorno e si dissolve se ignorato.", hint: "Se i PG non interagiscono, sparisce. Se attaccato, combatte brevemente poi svanisce.", hazard: false },
-  { d20: 5,  nome: "Ombra ×1",             desc: "Una singola ombra strappata dal suo portatore emerge dall'oscurità, affamata di forza vitale.", hint: "Incontro standard. Un'ombra solitaria, gestibile.", hazard: false },
-  { d20: 6,  nome: "Ombra ×1",             desc: "Una singola ombra strappata dal suo portatore emerge dall'oscurità, affamata di forza vitale.", hint: "Incontro standard. Un'ombra solitaria, gestibile.", hazard: false },
-  { d20: 7,  nome: "Ombre ×2",             desc: "Due ombre emergono in sincronia — a quanto pare legate in vita, indissolubili anche nella morte.", hint: "Più pressione. Considera la loro sinergia tattica.", hazard: false },
-  { d20: 8,  nome: "Ombre ×2",             desc: "Due ombre emergono in sincronia — a quanto pare legate in vita, indissolubili anche nella morte.", hint: "Più pressione. Considera la loro sinergia tattica.", hazard: false },
-  { d20: 9,  nome: "Poltergeist",          desc: "Nessuna forma visibile — solo oggetti scagliati nell'aria con furia cieca. Non ha corpo da bersagliare.", hint: "HAZARD puro: usa la tabella hazard. Non è un'entità bersagliabile con attacchi normali.", hazard: true, hazardForzato: true },
-  { d20: 10, nome: "Spettro",              desc: "Ricorda il momento della propria morte nei minimi dettagli. Non vuole combattere — vuole testimoni.", hint: "Può essere non ostile. Se i PG ascoltano, potrebbe rivelare informazioni sulla zona.", hazard: false },
-  { d20: 11, nome: "Spettro",              desc: "Uno spettro emerge portando con sé un'aura di morte — la magia curativa si congela nell'aria.", hint: "Spettro + Hazard 3 (Zona di Morte) automatico. Tre round senza recupero PF.", hazard: true, hazardFisso: 3 },
-  { d20: 12, nome: "Apparizione ancorata", desc: "Un'entità legata a questo luogo specifico — potrebbe non essere ostile, dipende da cosa le hanno fatto.", hint: "Valuta se è ostile in base al luogo. Forse vuole qualcosa dei PG.", hazard: false },
-  { d20: 13, nome: "Allip",               desc: "Irradia follia come un'aura — non attacca fisicamente, ma la sua presenza corrode la mente.", hint: "Non attacca fisicamente. La follia è il pericolo. CD Volontà ogni round in zona.", hazard: false },
-  { d20: 14, nome: "Ombre ×3 + Poltergeist", desc: "Un'orda di ombre sfreccia nell'oscurità mentre oggetti prendono vita tutto attorno. Caos puro.", hint: "Tre ombre simultanee + Hazard Poltergeist (2). Combattimento + pericolo ambientale.", hazard: true, hazardFisso: 2 },
-  { d20: 15, nome: "Apparizione del Marchio", desc: "Riconosce il Marchio di Rui Jin — ignorando completamente gli altri, punta diritto a lui.", hint: "Questa entità attacca Rui Jin direttamente, ignorando il resto del gruppo. Priorità assoluta.", hazard: false },
-  { d20: 16, nome: "Banshee",              desc: "Il grido lacera l'aria come lama — chi lo sente porta il lamento dentro di sé per ore.", hint: "Incontro serio. La banshee può uccidere con il grido. Attenzione alle immunità sonore.", hazard: false },
-  { d20: 17, nome: "Wraith",              desc: "Ha un obiettivo preciso: assorbire l'Artiglio e i Sospiri che contiene. Vuole ciò che Dronjons ha.", hint: "Va directo all'Artiglio. Priorità su Dronjons. Potrebbe ignorare chi non lo difende.", hazard: false },
-  { d20: 18, nome: "Spettro guerriero",   desc: "Un combattente in vita, ora guerriero della morte — porta con sé il tentativo di una possessione.", hint: "Spettro + Hazard 5 (Possessione) automatico. Doppia minaccia: combattimento e possessione.", hazard: true, hazardFisso: 5 },
-  { d20: 19, nome: "Il Gregge si rivolta", desc: "Qualcosa si muove dentro l'Artiglio — un Sospiro prigioniero spinge per uscire, disperato.", hint: "CD 18 Volontà per Dronjons. Fallimento: Grabbed + perde 1 Sospiro. Nessuna creatura esterna.", hazard: false },
-  { d20: 20, nome: "Il Collezionista Precedente", desc: "Un altro cacciatore di spiriti, morto con l'Artiglio in pugno. Parla. Contratta. Combatte solo se attaccato.", hint: "Trattativa prima della violenza. Sa cose sull'Artiglio. Potrebbe diventare alleato o nemico.", hazard: false },
+  {
+    d20: 1, nome: "Eco visivo", hazard: false,
+    desc: "Sogni disturbanti, ombre fuggevoli — nessun combattimento. Il Velo trema ma non cede.",
+    hint: "Descrivi presagi e rumori. Nessun incontro, solo atmosfera.",
+    creature: [],
+    reskin: null,
+    ambientale: "Nell'aria si sente il peso di qualcosa che ha già attraversato. Le ombre non coincidono con le fonti di luce."
+  },
+  {
+    d20: 2, nome: "Eco visivo", hazard: false,
+    desc: "Sogni disturbanti, ombre fuggevoli — nessun combattimento. Il Velo trema ma non cede.",
+    hint: "Descrivi presagi e rumori. Nessun incontro, solo atmosfera.",
+    creature: [],
+    reskin: null,
+    ambientale: "Qualcuno giura di aver sentito il proprio nome pronunciato nel buio — ma con una voce che non appartiene a nessuno del gruppo."
+  },
+  {
+    d20: 3, nome: "Wisp solitario", hazard: false,
+    desc: "Un frammento confuso di coscienza si materializza, si guarda attorno e si dissolve se ignorato.",
+    hint: "Se i PG non interagiscono, sparisce. Se attaccato, combatte brevemente poi svanisce.",
+    creature: [
+      { nome: "Will-o'-Wisp", livello: 6, aonUrl: `${AON}/Monsters.aspx?ID=414` },
+      { nome: "Soulbound Doll", livello: 2, aonUrl: `${AON}/Search.aspx?q=soulbound+doll` },
+    ],
+    reskin: "Un frammento di Sospiro fuggito dall'Artiglio — troppo piccolo per essere catturato, troppo confuso per essere pericoloso.",
+    ambientale: "Una luce pallida rimbalza tra le superfici senza provenire da nessuna direzione precisa. Fa freddo dove non dovrebbe."
+  },
+  {
+    d20: 4, nome: "Wisp solitario", hazard: false,
+    desc: "Un frammento confuso di coscienza si materializza, si guarda attorno e si dissolve se ignorato.",
+    hint: "Se i PG non interagiscono, sparisce. Se attaccato, combatte brevemente poi svanisce.",
+    creature: [
+      { nome: "Will-o'-Wisp", livello: 6, aonUrl: `${AON}/Monsters.aspx?ID=414` },
+      { nome: "Soulbound Doll", livello: 2, aonUrl: `${AON}/Search.aspx?q=soulbound+doll` },
+    ],
+    reskin: "Un frammento di Sospiro fuggito dall'Artiglio — troppo piccolo per essere catturato, troppo confuso per essere pericoloso.",
+    ambientale: "La luce sembra seguire il calore dei corpi. Dove qualcuno si è fermato a lungo, rimane un alone tiepido che non si disperde."
+  },
+  {
+    d20: 5, nome: "Ombra ×1", hazard: false,
+    desc: "Una singola ombra strappata dal suo portatore emerge dall'oscurità, affamata di forza vitale.",
+    hint: "Incontro standard. Un'ombra solitaria, gestibile.",
+    creature: [
+      { nome: "Shadow", livello: 4, aonUrl: `${AON}/Monsters.aspx?ID=363` },
+      { nome: "Greater Shadow", livello: 7, aonUrl: `${AON}/Monsters.aspx?ID=364` },
+    ],
+    reskin: "L'ombra di un soldato keolandese caduto — il suo nome era inciso su uno scudo, ma il metallo è arrugginito e il nome illeggibile.",
+    ambientale: "Le ombre di tutti i presenti si muovono un mezzo passo in ritardo. Non succede mai quando si guarda direttamente — solo fuori angolo."
+  },
+  {
+    d20: 6, nome: "Ombra ×1", hazard: false,
+    desc: "Una singola ombra strappata dal suo portatore emerge dall'oscurità, affamata di forza vitale.",
+    hint: "Incontro standard. Un'ombra solitaria, gestibile.",
+    creature: [
+      { nome: "Shadow", livello: 4, aonUrl: `${AON}/Monsters.aspx?ID=363` },
+      { nome: "Greater Shadow", livello: 7, aonUrl: `${AON}/Monsters.aspx?ID=364` },
+    ],
+    reskin: "L'ombra di un ladro impiccato — porta ancora il gesto finale, le mani che stringono qualcosa che non c'è più.",
+    ambientale: "Il fuoco non si spegne, ma smette di proiettare luce per qualche secondo. Tutti lo vedono. Nessuno lo dice ad alta voce."
+  },
+  {
+    d20: 7, nome: "Ombre ×2", hazard: false,
+    desc: "Due ombre emergono in sincronia — a quanto pare legate in vita, indissolubili anche nella morte.",
+    hint: "Più pressione. Considera la loro sinergia tattica.",
+    creature: [
+      { nome: "Shadow", livello: 4, aonUrl: `${AON}/Monsters.aspx?ID=363` },
+      { nome: "Greater Shadow", livello: 7, aonUrl: `${AON}/Monsters.aspx?ID=364` },
+    ],
+    reskin: "Due fratelli morti nello stesso istante — le loro ombre si cercano ancora nell'oscurità, come se cercassero di ritrovarsi.",
+    ambientale: "Due punti freddi nel buio, separati di tre metri esatti. Non si muovono finché non li guardi direttamente."
+  },
+  {
+    d20: 8, nome: "Ombre ×2", hazard: false,
+    desc: "Due ombre emergono in sincronia — a quanto pare legate in vita, indissolubili anche nella morte.",
+    hint: "Più pressione. Considera la loro sinergia tattica.",
+    creature: [
+      { nome: "Shadow", livello: 4, aonUrl: `${AON}/Monsters.aspx?ID=363` },
+      { nome: "Greater Shadow", livello: 7, aonUrl: `${AON}/Monsters.aspx?ID=364` },
+    ],
+    reskin: "Guardie del corpo di un nobile morto per tradimento — continuano a proteggersi a vicenda anche nell'oltretomba.",
+    ambientale: "Si sente il suono di passi che non appartengono a nessuno dei presenti. Poi si sente un secondo set di passi, sfasato."
+  },
+  {
+    d20: 9, nome: "Poltergeist", hazard: true, hazardForzato: true,
+    desc: "Nessuna forma visibile — solo oggetti scagliati nell'aria con furia cieca. Non ha corpo da bersagliare.",
+    hint: "HAZARD puro: usa la tabella hazard. Non è un'entità bersagliabile con attacchi normali.",
+    creature: [
+      { nome: "Poltergeist", livello: 4, aonUrl: `${AON}/Monsters.aspx?ID=330` },
+    ],
+    reskin: "La rabbia residua di qualcuno morto senza essere creduto — ogni oggetto che vola è una parola che non fu ascoltata.",
+    ambientale: "Prima del primo oggetto che vola c'è un secondo di silenzio totale. Come se l'aria trattenesse il respiro."
+  },
+  {
+    d20: 10, nome: "Spettro", hazard: false,
+    desc: "Ricorda il momento della propria morte nei minimi dettagli. Non vuole combattere — vuole testimoni.",
+    hint: "Può essere non ostile. Se i PG ascoltano, potrebbe rivelare informazioni sulla zona.",
+    creature: [
+      { nome: "Specter", livello: 7, aonUrl: `${AON}/Monsters.aspx?ID=373` },
+      { nome: "Ghost Commoner", livello: 4, aonUrl: `${AON}/Search.aspx?q=ghost+commoner` },
+    ],
+    reskin: "Una testimone di guerra — ha visto qualcosa che non doveva vedere e non riesce a smettere di vederlo, in loop eterno.",
+    ambientale: "Odore di cera bruciata. La temperatura scende di tre gradi in meno di un round. Poi la figura appare, ferma."
+  },
+  {
+    d20: 11, nome: "Spettro + Zona di Morte", hazard: true, hazardFisso: 3,
+    desc: "Uno spettro emerge portando con sé un'aura di morte — la magia curativa si congela nell'aria.",
+    hint: "Spettro + Hazard 3 (Zona di Morte) automatico. Tre round senza recupero PF.",
+    creature: [
+      { nome: "Specter", livello: 7, aonUrl: `${AON}/Monsters.aspx?ID=373` },
+      { nome: "Ghost Warrior", livello: 6, aonUrl: `${AON}/Search.aspx?q=ghost` },
+    ],
+    reskin: "Un sacerdote morto mentre officiava un rituale di morte — il suo corpo porta ancora i segni della cerimonia.",
+    ambientale: "L'aria si rapprende visibilmente. Chi tenta di lanciare magie curative sente la formula sfaldarsi tra le dita prima ancora di completarla."
+  },
+  {
+    d20: 12, nome: "Apparizione ancorata", hazard: false,
+    desc: "Un'entità legata a questo luogo specifico — potrebbe non essere ostile, dipende da cosa le hanno fatto.",
+    hint: "Valuta se è ostile in base al luogo. Forse vuole qualcosa dai PG.",
+    creature: [
+      { nome: "Ghost", livello: 4, aonUrl: `${AON}/Search.aspx?q=ghost` },
+      { nome: "Specter", livello: 7, aonUrl: `${AON}/Monsters.aspx?ID=373` },
+    ],
+    reskin: "L'eco di chi è morto qui senza capire perché. Non sa di essere morto — o lo sa e non lo accetta.",
+    ambientale: "Un punto preciso della stanza è sempre più freddo degli altri. Oggetti trovati spostati di notte: libri aperti a pagine vuote, sedie girate verso il muro."
+  },
+  {
+    d20: 13, nome: "Allip", hazard: false,
+    desc: "Irradia follia come un'aura — non attacca fisicamente, ma la sua presenza corrode la mente.",
+    hint: "Non attacca fisicamente. La follia è il pericolo. CD Volontà ogni round in zona.",
+    creature: [
+      { nome: "Allip", livello: 8, aonUrl: `${AON}/Search.aspx?q=allip` },
+    ],
+    reskin: "Il residuo di una mente spezzata da segreti troppo grandi — i sussurri che emana sono frammenti di Sapere Proibito di Vecna.",
+    ambientale: "Un ronzio sottile, quasi fuori dalla soglia dell'udibile. Chi lo sente non è sicuro di averlo sentito davvero — ma non riesce a pensare ad altro."
+  },
+  {
+    d20: 14, nome: "Ombre ×3 + Poltergeist", hazard: true, hazardFisso: 2,
+    desc: "Un'orda di ombre sfreccia nell'oscurità mentre oggetti prendono vita tutto attorno. Caos puro.",
+    hint: "Tre ombre simultanee + Hazard Poltergeist (2). Combattimento + pericolo ambientale.",
+    creature: [
+      { nome: "Shadow ×3", livello: 4, aonUrl: `${AON}/Monsters.aspx?ID=363` },
+      { nome: "Poltergeist", livello: 4, aonUrl: `${AON}/Monsters.aspx?ID=330` },
+    ],
+    reskin: "Le ombre di tre mercanti assassinati in questa locanda — il poltergeist è la loro rabbia collettiva fatta materia.",
+    ambientale: "Le torce si spengono nell'ordine sbagliato. Poi i muri iniziano a tremare, piano. Poi arrivano le ombre — e con loro, i proiettili."
+  },
+  {
+    d20: 15, nome: "Apparizione del Marchio", hazard: false,
+    desc: "Riconosce il Marchio di Rui Jin — ignorando completamente gli altri, punta diritto a lui.",
+    hint: "Questa entità attacca Rui Jin direttamente, ignorando il resto del gruppo. Priorità assoluta.",
+    creature: [
+      { nome: "Specter", livello: 7, aonUrl: `${AON}/Monsters.aspx?ID=373` },
+      { nome: "Ghost", livello: 4, aonUrl: `${AON}/Search.aspx?q=ghost` },
+    ],
+    reskin: "Un'anima attratta dal Marchio di Vecna come falena verso la fiamma — non vuole Dronjons, non vuole il gruppo. Vuole il bambino.",
+    ambientale: "Rui Jin sente la pressione prima degli altri. Qualcosa lo fissa da dentro il buio — solo lui, non il gruppo. Poi la forma prende consistenza."
+  },
+  {
+    d20: 16, nome: "Banshee", hazard: false,
+    desc: "Il grido lacera l'aria come una lama — chi lo sente porta il lamento dentro di sé per ore.",
+    hint: "Incontro serio. La banshee può uccidere con il grido. Attenzione alle immunità sonore.",
+    creature: [
+      { nome: "Banshee", livello: 12, aonUrl: `${AON}/Monsters.aspx?ID=38` },
+    ],
+    reskin: "Una nobile di Geoff morta durante le invasioni dei giganti — il suo grido è il suono dell'intera provincia che piange.",
+    ambientale: "Prima del grido c'è una nota. Una sola nota, perfetta, immobile nell'aria. Chi la sente smette di muoversi. Poi tutto si rompe."
+  },
+  {
+    d20: 17, nome: "Wraith", hazard: false,
+    desc: "Ha un obiettivo preciso: assorbire l'Artiglio e i Sospiri che contiene. Vuole ciò che Dronjons ha.",
+    hint: "Va diretto all'Artiglio. Priorità su Dronjons. Potrebbe ignorare chi non lo difende.",
+    creature: [
+      { nome: "Wraith", livello: 9, aonUrl: `${AON}/Monsters.aspx?ID=416` },
+      { nome: "Dread Wraith", livello: 16, aonUrl: `${AON}/Monsters.aspx?ID=417` },
+    ],
+    reskin: "Un cacciatore di reliquie che ha toccato troppi oggetti proibiti — ora vuole aggiungere l'Artiglio alla propria collezione postuma.",
+    ambientale: "Entra attraverso il pavimento senza rumore. L'unica cosa che tradisce la sua presenza: le monete nelle borse diventano fredde."
+  },
+  {
+    d20: 18, nome: "Spettro guerriero", hazard: true, hazardFisso: 5,
+    desc: "Un combattente in vita, ora guerriero della morte — porta con sé il tentativo di una possessione.",
+    hint: "Spettro + Hazard 5 (Possessione) automatico. Doppia minaccia: combattimento e possessione.",
+    creature: [
+      { nome: "Specter", livello: 7, aonUrl: `${AON}/Monsters.aspx?ID=373` },
+      { nome: "Graveknight", livello: 13, aonUrl: `${AON}/Search.aspx?q=graveknight` },
+    ],
+    reskin: "Un veterano delle Guerre Greyhawk, morto tradito — porta ancora la tecnica di combattimento che lo rendeva letale in vita.",
+    ambientale: "Si forma dalla nebbia con la postura di chi è abituato a combattere. Non è agitato. È metodico. Ha tutto il tempo che vuole."
+  },
+  {
+    d20: 19, nome: "Il Gregge si rivolta", hazard: false,
+    desc: "Qualcosa si muove dentro l'Artiglio — un Sospiro prigioniero spinge per uscire, disperato.",
+    hint: "CD 18 Volontà per Dronjons. Fallimento: Grabbed + perde 1 Sospiro. Nessuna creatura esterna.",
+    creature: [],
+    reskin: null,
+    ambientale: "Dronjons sente le voci diventare più forti — non da fuori, da dentro. Il guanto pulsa contro il palmo come un secondo cuore fuori ritmo."
+  },
+  {
+    d20: 20, nome: "Il Collezionista Precedente", hazard: false,
+    desc: "Un altro cacciatore di spiriti, morto con l'Artiglio in pugno. Parla. Contratta. Combatte solo se attaccato.",
+    hint: "Trattativa prima della violenza. Sa cose sull'Artiglio. Potrebbe diventare alleato o nemico.",
+    creature: [
+      { nome: "Revenant", livello: 6, aonUrl: `${AON}/Monsters.aspx?ID=350` },
+      { nome: "Ghost", livello: 4, aonUrl: `${AON}/Search.aspx?q=ghost` },
+    ],
+    reskin: "Ha avuto l'Artiglio prima di Dronjons. Lo conosce meglio di chiunque. Vuole sapere chi lo ha ammazzato — o vuole l'oggetto indietro.",
+    ambientale: "Arriva vestito da cacciatore. Capisce le lingue che parlate. Aspetta che qualcuno parli per primo. Non attacca per primo."
+  },
 ];
 
 const HAZARDS = [
   null, // 0
-  { d6: 1, nome: "Freddo spettrale",       desc: "−2 a tutte le prove fisiche per 1 ora" },
-  { d6: 2, nome: "Oggetti in volo",        desc: "1d4 oggetti/round su bersagli casuali (1d6 danni contundenti)" },
-  { d6: 3, nome: "Zona di Morte",          desc: "Nessun recupero PF né magie curative per 3 round" },
-  { d6: 4, nome: "Sussurri Amplificati",   desc: "Tutti Spaventati 1 — TS Volontà CD 16 per resistere" },
-  { d6: 5, nome: "Possessione tentata",    desc: "Bersaglio casuale nel gruppo, TS Volontà CD 18" },
-  { d6: 6, nome: "Artiglio in cortocircuito", desc: "Dronjons usa Mietere il Tormento sul primo alleato che subisce danni quel round" },
+  { d6: 1, nome: "Freddo spettrale",          desc: "−2 a tutte le prove fisiche per 1 ora", aonUrl: null },
+  { d6: 2, nome: "Oggetti in volo",            desc: "1d4 oggetti/round su bersagli casuali (1d6 danni contundenti)", aonUrl: `${AON}/Monsters.aspx?ID=330` },
+  { d6: 3, nome: "Zona di Morte",              desc: "Nessun recupero PF né magie curative per 3 round", aonUrl: null },
+  { d6: 4, nome: "Sussurri Amplificati",       desc: "Tutti Spaventati 1 — TS Volontà CD 16 per resistere", aonUrl: null },
+  { d6: 5, nome: "Possessione tentata",        desc: "Bersaglio casuale nel gruppo, TS Volontà CD 18", aonUrl: `${AON}/Search.aspx?q=possession` },
+  { d6: 6, nome: "Artiglio in cortocircuito", desc: "Dronjons usa Mietere il Tormento sul primo alleato che subisce danni quel round", aonUrl: null },
 ];
 
 const GRADI = [
-  { max: 3,  id: "eco",          label: "Eco",          cls: "grade-eco",          desc: "Atmosfera e presagi — nessun combattimento" },
-  { max: 6,  id: "banale",       label: "Banale",       cls: "grade-banale",       desc: "Fastidioso ma non pericoloso" },
-  { max: 9,  id: "minore",       label: "Minore",       cls: "grade-minore",       desc: "Vero incontro, gestibile" },
-  { max: 12, id: "grave",        label: "Grave",        cls: "grade-grave",        desc: "Richiede strategia" },
-  { max: 15, id: "letale",       label: "Letale",       cls: "grade-letale",       desc: "Qualcuno può morire" },
-  { max: 999,id: "catastrofico", label: "Catastrofico", cls: "grade-catastrofico", desc: "Tiro su tabella speciale" },
+  { max: 3,   id: "eco",          label: "Eco",          cls: "grade-eco",          desc: "Atmosfera e presagi — nessun combattimento", livOffset: null },
+  { max: 6,   id: "banale",       label: "Banale",       cls: "grade-banale",       desc: "Fastidioso ma non pericoloso",               livOffset: -2 },
+  { max: 9,   id: "minore",       label: "Minore",       cls: "grade-minore",       desc: "Vero incontro, gestibile",                   livOffset: -1 },
+  { max: 12,  id: "grave",        label: "Grave",        cls: "grade-grave",        desc: "Richiede strategia",                         livOffset: 0  },
+  { max: 15,  id: "letale",       label: "Letale",       cls: "grade-letale",       desc: "Qualcuno può morire",                        livOffset: 2  },
+  { max: 999, id: "catastrofico", label: "Catastrofico", cls: "grade-catastrofico", desc: "Tiro su tabella speciale",                   livOffset: 3  },
 ];
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
@@ -472,7 +756,7 @@ function rand(n) { return Math.floor(Math.random() * n) + 1; }
 
 function getSoglia(sospiri, overflow) {
   if (sospiri === 0) return null;
-  if (overflow)     return { min: 4, autoBelow: 3 };
+  if (overflow)      return { min: 4, autoBelow: 3 };
   if (sospiri === 1) return { min: 20 };
   if (sospiri === 2) return { min: 17 };
   if (sospiri === 3) return { min: 14 };
@@ -485,10 +769,19 @@ function getGrado(totale) {
 }
 
 function faroInfo(sospiri) {
-  if (sospiri === 0) return { label: "Faro Silente", color: "#6a6762", hint: "Nessun rischio planare" };
-  if (sospiri <= 2)  return { label: "Faro Tiepido", color: "#7ab8f0", hint: "Entità planari sentono direzione vaga entro 1 miglio" };
+  if (sospiri === 0) return { label: "Faro Silente",  color: "#6a6762", hint: "Nessun rischio planare" };
+  if (sospiri <= 2)  return { label: "Faro Tiepido",  color: "#7ab8f0", hint: "Entità planari sentono direzione vaga entro 1 miglio" };
   if (sospiri <= 4)  return { label: "Faro Pulsante", color: "#f5c06a", hint: "+2 prove localizzazione; Marut/Cavalieri di Kas allertati entro 10 miglia" };
-  return               { label: "Faro Ardente", color: "#f09595", hint: "Locate attivo 1 miglio; Servitori di Vecna conoscono direzione esatta" };
+  return               { label: "Faro Ardente",  color: "#f09595", hint: "Locate attivo 1 miglio; Servitori di Vecna conoscono direzione esatta" };
+}
+
+function creatureConsigliate(manif, grado, livelloPG) {
+  if (!manif.creature || manif.creature.length === 0) return [];
+  if (grado.livOffset === null || grado.livOffset === undefined) return [];
+  const target = livelloPG + grado.livOffset;
+  return [...manif.creature].sort(
+    (a, b) => Math.abs(a.livello - target) - Math.abs(b.livello - target)
+  );
 }
 
 // ── LocalStorage sync ────────────────────────────────────────────────────────
@@ -507,8 +800,8 @@ function loadFromStorage() {
 // ── UI updates ───────────────────────────────────────────────────────────────
 
 function updateFaro() {
-  const sospiri = parseInt(document.getElementById('inp-sospiri').value) || 0;
-  const des     = parseInt(document.getElementById('inp-des').value)     || 0;
+  const sospiri    = parseInt(document.getElementById('inp-sospiri').value) || 0;
+  const des        = parseInt(document.getElementById('inp-des').value)     || 0;
   const isOverflow = sospiri > des && sospiri > 0;
 
   const info = faroInfo(sospiri);
@@ -533,6 +826,7 @@ async function eseguiRoll() {
 
   const sospiri = parseInt(document.getElementById('inp-sospiri').value) || 0;
   const des     = parseInt(document.getElementById('inp-des').value)     || 0;
+  const livello = parseInt(document.getElementById('inp-lv').value)      || 1;
 
   const area = document.getElementById('results-area');
   area.innerHTML = '';
@@ -546,10 +840,9 @@ async function eseguiRoll() {
   }
 
   const isOverflow = sospiri > des;
-  const soglia = getSoglia(sospiri, isOverflow);
-
-  const d20_1 = rand(20);
-  const disturbo = isOverflow && d20_1 <= 3 ? true : d20_1 >= soglia.min;
+  const soglia     = getSoglia(sospiri, isOverflow);
+  const d20_1      = rand(20);
+  const disturbo   = isOverflow && d20_1 <= 3 ? true : d20_1 >= soglia.min;
 
   await showStep(area, 1, "Il Velo si assottiglia?", buildStep1HTML(d20_1, soglia, disturbo, isOverflow), 0);
 
@@ -563,16 +856,16 @@ async function eseguiRoll() {
   // ── Step 2: Intensità ───────────────────────────────────────────────────
 
   await delay(700);
-  const d10 = rand(10);
+  const d10            = rand(10);
   const totaleIntensita = d10 + sospiri;
-  const grado = getGrado(totaleIntensita);
+  const grado          = getGrado(totaleIntensita);
 
   await showStep(area, 2, "Intensità", buildStep2HTML(d10, sospiri, totaleIntensita, grado), 0);
 
   // ── Step 3: Manifestazione ──────────────────────────────────────────────
 
   await delay(800);
-  const d20_3 = rand(20);
+  const d20_3    = rand(20);
   const manifEntry = MANIFESTAZIONI[d20_3];
 
   let hazardEntry = null;
@@ -593,7 +886,7 @@ async function eseguiRoll() {
   // ── Risultato finale ────────────────────────────────────────────────────
 
   await delay(500);
-  appendToArea(area, buildFinalHTML(manifEntry, grado, hazardEntry, hazardRoll));
+  appendToArea(area, buildFinalHTML(manifEntry, grado, hazardEntry, hazardRoll, livello));
 
   finish();
 }
@@ -681,16 +974,70 @@ function buildStep3HTML(d20, manif, hazardRoll, hazardEntry) {
     ${hazardReveal}`;
 }
 
-function buildFinalHTML(manif, grado, hazardEntry, hazardRoll) {
-  const hazardBlock = hazardEntry ? `
-    <div class="hazard-block">
-      <div class="hazard-block-title">
-        <i class="ti ti-skull" aria-hidden="true"></i>
-        HAZARD attivo
-        ${manif.hazardFisso === undefined ? `<span style="font-size:10px;color:var(--t3);">(d6 = ${hazardRoll})</span>` : ''}
+function buildCreatureBlock(creature, grado, livelloPG) {
+  const target    = livelloPG + grado.livOffset;
+  const targetLbl = grado.livOffset >= 0
+    ? `Lv ${target} (PG ${livelloPG} +${grado.livOffset})`
+    : `Lv ${target} (PG ${livelloPG} ${grado.livOffset})`;
+
+  const rows = creature.map((c, i) => {
+    const isBest = i === 0;
+    return `
+      <div class="creature-row">
+        ${isBest ? '<span class="creature-star">★</span>' : '<span style="width:11px;flex-shrink:0;"></span>'}
+        <span class="${isBest ? 'creature-best' : 'creature-alt'}">${c.nome}</span>
+        <span class="creature-lv">Lv ${c.livello}</span>
+        <a class="creature-aon" href="${c.aonUrl}" target="_blank" rel="noopener">→ AoN</a>
+      </div>`;
+  }).join('');
+
+  return `
+    <div class="creature-block">
+      <div class="creature-block-title">
+        <i class="ti ti-sword" style="font-size:11px;" aria-hidden="true"></i>
+        Creature suggerite
+        <span class="creature-target">target ${targetLbl}</span>
       </div>
-      <div class="hazard-block-name">${hazardEntry.nome}</div>
-      <div class="hazard-block-desc">${hazardEntry.desc}</div>
+      ${rows}
+    </div>`;
+}
+
+function buildFinalHTML(manif, grado, hazardEntry, hazardRoll, livelloPG) {
+  const hazardBlock = hazardEntry ? (() => {
+    const aonLink = hazardEntry.aonUrl
+      ? `<a class="creature-aon" href="${hazardEntry.aonUrl}" target="_blank" rel="noopener" style="margin-left:auto;">→ AoN</a>`
+      : '';
+    return `
+      <div class="hazard-block">
+        <div class="hazard-block-title">
+          <i class="ti ti-skull" aria-hidden="true"></i>
+          HAZARD attivo
+          ${manif.hazardFisso === undefined ? `<span style="font-size:10px;color:var(--t3);">(d6 = ${hazardRoll})</span>` : ''}
+          ${aonLink}
+        </div>
+        <div class="hazard-block-name">${hazardEntry.nome}</div>
+        <div class="hazard-block-desc">${hazardEntry.desc}</div>
+      </div>`;
+  })() : '';
+
+  const listaCreature = creatureConsigliate(manif, grado, livelloPG);
+  const creatureBlock = listaCreature.length > 0
+    ? buildCreatureBlock(listaCreature, grado, livelloPG)
+    : '';
+
+  const reskinBlock = manif.reskin ? `
+    <div class="creature-reskin">
+      <i class="ti ti-wand" style="font-size:11px;vertical-align:middle;margin-right:4px;" aria-hidden="true"></i>
+      Reskin: ${manif.reskin}
+    </div>` : '';
+
+  const ambientaleBlock = manif.ambientale ? `
+    <div class="ambientale-block">
+      <div class="ambientale-block-title">
+        <i class="ti ti-eye" style="font-size:10px;" aria-hidden="true"></i>
+        Dettaglio ambientale
+      </div>
+      <div class="ambientale-block-text">${manif.ambientale}</div>
     </div>` : '';
 
   return `
@@ -699,9 +1046,12 @@ function buildFinalHTML(manif, grado, hazardEntry, hazardRoll) {
       <div class="result-name">${manif.nome}</div>
       <div class="result-grade"><span class="${grado.cls}">${grado.label}</span></div>
       <div class="result-desc">${manif.desc}</div>
+      ${creatureBlock}
+      ${reskinBlock}
+      ${ambientaleBlock}
       ${hazardBlock}
       <div class="result-hint">
-        <i class="ti ti-wand" style="font-size:12px;vertical-align:middle;margin-right:5px;" aria-hidden="true"></i>
+        <i class="ti ti-shield-half-filled" style="font-size:12px;vertical-align:middle;margin-right:5px;" aria-hidden="true"></i>
         <strong style="color:var(--t2);font-style:normal;">DM:</strong> ${manif.hint}
       </div>
     </div>`;
