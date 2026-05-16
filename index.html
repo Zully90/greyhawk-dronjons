@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Artiglio del Collezionista di Sospiri — PF2e</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Crimson+Pro:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.11.0/tabler-icons.min.css">
+<style>
+:root {
+  --bg0: #0e0d0b;
+  --bg1: #181714;
+  --bg2: #211f1c;
+  --bg3: #2a2825;
+  --border: rgba(255,255,255,0.09);
+  --border2: rgba(255,255,255,0.18);
+  --t1: #f0ede6;
+  --t2: #a8a49c;
+  --t3: #6a6762;
+  --info-bg: #0a1f36;
+  --info-fg: #7ab8f0;
+  --warn-bg: #2d1a05;
+  --warn-fg: #f5c06a;
+  --warn-border: #8a5a10;
+  --danger-bg: #2a0f0f;
+  --danger-fg: #f09595;
+  --color-background-primary: var(--bg1);
+  --color-background-secondary: var(--bg2);
+  --color-background-info: var(--info-bg);
+  --color-background-warning: var(--warn-bg);
+  --color-background-danger: var(--danger-bg);
+  --color-text-primary: var(--t1);
+  --color-text-secondary: var(--t2);
+  --color-text-tertiary: var(--t3);
+  --color-text-info: var(--info-fg);
+  --color-text-warning: var(--warn-fg);
+  --color-text-danger: var(--danger-fg);
+  --color-border-tertiary: var(--border);
+  --color-border-secondary: var(--border2);
+  --color-border-warning: var(--warn-border);
+  --font-sans: 'Crimson Pro', Georgia, serif;
+  --font-serif: 'Cinzel', Georgia, serif;
+  --border-radius-md: 7px;
+  --border-radius-lg: 11px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--font-sans);
+  background: var(--bg0);
+  color: var(--t1);
+  min-height: 100vh;
+  padding: 2rem 1rem 4rem;
+  font-size: 16px;
+  line-height: 1.6;
+}
+.wrap {
+  max-width: 660px;
+  margin: 0 auto;
+}
+.page-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 0.5px solid var(--border);
+}
+.page-header .eyebrow {
+  font-size: 11px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--t3);
+  margin-bottom: 6px;
+}
+.page-header h1 {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  font-weight: 400;
+  letter-spacing: .06em;
+  color: var(--t1);
+  line-height: 1.3;
+}
+.page-header .sub {
+  font-size: 13px;
+  color: var(--t3);
+  margin-top: 5px;
+  font-style: italic;
+}
+input[type="number"] {
+  background: var(--bg3);
+  border: 0.5px solid var(--border2);
+  border-radius: var(--border-radius-md);
+  color: var(--t1);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  padding: 6px 10px;
+  height: 36px;
+  width: 100%;
+  outline: none;
+}
+input[type="number"]:focus { border-color: rgba(255,255,255,0.35); }
+button {
+  background: var(--bg3);
+  border: 0.5px solid var(--border2);
+  border-radius: var(--border-radius-md);
+  color: var(--t1);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  cursor: pointer;
+  padding: 5px 11px;
+  height: 30px;
+  line-height: 1;
+  transition: background .12s;
+}
+button:hover { background: #353330; }
+button:active { transform: scale(0.97); }
+button:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+.card {
+  background: var(--bg1);
+  border: 0.5px solid var(--border);
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+.sh { display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;user-select:none; }
+.sh:hover { background: var(--bg2); }
+.pip {
+  width: 13px; height: 13px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border2);
+  flex-shrink: 0;
+  transition: background .15s, border-color .15s;
+}
+.atag {
+  font-size: 11px; padding: 1px 6px;
+  border-radius: 4px;
+  background: var(--bg3);
+  color: var(--t3);
+}
+.section-bg {
+  background: var(--bg2);
+  border-radius: var(--border-radius-lg);
+  padding: 1rem 1.25rem;
+  margin-bottom: .875rem;
+}
+footer {
+  text-align: center;
+  margin-top: 3rem;
+  font-size: 12px;
+  color: var(--t3);
+  font-style: italic;
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="page-header">
+  <div class="eyebrow">Campagna Greyhawk · PF2e · Oggetto Magico</div>
+  <h1>L'Artiglio del Collezionista di Sospiri</h1>
+  <div class="sub">Reliquia · Legato all'Anima · Guanto d'Arme</div>
+</div>
+
+<p style="font-size:13px;color:var(--t3);font-style:italic;line-height:1.6;margin-bottom:1.5rem;text-align:center;">
+  Ferro Freddo e Vetro Nero delle Lande del Ghiaccio Nero, tendini di creatura planare sconosciuta.<br>
+  Creato da un rinnegato di Wee Jas per <em>tassare i morti prima del riposo finale</em>.
+</p>
+
+<div class="section-bg">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+    <div>
+      <label style="font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px;">Livello PG</label>
+      <input type="number" id="lvl" min="1" max="20" value="5" oninput="go()">
+    </div>
+    <div>
+      <label style="font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px;">Mod. DES</label>
+      <input type="number" id="des" min="1" max="6" value="4" oninput="go()">
+    </div>
+  </div>
+  <div style="border-top:.5px solid var(--border);padding-top:11px;">
+    <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+      <span style="font-size:13px;color:var(--t2);min-width:58px;">Sospiri</span>
+      <div id="pips" style="display:flex;gap:4px;flex-wrap:wrap;flex:1;min-height:14px;"></div>
+      <button onclick="cS(-1)" style="width:26px;height:26px;padding:0;display:flex;align-items:center;justify-content:center;" aria-label="Rimuovi sospiro"><i class="ti ti-minus" style="font-size:13px;" aria-hidden="true"></i></button>
+      <span id="sN" style="font-size:20px;font-weight:500;min-width:1.2ch;text-align:center;">0</span>
+      <span style="color:var(--t3);font-size:13px;">/</span>
+      <span id="sMax" style="font-size:13px;color:var(--t2);">4</span>
+      <button onclick="cS(1)" style="width:26px;height:26px;padding:0;display:flex;align-items:center;justify-content:center;" aria-label="Aggiungi sospiro"><i class="ti ti-plus" style="font-size:13px;" aria-hidden="true"></i></button>
+    </div>
+    <div id="sus" style="display:none;align-items:center;gap:6px;font-size:13px;">
+      <i class="ti ti-ear" style="font-size:14px;color:var(--warn-fg);" aria-hidden="true"></i>
+      <span style="color:var(--warn-fg);">Sussurri Incessanti: <strong id="susV"></strong></span>
+    </div>
+  </div>
+</div>
+
+<div id="bcard" style="border-radius:var(--border-radius-lg);padding:11px 14px;margin-bottom:.875rem;border:.5px solid transparent;">
+  <div style="display:flex;align-items:center;gap:7px;margin-bottom:4px;">
+    <i class="ti ti-broadcast" style="font-size:17px;" id="bico" aria-hidden="true"></i>
+    <span style="font-size:13px;font-weight:500;color:var(--t2);">Il Faro —</span>
+    <span id="blvl" style="font-size:13px;font-weight:500;"></span>
+    <span id="bbadge" style="font-size:11px;padding:2px 8px;border-radius:4px;margin-left:auto;"></span>
+  </div>
+  <div id="bdesc" style="font-size:13px;line-height:1.5;"></div>
+</div>
+
+<div style="border-radius:var(--border-radius-lg);border:.5px solid var(--border);margin-bottom:.875rem;overflow:hidden;">
+  <div onclick="var b=document.getElementById('capbody');b.style.display=b.style.display==='none'?'block':'none';var c=document.getElementById('capchev');c.style.transform=c.style.transform==='rotate(180deg)'?'':'rotate(180deg)';" style="display:flex;align-items:center;gap:8px;padding:11px 14px;background:var(--bg2);cursor:pointer;user-select:none;">
+    <i class="ti ti-hand-grab" style="font-size:16px;color:var(--t2);" aria-hidden="true"></i>
+    <span style="font-size:14px;font-weight:500;color:var(--t1);">Come catturare i Sospiri</span>
+    <i class="ti ti-chevron-down" id="capchev" style="font-size:15px;color:var(--t3);margin-left:auto;transition:transform .2s;" aria-hidden="true"></i>
+  </div>
+  <div id="capbody" style="display:none;padding:12px 14px;">
+    <p style="font-size:13px;color:var(--t2);line-height:1.6;margin-bottom:12px;">L'Artiglio non è semplicemente un'arma — è uno strumento di caccia. Uccidere non è l'unico modo per catturare. La preda catturata <em>viva</em> ricorda di più.</p>
+
+    <div style="display:grid;gap:8px;">
+
+      <div style="padding:10px 12px;border-radius:var(--border-radius-md);border:.5px solid var(--border);background:var(--bg2);">
+        <div style="display:flex;align-items:center;gap:7px;margin-bottom:5px;">
+          <i class="ti ti-skull" style="font-size:15px;color:#378ADD;" aria-hidden="true"></i>
+          <span style="font-size:13px;font-weight:500;color:var(--t1);">Alla morte</span>
+          <span style="font-size:11px;padding:1px 6px;border-radius:4px;background:#378ADD20;color:#378ADD;margin-left:auto;">Reazione</span>
+        </div>
+        <div style="font-size:12px;color:var(--t3);margin-bottom:4px;font-style:italic;">Trigger: creatura ridotta a 0 PF</div>
+        <div style="font-size:13px;color:var(--t2);line-height:1.5;">Prova Furtività o Occultismo vs CD Tempra della creatura. La più comune — ma la preda è già morta. <em>Interrogare il Catturato</em> raccoglie solo l'eco residua: ricordi frammentati, niente segreti sepolti in profondità.</div>
+      </div>
+
+      <div style="padding:10px 12px;border-radius:var(--border-radius-md);border:.5px solid var(--border);background:var(--bg2);">
+        <div style="display:flex;align-items:center;gap:7px;margin-bottom:5px;">
+          <i class="ti ti-hand-grab" style="font-size:15px;color:#1D9E75;" aria-hidden="true"></i>
+          <span style="font-size:13px;font-weight:500;color:var(--t1);">Cattura attiva</span>
+          <span style="font-size:11px;padding:1px 6px;border-radius:4px;background:#1D9E7520;color:#1D9E75;margin-left:auto;">Azione</span>
+        </div>
+        <div style="font-size:12px;color:var(--t3);margin-bottom:4px;font-style:italic;">Trigger: creatura viva con PF pari o inferiori a metà del suo massimo</div>
+        <div style="font-size:13px;color:var(--t2);line-height:1.5;">Prova Furtività o Occultismo vs CD Tempra +4. Più difficile — la preda si difende. Ma lo spirito rimane integro: <em>Interrogare il Catturato</em> ha accesso a ricordi completi, segreti, nomi, luoghi. Ideale per fantasmi che sanno qualcosa di utile.</div>
+      </div>
+
+      <div style="padding:10px 12px;border-radius:var(--border-radius-md);border:.5px solid var(--border);background:var(--bg2);">
+        <div style="display:flex;align-items:center;gap:7px;margin-bottom:5px;">
+          <i class="ti ti-ripple" style="font-size:15px;color:#BA7517;" aria-hidden="true"></i>
+          <span style="font-size:13px;font-weight:500;color:var(--t1);">Manifestazione intercettata</span>
+          <span style="font-size:11px;padding:1px 6px;border-radius:4px;background:#BA751720;color:#BA7517;margin-left:auto;">Reazione automatica</span>
+        </div>
+        <div style="font-size:12px;color:var(--t3);margin-bottom:4px;font-style:italic;">Trigger: uno spirito tenta di manifestarsi attraverso il Marchio di Rui Jin</div>
+        <div style="font-size:13px;color:var(--t2);line-height:1.5;">Nessuna prova richiesta. Il Marchio agisce da trappola — lo spirito si avvicina da solo cercando un vettore, e l'Artiglio è lì ad aspettarlo. Dronjons non deve fare nulla: è il bambino a fare da esca.</div>
+      </div>
+
+    </div>
+
+    <div style="margin-top:10px;padding:8px 10px;border-radius:var(--border-radius-md);background:var(--warn-bg);border-left:3px solid var(--warn-border);">
+      <div style="font-size:13px;color:var(--warn-fg);line-height:1.5;"><i class="ti ti-alert-triangle" style="font-size:13px;vertical-align:-2px;" aria-hidden="true"></i> <strong>Nota tattica:</strong> il gruppo può deliberatamente indebolire uno spirito invece di ucciderlo, lasciando poi a Dronjons la cattura attiva. Uno spirito catturato vivo risponde meglio alle domande — e il gruppo si porta a casa sia il Sospiro che l'informazione.</div>
+    </div>
+  </div>
+</div>
+
+<div id="qa" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1.1rem;"></div>
+
+<div id="slist"></div>
+
+<footer>Campagna Greyhawk di Marcello · Dronjons · PF2e</footer>
+
+</div>
+
+<script>
+let sN=0;
+const DATA=[
+  {id:1,name:'I — Il Cacciatore',lv:'Livello 3–4',minLv:3,col:'#378ADD',
+   cap:'Max Sospiri: Mod. DES',
+   ab:[
+    {n:'Senso della Preda',tag:'Passiva',ico:'ti-eye',
+     t:'Percepisce la direzione di entità Spirit/Undead/Demone entro 60 piedi. Direzione, non distanza né numero.'},
+    {n:'Mietere il Tormento',tag:'Reazione',ico:'ti-bolt',
+     trigger:'Creatura Spirit/Demone/Undead entro 30p ridotta a 0 PF, o tenta di manifestarsi attraverso il Marchio di Rui Jin.',
+     t:'Furtività o Occultismo vs CD Tempra. ✓✓ 2 Sospiri. ✓ 1 Sospiro. ✗ Spirito proiettato 30p casuale. ✗✗ Artiglio Grabbed 1 round.'},
+    {n:'Impeto Predatorio',tag:'Azione',ico:'ti-flame',cost:'1 Sospiro',
+     t:'+2 status ad Attacco e Danni per 1 minuto. I danni diventano Mentale o Vuoto (scelta di Dronjons).'},
+   ],
+   dr:[{n:'Sussurri Incessanti',t:'-1 ai TS contro Follia e alle prove Percezione per ogni Sospiro nell\'Artiglio. Cumulativo.'}]
+  },
+  {id:2,name:'II — Il Predatore',lv:'Livello 5–8',minLv:5,col:'#1D9E75',
+   cap:'Max Sospiri: Mod. DES + 2',
+   ab:[
+    {n:'Velo di Ombre Divorate',tag:'Azione',ico:'ti-eye-off',cost:'2 Sospiri',
+     t:'Invisibile (equiv. Invisibilità 4°) per 1 round. In combo con Attacco Furtivo: penalità Percezione del bersaglio è -4 invece di -2.'},
+    {n:'Nutrire la Lama',tag:'Azione',ico:'ti-snowflake',cost:'Tutti i Sospiri (min 1)',
+     t:'Prossimo attacco entro 1 round: +1d6 danni da Freddo per ogni Sospiro speso. Bersaglio Spaventato 2 (o 3 al Critico).'},
+    {n:'Interrogare il Catturato',tag:'1 minuto',ico:'ti-message-question',cost:'1 Sospiro',
+     t:'Una domanda a uno spirito consumato. DM risponde onestamente in max una frase — ciò che lo spirito sapeva alla morte. Non funziona su spiriti privi di linguaggio.'},
+   ],
+   dr:[{n:'Corruzione Fisica',t:'Fine Riposo Lungo con Artiglio al massimo: CD 16 Tempra o Drained 1, permanente finché non si liberano almeno metà dei Sospiri.'}]
+  },
+  {id:3,name:'III — Il Collezionista',lv:'Livello 9–12',minLv:9,col:'#BA7517',
+   cap:'Max Sospiri: Mod. DES + Livello÷2 (↓)',
+   ab:[
+    {n:'Liberare il Gregge',tag:'2 Azioni',ico:'ti-wind',cost:'Tutti (min 3)',
+     t:'Esplosione spettrale 20 piedi: 2d6 Vuoto per ogni Sospiro rilasciato (Tempra base, dimezzato al successo). Creature Spirit/Undead: Volontà o Terrorizzate 3.'},
+    {n:'L\'Artiglio Sceglie',tag:'Passiva',ico:'ti-hand-stop',
+     t:'L\'Artiglio può rifiutare di catturare spiriti specifici, o tentare di catturarne di non bersagliati. CD 14 Volontà per resistere all\'impulso.'},
+   ],
+   dr:[
+    {n:'Il Faro si Manifesta',t:'Gli effetti del Faro diventano attivi anche tra le sessioni. I cacciatori di Reliquie possono tracciare il gruppo da una sessione all\'altra.'},
+    {n:'Il Gregge Parla',t:'Dopo un Riposo Lungo con spiriti: CD 14 Volontà o Disorientato 1 fino al primo incontro.'}
+   ]
+  },
+  {id:4,name:'IV — L\'Eredità',lv:'Livello 13–16',minLv:13,col:'#D85A30',
+   cap:'Max Sospiri: Mod. DES + Livello÷2 (↓)',
+   ab:[
+    {n:'Forma del Predatore',tag:'2 Azioni',ico:'ti-ghost',cost:'3 Sospiri',
+     t:'Per round pari a Mod. DES: Velocità +10p, Senso del Buio 60p, mani = armi Agili (2d8 Vuoto). Pelle traslucida, occhi bianchi, voce risuona. I Non-Morti intelligenti riconoscono il fenomeno.'},
+    {n:'Patto con il Gregge',tag:'3 Azioni',ico:'ti-users',cost:'4+ Sospiri',
+     t:'Per 1 minuto: ogni 2 Sospiri crea 1 Spirito Gregge (come Shadow senza drenaggio FOR; PF = 10 + Livello). Svaniscono allo scadere del tempo o se distrutti.'},
+    {n:'Il Guanto Sussurra',tag:'Passiva',ico:'ti-ear',
+     t:'Entità planari di livello < 10: CD 18 Volontà o Intimidite dall\'Artiglio. I Non-Morti intelligenti lo conoscono — e lo temono.'},
+   ],
+   dr:[{n:'L\'Identità si Stempera',t:'Dopo scontri con Forma Predatore o Patto Gregge: CD 18 Volontà. Fallimento: tratto di personalità di un Sospiro per 24 ore (DM sceglie quale).'}]
+  },
+  {id:5,name:'V — Il Collezionista Completo',lv:'Livello 17+',minLv:17,col:'#888780',
+   cap:'Max Sospiri: illimitata — oltre Mod. DES il Faro si attiva automaticamente',
+   ab:[
+    {n:'Divorare il Velo',tag:'Azione',ico:'ti-barrier-block-off',cost:'1 / giorno',
+     t:'Ignora l\'immunità Incorporea di qualunque creatura per 1 round. Se ridotta a 0 PF in questo round: cattura automatica, nessuna prova richiesta.'},
+    {n:'L\'Ultimo Sospiro',tag:'3 Azioni',ico:'ti-star',cost:'1 / settimana',
+     t:'A morte di creatura Divina/Semi-Divina (o PO>20): CD Volontà = 10 + Livello creatura. Successo: Sospiro Divino (vale 3, risponde a domande cosmiche).'},
+    {n:'Eredità del Gregge',tag:'Passiva',ico:'ti-heart-handshake',
+     t:'Se muori con 5+ Sospiri presenti, il gregge esegue il tuo ultimo desiderio pronunciato nei 10 minuti precedenti. Una volta sola, in tutta la storia dell\'Artiglio.'},
+   ],
+   dr:[{n:'La Voce dell\'Artiglio',t:'L\'Artiglio è sentiente — paziente, predatorio, collezionista. Comunica telepaticamente. Non malvagio, ma con propri interessi. Occasionalmente tenterà di influenzare le scelte sui Sospiri.'}]
+  }
+];
+const BEACON=[
+  {min:0,max:0,lv:'Silente',tcol:'#6a6762',bg:'#1c1a17',d:'L\'Artiglio è freddo. Nessuna entità percepisce il gruppo.'},
+  {min:1,max:2,lv:'Tepore',tcol:'#7ab8f0',bg:'#0a1f36',d:'Entità planari entro 1 miglio sentono una direzione vaga. Non sanno cosa stanno cercando.'},
+  {min:3,max:4,lv:'Pulsante',tcol:'#f5c06a',bg:'#2d1a05',d:'+2 circostanza ai cacciatori planari. I Marut e i Cavalieri di Kas entro 10 miglia sanno che qualcuno porta le Reliquie di Vecna.'},
+  {min:5,max:999,lv:'Ardente',tcol:'#f09595',bg:'#2a0f0f',d:'Locate (5°, raggio 1 miglio) attivo passivamente. I Servitori di Vecna conoscono la direzione esatta. I Marut possono intercettare.'},
+];
+function maxS(){
+  const d=+document.getElementById('des').value||1;
+  const l=+document.getElementById('lvl').value||1;
+  if(l>=17)return Infinity;
+  if(l>=9)return d+Math.floor(l/2);
+  if(l>=5)return d+2;
+  return d;
+}
+function cS(delta){
+  const mx=maxS();
+  const cap=mx===Infinity?Math.max(sN+20,20):mx;
+  sN=Math.max(0,Math.min(cap,sN+delta));
+  go();
+}
+function go(){
+  const l=+document.getElementById('lvl').value||1;
+  const mx=maxS();
+  if(mx!==Infinity&&sN>mx)sN=mx;
+  document.getElementById('sN').textContent=sN;
+  document.getElementById('sMax').textContent=mx===Infinity?'∞':mx;
+  const pipC=document.getElementById('pips');
+  pipC.innerHTML='';
+  const total=mx===Infinity?Math.max(sN,8):Math.min(mx,14);
+  for(let i=0;i<total;i++){
+    const p=document.createElement('div');
+    p.className='pip';
+    if(i<sN){p.style.background='#378ADD';p.style.borderColor='#378ADD';}
+    pipC.appendChild(p);
+  }
+  const sus=document.getElementById('sus');
+  if(sN>0){sus.style.display='flex';document.getElementById('susV').textContent=`−${sN} ai TS Follia e Percezione`;}
+  else{sus.style.display='none';}
+  const b=BEACON.find(x=>sN>=x.min&&sN<=x.max)||BEACON[BEACON.length-1];
+  const bc=document.getElementById('bcard');
+  bc.style.background=b.bg;
+  bc.style.borderColor='transparent';
+  document.getElementById('blvl').textContent=b.lv;
+  document.getElementById('blvl').style.color=b.tcol;
+  document.getElementById('bico').style.color=b.tcol;
+  const bb=document.getElementById('bbadge');
+  bb.style.background=b.tcol;
+  bb.style.color='#111';
+  bb.textContent=sN+' Sospiro'+(sN!==1?'i':'');
+  document.getElementById('bdesc').textContent=b.d;
+  document.getElementById('bdesc').style.color=b.tcol;
+  const qa=document.getElementById('qa');
+  qa.innerHTML='';
+  const acts=[
+    {lbl:'Impeto Predatorio −1',minLv:3,spend:1},
+    {lbl:'Velo di Ombre −2',minLv:5,spend:2},
+    {lbl:'Interrogare −1',minLv:5,spend:1},
+    {lbl:'Nutrire la Lama −tutto',minLv:5,spend:sN},
+    {lbl:'Liberare il Gregge −tutto',minLv:9,spend:sN,minSpend:3},
+    {lbl:'Forma Predatore −3',minLv:13,spend:3},
+    {lbl:'Patto col Gregge −4',minLv:13,spend:4},
+  ];
+  acts.forEach(a=>{
+    if(l>=a.minLv){
+      const btn=document.createElement('button');
+      btn.textContent=a.lbl;
+      btn.style.fontSize='12px';
+      const canDo=sN>=a.spend&&(a.minSpend===undefined||sN>=a.minSpend);
+      btn.disabled=!canDo;
+      btn.onclick=()=>{cS(-a.spend);};
+      qa.appendChild(btn);
+    }
+  });
+  buildSoglie(l);
+}
+function buildSoglie(l){
+  const sl=document.getElementById('slist');
+  sl.innerHTML='';
+  DATA.forEach((s,idx)=>{
+    const unlocked=l>=s.minLv;
+    const card=document.createElement('div');
+    card.className='card';
+    const head=document.createElement('div');
+    head.className='sh';
+    head.innerHTML=`
+      <div style="width:4px;height:30px;border-radius:2px;background:${unlocked?s.col:'#333'};flex-shrink:0;"></div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:14px;font-weight:500;color:${unlocked?'var(--t1)':'var(--t3)'};">${s.name}</div>
+        <div style="font-size:11px;color:var(--t3);margin-top:1px;">${s.lv} · ${s.cap}</div>
+      </div>
+      <span style="font-size:11px;padding:2px 8px;border-radius:4px;background:${unlocked?s.col+'20':'#2a2825'};color:${unlocked?s.col:'var(--t3)'};">${unlocked?'Sbloccata':'Lv '+s.minLv}</span>
+      <i class="ti ti-chevron-down" id="chev${s.id}" style="font-size:15px;color:var(--t3);transition:transform .2s;flex-shrink:0;" aria-hidden="true"></i>`;
+    const body=document.createElement('div');
+    body.id='body'+s.id;
+    body.style.cssText='padding:0 14px 14px;display:none;';
+    if(unlocked){
+      let html='';
+      s.ab.forEach(a=>{
+        html+=`<div style="padding:7px 0;border-top:.5px solid var(--border);">
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+            <i class="ti ${a.ico}" style="font-size:15px;color:${s.col};" aria-hidden="true"></i>
+            <span style="font-size:14px;font-weight:500;color:var(--t1);">${a.n}</span>
+            <span class="atag">${a.tag}</span>
+            ${a.cost?`<span style="font-size:11px;padding:1px 6px;border-radius:4px;background:${s.col}20;color:${s.col};">${a.cost}</span>`:''}
+          </div>
+          ${a.trigger?`<div style="font-size:12px;color:var(--t3);margin-top:3px;font-style:italic;line-height:1.4;">Trigger: ${a.trigger}</div>`:''}
+          <div style="font-size:13px;color:var(--t2);margin-top:3px;line-height:1.55;">${a.t}</div>
+        </div>`;
+      });
+      s.dr.forEach(d=>{
+        html+=`<div style="margin-top:8px;padding:8px 10px;border-radius:var(--border-radius-md);background:var(--warn-bg);border-left:3px solid var(--warn-border);">
+          <div style="font-size:13px;font-weight:500;color:var(--warn-fg);display:flex;align-items:center;gap:5px;">
+            <i class="ti ti-alert-triangle" style="font-size:13px;" aria-hidden="true"></i>${d.n}
+          </div>
+          <div style="font-size:13px;color:var(--t2);margin-top:2px;line-height:1.45;">${d.t}</div>
+        </div>`;
+      });
+      body.innerHTML=html;
+    } else {
+      body.innerHTML=`<div style="font-size:13px;color:var(--t3);padding:8px 0;">Disponibile al livello ${s.minLv}.</div>`;
+    }
+    let open=(idx===0);
+    const toggle=()=>{
+      open=!open;
+      body.style.display=open?'block':'none';
+      const ch=document.getElementById('chev'+s.id);
+      if(ch)ch.style.transform=open?'rotate(180deg)':'rotate(0deg)';
+    };
+    head.addEventListener('click',toggle);
+    if(open){body.style.display='block';}
+    card.appendChild(head);
+    card.appendChild(body);
+    sl.appendChild(card);
+    if(open){const ch=document.getElementById('chev'+s.id);if(ch)ch.style.transform='rotate(180deg)';}
+  });
+}
+go();
+</script>
+</body>
+</html>
