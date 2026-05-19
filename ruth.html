@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>L'Arco di Ruth — Rui Jin · PF2e</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Crimson+Pro:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.11.0/tabler-icons.min.css">
+<style>
+:root {
+  --bg0: #0e0d0b;
+  --bg1: #181714;
+  --bg2: #211f1c;
+  --bg3: #2a2825;
+  --border: rgba(255,255,255,0.09);
+  --border2: rgba(255,255,255,0.18);
+  --t1: #f0ede6;
+  --t2: #a8a49c;
+  --t3: #6a6762;
+  --info-bg: #0a1f36;
+  --info-fg: #7ab8f0;
+  --warn-bg: #2d1a05;
+  --warn-fg: #f5c06a;
+  --warn-border: #8a5a10;
+  --danger-bg: #2a0f0f;
+  --danger-fg: #f09595;
+  --ruth-grazia: #d4c4a8;
+  --ruth-condanna: #c04040;
+  --ruth-accent: #9b3080;
+  --font-sans: 'Crimson Pro', Georgia, serif;
+  --font-serif: 'Cinzel', Georgia, serif;
+  --r-md: 7px;
+  --r-lg: 11px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--font-sans);
+  background: var(--bg0);
+  color: var(--t1);
+  min-height: 100vh;
+  padding: 2rem 1rem 4rem;
+  font-size: 16px;
+  line-height: 1.6;
+}
+.wrap { max-width: 660px; margin: 0 auto; }
+.page-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 0.5px solid var(--border);
+}
+.page-header .eyebrow {
+  font-size: 11px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--t3);
+  margin-bottom: 6px;
+}
+.page-header h1 {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  font-weight: 400;
+  letter-spacing: .06em;
+  color: var(--t1);
+  line-height: 1.3;
+}
+.page-header .sub {
+  font-size: 13px;
+  color: var(--t3);
+  margin-top: 5px;
+  font-style: italic;
+}
+input[type="number"] {
+  background: var(--bg3);
+  border: 0.5px solid var(--border2);
+  border-radius: var(--r-md);
+  color: var(--t1);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  padding: 6px 10px;
+  height: 36px;
+  width: 100%;
+  outline: none;
+}
+input[type="number"]:focus { border-color: rgba(255,255,255,0.35); }
+button {
+  background: var(--bg3);
+  border: 0.5px solid var(--border2);
+  border-radius: var(--r-md);
+  color: var(--t1);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  cursor: pointer;
+  padding: 5px 11px;
+  height: 30px;
+  line-height: 1;
+  transition: background .12s;
+}
+button:hover { background: #353330; }
+button:active { transform: scale(0.97); }
+button:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+.card {
+  background: var(--bg1);
+  border: 0.5px solid var(--border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+.sh { display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;user-select:none; }
+.sh:hover { background: var(--bg2); }
+.pip {
+  width: 13px; height: 13px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border2);
+  flex-shrink: 0;
+  transition: background .15s, border-color .15s;
+}
+.pip-cic {
+  width: 11px; height: 11px;
+  border-radius: 3px;
+  border: 1.5px solid var(--border2);
+  flex-shrink: 0;
+}
+.atag {
+  font-size: 11px; padding: 1px 6px;
+  border-radius: 4px;
+  background: var(--bg3);
+  color: var(--t3);
+}
+.section-bg {
+  background: var(--bg2);
+  border-radius: var(--r-lg);
+  padding: 1rem 1.25rem;
+  margin-bottom: .875rem;
+}
+.btn-life {
+  background: #1a2e1a;
+  border-color: #3a6a3a;
+  color: var(--ruth-grazia);
+  font-size: 13px;
+  height: 36px;
+  padding: 0 14px;
+  flex: 1;
+}
+.btn-life:hover { background: #223322; }
+.btn-death {
+  background: #2a1010;
+  border-color: #6a2020;
+  color: var(--ruth-condanna);
+  font-size: 13px;
+  height: 36px;
+  padding: 0 14px;
+  flex: 1;
+}
+.btn-death:hover { background: #331515; }
+footer {
+  text-align: center;
+  margin-top: 3rem;
+  font-size: 12px;
+  color: var(--t3);
+  font-style: italic;
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="page-header">
+  <div class="eyebrow">Campagna Greyhawk · PF2e · Arma Scalante</div>
+  <h1>L'Arco di Ruth</h1>
+  <div class="sub">Reliquia · Sentenza di Wee Jas · Arco Corto</div>
+</div>
+
+<p style="font-size:13px;color:var(--t3);font-style:italic;line-height:1.6;margin-bottom:1.5rem;text-align:center;">
+  Legno di cipresso dell'Abisso, corde di crine di unicorno da Celestia.<br>
+  Forgiato per chi sa che <em>la pietà è la forma più dura del giudizio</em>.
+</p>
+
+<div class="section-bg">
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px;">
+    <div>
+      <label style="font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px;">Livello PG</label>
+      <input type="number" id="lvl" min="1" max="20" value="8" oninput="go()">
+    </div>
+    <div>
+      <label style="font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px;">Mod. SAG</label>
+      <input type="number" id="sag" min="1" max="6" value="4" oninput="go()">
+    </div>
+    <div>
+      <label style="font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px;">Cicatrici</label>
+      <input type="number" id="cic" min="0" max="10" value="0" oninput="go()">
+    </div>
+  </div>
+  <div id="cic-note" style="font-size:12px;color:var(--t3);line-height:1.4;margin-bottom:12px;padding:6px 8px;border-radius:var(--r-md);background:var(--bg3);display:none;"></div>
+
+  <div style="border-top:.5px solid var(--border);padding-top:12px;">
+
+    <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+      <span style="font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;min-width:72px;">Grazie</span>
+      <div id="pips-g" style="display:flex;gap:4px;flex-wrap:wrap;flex:1;min-height:14px;"></div>
+      <span id="gN" style="font-size:16px;font-weight:500;min-width:1.4ch;text-align:right;color:var(--ruth-grazia);">0</span>
+      <span style="color:var(--t3);font-size:12px;">/</span>
+      <span id="gMax" style="font-size:12px;color:var(--t2);">12</span>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px;">
+      <span style="font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;min-width:72px;">Condanne</span>
+      <div id="pips-c" style="display:flex;gap:4px;flex-wrap:wrap;flex:1;min-height:14px;"></div>
+      <span id="cN" style="font-size:16px;font-weight:500;min-width:1.4ch;text-align:right;color:var(--ruth-condanna);">0</span>
+      <span style="color:var(--t3);font-size:12px;">/</span>
+      <span id="cMax" style="font-size:12px;color:var(--t2);">12</span>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:12px;border-top:.5px solid var(--border);padding-top:10px;">
+      <div style="flex:1;">
+        <div style="font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px;">Bilancio</div>
+        <div id="bilancio" style="font-size:26px;font-weight:500;line-height:1;">0</div>
+      </div>
+      <div style="display:flex;gap:6px;">
+        <button class="btn-death" onclick="cV('condanna',-1)" style="width:26px;height:26px;padding:0;display:flex;align-items:center;justify-content:center;flex:none;" aria-label="Rimuovi condanna"><i class="ti ti-minus" style="font-size:12px;" aria-hidden="true"></i></button>
+        <button class="btn-death" onclick="cV('condanna',1)" aria-label="Aggiungi condanna" style="height:26px;"><i class="ti ti-skull" style="font-size:13px;vertical-align:-2px;" aria-hidden="true"></i> DEATH</button>
+        <button class="btn-life" onclick="cV('grazia',1)" aria-label="Aggiungi grazia" style="height:26px;"><i class="ti ti-heart" style="font-size:13px;vertical-align:-2px;" aria-hidden="true"></i> LIFE</button>
+        <button class="btn-life" onclick="cV('grazia',-1)" style="width:26px;height:26px;padding:0;display:flex;align-items:center;justify-content:center;flex:none;" aria-label="Rimuovi grazia"><i class="ti ti-minus" style="font-size:12px;" aria-hidden="true"></i></button>
+      </div>
+    </div>
+
+    <div id="warn-bilancio" style="display:none;align-items:center;gap:6px;font-size:13px;margin-top:8px;">
+      <i class="ti ti-scale-off" style="font-size:14px;color:var(--danger-fg);" aria-hidden="true"></i>
+      <span id="warn-bilancio-txt" style="color:var(--danger-fg);"></span>
+    </div>
+    <div id="warn-cortocircuito" style="display:none;align-items:center;gap:6px;font-size:13px;margin-top:6px;">
+      <i class="ti ti-alert-triangle" style="font-size:14px;color:var(--warn-fg);" aria-hidden="true"></i>
+      <span style="color:var(--warn-fg);">Cortocircuito — tutte le azioni diventano DEATH automaticamente fino al riposo lungo.</span>
+    </div>
+
+  </div>
+</div>
+
+<div id="stato-card" style="border-radius:var(--r-lg);padding:11px 14px;margin-bottom:.875rem;border:.5px solid transparent;">
+  <div style="display:flex;align-items:center;gap:7px;margin-bottom:4px;">
+    <i class="ti ti-bow" style="font-size:17px;" id="stato-ico" aria-hidden="true"></i>
+    <span style="font-size:13px;font-weight:500;color:var(--t2);">Stato dell'Arco —</span>
+    <span id="stato-lbl" style="font-size:13px;font-weight:500;"></span>
+    <span id="stato-badge" style="font-size:11px;padding:2px 8px;border-radius:4px;margin-left:auto;"></span>
+  </div>
+  <div id="stato-desc" style="font-size:13px;line-height:1.5;"></div>
+</div>
+
+<div style="border-radius:var(--r-lg);border:.5px solid var(--border);margin-bottom:.875rem;overflow:hidden;">
+  <div onclick="tog('risonanza-body','risonanza-chev')" style="display:flex;align-items:center;gap:8px;padding:11px 14px;background:var(--bg2);cursor:pointer;user-select:none;">
+    <i class="ti ti-link" style="font-size:16px;color:var(--t2);" aria-hidden="true"></i>
+    <span style="font-size:14px;font-weight:500;color:var(--t1);">Risonanza con l'Artiglio</span>
+    <i class="ti ti-chevron-down" id="risonanza-chev" style="font-size:15px;color:var(--t3);margin-left:auto;transition:transform .2s;" aria-hidden="true"></i>
+  </div>
+  <div id="risonanza-body" style="display:none;padding:12px 14px;">
+
+    <div id="faro-box" style="padding:10px 12px;border-radius:var(--r-md);margin-bottom:10px;border:.5px solid var(--border);background:var(--bg2);">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+        <i class="ti ti-broadcast" style="font-size:15px;" id="faro-ico" aria-hidden="true"></i>
+        <span style="font-size:12px;color:var(--t2);">Faro dell'Artiglio</span>
+        <button onclick="aggiornaFaro()" style="margin-left:auto;font-size:11px;height:22px;padding:0 8px;">↺ Aggiorna</button>
+      </div>
+      <div id="faro-desc" style="font-size:13px;color:var(--t3);line-height:1.4;font-style:italic;">
+        Nessun dato — apri index.html nello stesso browser per sincronizzare.
+      </div>
+    </div>
+
+    <div style="display:grid;gap:7px;">
+      <div style="padding:8px 10px;border-radius:var(--r-md);background:var(--bg2);border:.5px solid var(--border);">
+        <div style="font-size:12px;font-weight:500;color:var(--ruth-grazia);margin-bottom:2px;"><i class="ti ti-arrow-down" style="vertical-align:-2px;" aria-hidden="true"></i> Morte Pulita</div>
+        <div style="font-size:12px;color:var(--t2);line-height:1.5;">Rui Jin uccide un non-morto o spirito con DEATH path → il Faro scende di 1 stato per 10 minuti. Se Dronjons aveva quel spirito come Sospiro → perde 1 Sospiro ma Rui Jin guadagna 1 Grazia.</div>
+      </div>
+      <div style="padding:8px 10px;border-radius:var(--r-md);background:var(--bg2);border:.5px solid var(--border);">
+        <div style="font-size:12px;font-weight:500;color:var(--warn-fg);margin-bottom:2px;"><i class="ti ti-alert-circle" style="vertical-align:-2px;" aria-hidden="true"></i> Condanna Condivisa</div>
+        <div style="font-size:12px;color:var(--t2);line-height:1.5;">Rui Jin usa LIFE su una creatura che Dronjons stava per catturare → l'Artiglio protesta (TS Volontà CD 16 o Dronjons Spaventato 1). Le due armi si percepiscono a vicenda da Soglia III.</div>
+      </div>
+      <div style="padding:8px 10px;border-radius:var(--r-md);background:var(--bg2);border:.5px solid var(--border);">
+        <div style="font-size:12px;font-weight:500;color:var(--ruth-condanna);margin-bottom:2px;"><i class="ti ti-arrow-up" style="vertical-align:-2px;" aria-hidden="true"></i> Sacrificio e Faro</div>
+        <div style="font-size:12px;color:var(--t2);line-height:1.5;">Rui Jin usa Il Dono della Pietà → il Faro sale di 1 stato per 1 ora (evento planare). Gli spiriti nel raggio devono TS Volontà CD 18 o Terrorizzati 3 (la morte volontaria li spaventa).</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div style="border-radius:var(--r-lg);border:.5px solid var(--border);margin-bottom:.875rem;overflow:hidden;">
+  <div onclick="tog('verd-body','verd-chev')" style="display:flex;align-items:center;gap:8px;padding:11px 14px;background:var(--bg2);cursor:pointer;user-select:none;">
+    <i class="ti ti-scales" style="font-size:16px;color:var(--t2);" aria-hidden="true"></i>
+    <span style="font-size:14px;font-weight:500;color:var(--t1);">Come si accumulano i Verdetti</span>
+    <i class="ti ti-chevron-down" id="verd-chev" style="font-size:15px;color:var(--t3);margin-left:auto;transition:transform .2s;" aria-hidden="true"></i>
+  </div>
+  <div id="verd-body" style="display:none;padding:12px 14px;">
+    <p style="font-size:13px;color:var(--t2);line-height:1.6;margin-bottom:12px;">L'arco non conta i morti — conta le <em>intenzioni</em>. Una Condanna pronunciata con consapevolezza pesa più di mille uccisioni accidentali. Una Grazia data a chi non la merita vale più di qualunque pietà spontanea.</p>
+    <div style="display:grid;gap:8px;">
+
+      <div style="padding:10px 12px;border-radius:var(--r-md);border:.5px solid var(--border);background:var(--bg2);">
+        <div style="display:flex;align-items:center;gap:7px;margin-bottom:5px;">
+          <i class="ti ti-heart" style="font-size:15px;color:var(--ruth-grazia);" aria-hidden="true"></i>
+          <span style="font-size:13px;font-weight:500;color:var(--t1);">Guadagnare Grazie</span>
+        </div>
+        <div style="font-size:13px;color:var(--t2);line-height:1.5;">
+          <strong style="color:var(--t1);">+1</strong> Risparmiare con LIFE path (Sentenza pronunciata).<br>
+          <strong style="color:var(--t1);">+1</strong> Intercedere per un alleato (Soglia II).<br>
+          <strong style="color:var(--t1);">+2</strong> Sacrificarsi con Il Dono della Pietà (Soglia IV).<br>
+          <strong style="color:var(--t1);">+1 bonus</strong> Dissoluzione Pietosa di un non-morto (Soglia V, può essere usata come Grazia o Condanna).
+        </div>
+      </div>
+
+      <div style="padding:10px 12px;border-radius:var(--r-md);border:.5px solid var(--border);background:var(--bg2);">
+        <div style="display:flex;align-items:center;gap:7px;margin-bottom:5px;">
+          <i class="ti ti-skull" style="font-size:15px;color:var(--ruth-condanna);" aria-hidden="true"></i>
+          <span style="font-size:13px;font-weight:500;color:var(--t1);">Guadagnare Condanne</span>
+        </div>
+        <div style="font-size:13px;color:var(--t2);line-height:1.5;">
+          <strong style="color:var(--t1);">+1</strong> Uccidere con DEATH path (Sentenza pronunciata).<br>
+          <strong style="color:var(--t1);">+1 speciale</strong> Uccidere un non-morto/spirito con DEATH (attiva anche Risonanza con l'Artiglio).
+        </div>
+      </div>
+
+      <div style="padding:10px 12px;border-radius:var(--r-md);border:.5px solid var(--border);background:var(--bg2);">
+        <div style="display:flex;align-items:center;gap:7px;margin-bottom:5px;">
+          <i class="ti ti-refresh" style="font-size:15px;color:var(--t2);" aria-hidden="true"></i>
+          <span style="font-size:13px;font-weight:500;color:var(--t1);">Reset e variazioni</span>
+        </div>
+        <div style="font-size:13px;color:var(--t2);line-height:1.5;">
+          <strong style="color:var(--t1);">Reset a 0</strong> Rui Jin muore e rinascita come Duskwalker — torna con Bilancio a 0 (Grazie = Condanne = 0) più un bonus narrativo a scelta del DM.<br>
+          <strong style="color:var(--t1);">−tutto</strong> Freccia del Sacrificio azzera tutte le Condanne spendendole come arma.<br>
+          <strong style="color:var(--t1);">−tutto</strong> Giudizio Finale svuota entrambi gli stack (Soglia V, 1/giorno).
+        </div>
+      </div>
+
+    </div>
+    <div style="margin-top:10px;padding:8px 10px;border-radius:var(--r-md);background:var(--warn-bg);border-left:3px solid var(--warn-border);">
+      <div style="font-size:13px;color:var(--warn-fg);line-height:1.5;"><i class="ti ti-alert-triangle" style="font-size:13px;vertical-align:-2px;" aria-hidden="true"></i> <strong>Limite:</strong> Max Verdetti totali = Livello + Mod. SAG. Superarlo attiva il Cortocircuito. Max Grazie si riduce di 1 per ogni Cicatrice permanente sull'arco.</div>
+    </div>
+  </div>
+</div>
+
+<div id="qa" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1.1rem;"></div>
+
+<div id="slist"></div>
+
+<div style="text-align:center;margin-top:1.5rem;font-size:12px;color:var(--t3);">
+  <a href="index.html" style="color:var(--t3);text-decoration:none;opacity:.7;">← L'Artiglio di Dronjons</a>
+  &nbsp;·&nbsp;
+  <a href="spawn.html" style="color:var(--t3);text-decoration:none;opacity:.7;">Calar del Sole →</a>
+</div>
+
+<footer>Campagna Greyhawk di Marcello · Rui Jin · PF2e</footer>
+</div>
+
+<script>
+let grazie = 0;
+let condanne = 0;
+
+const DATA = [
+  {id:1,name:'I — Il Giudice',lv:'Livello 3–4',minLv:3,col:'#9B3080',
+   cap:'Max Verdetti: Livello + Mod. SAG',
+   ab:[
+    {n:'Sentenza',tag:'Passiva',ico:'ti-scales',
+     t:'Quando una creatura è ridotta a 0 PF entro 1 round, puoi dichiarare LIFE o DEATH senza azioni aggiuntive. <strong style="color:#d4c4a8;">LIFE:</strong> +1 Grazia, creatura stabilizzata e Maledetta dalla Signora Oscura — non può essere uccisa da altri per 24h. <strong style="color:#c04040;">DEATH:</strong> +1 Condanna + danno bonus pari a Mod. SAG (necromantico, di transizione).'},
+    {n:'Lo Sguardo della Signora',tag:'Passiva',ico:'ti-eye',
+     t:'Creature ridotte a 0 PF entro 30p senza Sentenza pronunciata generano l\'occhio di Wee Jas su Rui Jin: Spaventato 1 per 1 round. Non si accumula.'},
+   ],
+   dr:[{n:'Wee Jas Osserva',t:'Non pronunciare Sentenza è trascuratezza rituale. Il DM può richiamare questo drawback in modo narrativo: voci, sogni, simboli del teschio di rubino che compaiono.'}]
+  },
+  {id:2,name:'II — Il Testimone',lv:'Livello 5–8',minLv:5,col:'#6B3FA0',
+   cap:'Max Verdetti: Livello + Mod. SAG',
+   ab:[
+    {n:'Vedere il Confine',tag:'Passiva',ico:'ti-eye-dotted',
+     t:'Percepisce automaticamente creature con ≤ 25% HP entro 30 piedi. Ottiene direzione e tipo: morto vivente / vivo / spirito. Non richiede prove né azioni.'},
+    {n:'Freccia Testamento',tag:'Azione',ico:'ti-feather',cost:'1 Verdetto (qualunque)',
+     t:'La freccia registra l\'ultima volontà della creatura colpita. Se quella creatura muore entro 1 minuto, Rui Jin e il gruppo apprendono 1 segreto che portava in vita. Non richiede cooperazione né consenso.'},
+    {n:'Intercedere',tag:'Reazione',ico:'ti-shield-heart',cost:'1 Grazia',
+     trigger:'Un alleato entro 30p sta per essere ridotto a 0 PF da un attacco',
+     t:'L\'attacco si trasferisce su Rui Jin, anche a distanza. Il danno trasferito è ridotto della metà. Può essere usato una volta per round.'},
+   ],
+   dr:[{n:'I Moribondi Lo Cercano',t:'Creature con ≤ 10% HP entro 60p si orientano istintivamente verso Rui Jin. Non sono obbligate ad attaccarlo, ma il DM può usarlo per creare pressione tattica o scenari narrativi.'}]
+  },
+  {id:3,name:'III — Il Guardiano della Soglia',lv:'Livello 9–12',minLv:9,col:'#3A8A9F',
+   cap:'Max Verdetti: Livello + Mod. SAG',
+   ab:[
+    {n:'Scoccare nel Velo',tag:'Azione',ico:'ti-ghost',cost:'2 Verdetti (qualunque)',
+     t:'La freccia viaggia attraverso il piano etereo per un singolo attacco: ignora copertura totale, pareti non magiche, e l\'immunità all\'Incorporeità.'},
+    {n:'Ancorare l\'Anima',tag:'Reazione',ico:'ti-anchor',cost:'1 Grazia + 1 Cicatrice',
+     trigger:'Un alleato fallisce il TS Recupero (0 PF, sta morendo)',
+     t:'L\'anima dell\'alleato viene ancorata per 1 minuto — rimane a 0 PF ma non muore. Trascorso il minuto: TS Tempra CD 18 o morte definitiva. Ogni uso lascia una Cicatrice permanente sull\'arco.'},
+    {n:'Interrogare il Confine',tag:'1 minuto',ico:'ti-message-question',cost:'1 Verdetto',
+     t:'Pone una domanda a Wee Jas tramite l\'arco. Risponde se la domanda riguarda morte, transizione anime, o la sorte di un\'anima specifica. Risposta vera ma obliqua — la Signora non mente, ma non semplifica.'},
+   ],
+   dr:[{n:'Il Portale del Marchio',t:'Spiriti e non-morti percepiscono Rui Jin come portale verso il Velo. Il range di attrazione per gli spawn notturni sale di 1 step di soglia (vedi spawn.html).'}]
+  },
+  {id:4,name:'IV — Il Sacrificio Vivente',lv:'Livello 13–16',minLv:13,col:'#C04040',
+   cap:'Max Verdetti: Livello + Mod. SAG',
+   ab:[
+    {n:'Il Dono della Pietà',tag:'3 Azioni',ico:'ti-heart-handshake',cost:'3 Grazie',
+     t:'Tocca un alleato con 0 PF che ha fallito il TS Recupero. La morte imminente si trasferisce su Rui Jin: l\'alleato si stabilizza a 1 PF, Rui Jin scende a 0 PF e deve effettuare un TS Recupero. Se fallisce, rinascerà alla sessione successiva come Duskwalker. Ogni uso lascia 1 Cicatrice sull\'arco.'},
+    {n:'Freccia del Sacrificio',tag:'2 Azioni',ico:'ti-arrow-big-right-lines',cost:'Tutte le Condanne (min 2)',
+     t:'Scocca una freccia che porta il peso di tutte le Condanne accumulate: 1d6 danni Vuoto per ogni Condanna spesa (max Mod. SAG × d6), poi azzera le Condanne. Bersaglio: TS Tempra CD 10 + numero Condanne o Indebolito 2 per 1 minuto.'},
+   ],
+   dr:[{n:'Il Peso del Sacrificio',t:'Ogni Cicatrice permanente riduce di 1 il numero massimo di Grazie (il totale rimane Livello + Mod. SAG, ma la capacità di pietà si consuma con i sacrifici).'}]
+  },
+  {id:5,name:'V — L\'Eterno',lv:'Livello 17+',minLv:17,col:'#D4C4A8',
+   cap:'Max Verdetti: Livello + Mod. SAG',
+   ab:[
+    {n:'Giudizio Finale',tag:'3 Azioni',ico:'ti-scale',cost:'Tutti i Verdetti (min 5) · 1/giorno',
+     t:'Spende tutti i Verdetti. Per ogni Grazia: un alleato a 0 PF si stabilizza e guadagna 10 PF temporanei. Per ogni Condanna: ogni non-morto/spirito entro 30p subisce danno Vuoto pari al Livello PG (TS Tempra CD 20 per dimezzare). Dopo l\'uso l\'arco è Silente per 24h.'},
+    {n:'La Memoria del Duskwalker',tag:'Passiva',ico:'ti-brain',
+     t:'Rui Jin ricorda la morte di ogni creatura che ha giudicato. Può invocare un ricordo una volta per sessione per ottenere 1 informazione che quella creatura conosceva.'},
+    {n:'Dissoluzione Pietosa',tag:'Azione',ico:'ti-sparkles',cost:'1 Grazia',
+     t:'Un non-morto entro 60p con ≤ 25% HP che non sta attaccando attivamente può essere dissolto senza combattimento — Wee Jas lo accoglie. Nessuna esperienza di combattimento, ma il gruppo guadagna 1 Verdetto speciale (usabile come Grazia o Condanna a scelta del portatore).'},
+   ],
+   dr:[{n:'La Voce della Signora Oscura',t:'Wee Jas parla attraverso l\'arco — ha una voce, obiettivi propri, e occasionalmente richiederà un Verdetto specifico entro la sessione. Non è malvagia, ma ha la sua agenda.'}]
+  }
+];
+
+const STATI = [
+  {id:'silente',lbl:'Silente',tcol:'#6a6762',bg:'#1c1a17',
+   d:'Le rune non si illuminano. Nessuna sentenza è stata pronunciata — l\'arco è freddo, in attesa.'},
+  {id:'bilanciato',lbl:'Bilanciato',tcol:'#7ab8f0',bg:'#0a1f36',
+   d:'Grazie e Condanne si equivalgono. Wee Jas osserva in silenzio — non è soddisfatta, non è scontenta.'},
+  {id:'grazia',lbl:'In Grazia',tcol:'#98C090',bg:'#0d1f0d',
+   d:'Le Grazie superano le Condanne. La Signora Oscura apprezza — ma la pietà non è debolezza, è scelta. Un giudice che non sa uccidere è solo un testimone.'},
+  {id:'condanna',lbl:'In Condanna',tcol:'#f09595',bg:'#2a0f0f',
+   d:'Le Condanne superano le Grazie. Wee Jas accetta la morte, ma esige equilibrio. Senza una Grazia pronunciata entro la sessione: Drained 1 al riposo lungo.'},
+  {id:'cortocircuito',lbl:'Cortocircuito',tcol:'#f5c06a',bg:'#2d1a05',
+   d:'Troppi Verdetti — l\'arco non contiene più il peso del giudizio. Ogni azione è automaticamente DEATH fino al riposo lungo.'},
+];
+
+const BEACON_FARO = [
+  {min:0,max:0,lbl:'Silente',col:'#6a6762'},
+  {min:1,max:2,lbl:'Tepore',col:'#7ab8f0'},
+  {min:3,max:4,lbl:'Pulsante',col:'#f5c06a'},
+  {min:5,max:999,lbl:'Ardente',col:'#f09595'},
+];
+
+function maxV() { return (+document.getElementById('lvl').value||1) + (+document.getElementById('sag').value||1); }
+function maxG() { return Math.max(0, maxV() - (+document.getElementById('cic').value||0)); }
+function maxC() { return maxV(); }
+
+function cV(tipo, delta) {
+  if (tipo === 'grazia') {
+    grazie = Math.max(0, grazie + delta);
+    if (delta > 0 && grazie > maxG()) grazie = maxG();
+  } else {
+    condanne = Math.max(0, condanne + delta);
+  }
+  go();
+}
+
+function statoArco() {
+  const tot = grazie + condanne;
+  if (tot === 0) return STATI[0];
+  if (tot > maxV()) return STATI[4];
+  if (condanne > grazie + 1) return STATI[3];
+  if (grazie > condanne + 1) return STATI[2];
+  return STATI[1];
+}
+
+function go() {
+  const l = +document.getElementById('lvl').value || 1;
+  const cic = +document.getElementById('cic').value || 0;
+  const mg = maxG();
+  const mc = maxC();
+
+  if (grazie > mg) grazie = mg;
+
+  document.getElementById('gN').textContent = grazie;
+  document.getElementById('gMax').textContent = mg;
+  document.getElementById('cN').textContent = condanne;
+  document.getElementById('cMax').textContent = mc;
+
+  const bilancio = grazie - condanne;
+  const bil = document.getElementById('bilancio');
+  bil.textContent = bilancio > 0 ? '+' + bilancio : bilancio;
+  bil.style.color = bilancio > 0 ? '#98C090' : bilancio < 0 ? '#f09595' : '#6a6762';
+
+  const pg = document.getElementById('pips-g');
+  pg.innerHTML = '';
+  const totalG = Math.min(mg, 14);
+  for (let i = 0; i < totalG; i++) {
+    const p = document.createElement('div');
+    p.className = 'pip';
+    if (i < grazie) { p.style.background = '#d4c4a8'; p.style.borderColor = '#d4c4a8'; }
+    pg.appendChild(p);
+  }
+
+  const pc = document.getElementById('pips-c');
+  pc.innerHTML = '';
+  const totalC = Math.min(Math.max(mc, condanne), 14);
+  for (let i = 0; i < totalC; i++) {
+    const p = document.createElement('div');
+    p.className = 'pip';
+    if (i < condanne) { p.style.background = '#c04040'; p.style.borderColor = '#c04040'; }
+    pc.appendChild(p);
+  }
+
+  const wb = document.getElementById('warn-bilancio');
+  const tot = grazie + condanne;
+  const cortocircuito = tot > maxV();
+  if (cortocircuito) {
+    wb.style.display = 'none';
+    document.getElementById('warn-cortocircuito').style.display = 'flex';
+  } else {
+    document.getElementById('warn-cortocircuito').style.display = 'none';
+    if (condanne > grazie + 1) {
+      wb.style.display = 'flex';
+      document.getElementById('warn-bilancio-txt').textContent = `Bilancio negativo (${bilancio}) — senza una Grazia entro la sessione: Drained 1 al riposo lungo.`;
+    } else if (grazie > condanne + 1 && condanne === 0 && grazie > 2) {
+      wb.style.display = 'flex';
+      document.getElementById('warn-bilancio-txt').style.color = '#98C090';
+      document.getElementById('warn-bilancio-txt').textContent = `La misericordia pura non è equilibrio. Wee Jas osserva.`;
+    } else {
+      wb.style.display = 'none';
+    }
+  }
+
+  const st = statoArco();
+  const sc = document.getElementById('stato-card');
+  sc.style.background = st.bg;
+  sc.style.borderColor = 'transparent';
+  document.getElementById('stato-lbl').textContent = st.lbl;
+  document.getElementById('stato-lbl').style.color = st.tcol;
+  document.getElementById('stato-ico').style.color = st.tcol;
+  const sb = document.getElementById('stato-badge');
+  sb.style.background = st.tcol;
+  sb.style.color = '#111';
+  sb.textContent = tot + ' Verdict' + (tot !== 1 ? 'i' : 'o');
+  document.getElementById('stato-desc').textContent = st.d;
+  document.getElementById('stato-desc').style.color = st.tcol;
+
+  const cicNote = document.getElementById('cic-note');
+  if (cic === 0) {
+    cicNote.style.display = 'none';
+  } else {
+    cicNote.style.display = 'block';
+    if (cic >= 5) {
+      cicNote.innerHTML = `<i class="ti ti-cut" style="vertical-align:-2px;color:#8B7355;" aria-hidden="true"></i> ${cic} cicatrici — <strong style="color:#8B7355;">−${Math.min(cic,1)} al tiro per colpire.</strong> La quinta runa è comparsa: <em>Eredità dei Sacrificati</em> attiva (1/sessione un alleato salvato suggerisce la mossa giusta).`;
+    } else if (cic >= 3) {
+      cicNote.innerHTML = `<i class="ti ti-cut" style="vertical-align:-2px;color:#8B7355;" aria-hidden="true"></i> ${cic} cicatrici — <strong style="color:#8B7355;">−1 al tiro per colpire.</strong> L'arco porta il peso dei sacrifici.`;
+    } else {
+      cicNote.innerHTML = `<i class="ti ti-cut" style="vertical-align:-2px;color:var(--t3);" aria-hidden="true"></i> ${cic} cicatric${cic===1?'e':'i'} — nessun effetto meccanico. L'arco sembra vissuto.`;
+    }
+  }
+
+  const qa = document.getElementById('qa');
+  qa.innerHTML = '';
+  const acts = [
+    {lbl:'Freccia Testamento −1V', minLv:5, fn:()=>{
+      if (condanne > 0) cV('condanna',-1); else cV('grazia',-1);
+    }, canDo:()=> grazie+condanne >= 1},
+    {lbl:'Intercedere −1G', minLv:5, fn:()=>cV('grazia',-1), canDo:()=>grazie>=1},
+    {lbl:'Scoccare nel Velo −2V', minLv:9, fn:()=>{
+      let n=2;
+      const dc=Math.min(condanne,n); condanne-=dc; n-=dc;
+      if(n>0){grazie=Math.max(0,grazie-n);}
+      go();
+    }, canDo:()=>grazie+condanne>=2},
+    {lbl:'Ancorare l\'Anima −1G +1Cic', minLv:9, fn:()=>{
+      cV('grazia',-1);
+      const cinput=document.getElementById('cic');
+      cinput.value=Math.min(10,(+cinput.value||0)+1);
+      go();
+    }, canDo:()=>grazie>=1},
+    {lbl:'Freccia Sacrificio −tutteC', minLv:13, fn:()=>{condanne=0;go();}, canDo:()=>condanne>=2},
+    {lbl:'Dono della Pietà −3G +1Cic', minLv:13, fn:()=>{
+      grazie=Math.max(0,grazie-3);
+      const cinput=document.getElementById('cic');
+      cinput.value=Math.min(10,(+cinput.value||0)+1);
+      go();
+    }, canDo:()=>grazie>=3},
+    {lbl:'Giudizio Finale −tutto', minLv:17, fn:()=>{grazie=0;condanne=0;go();}, canDo:()=>grazie+condanne>=5},
+  ];
+  acts.forEach(a => {
+    if (l >= a.minLv) {
+      const btn = document.createElement('button');
+      btn.textContent = a.lbl;
+      btn.style.fontSize = '12px';
+      btn.disabled = !a.canDo();
+      btn.onclick = a.fn;
+      qa.appendChild(btn);
+    }
+  });
+
+  buildSoglie(l);
+  saveRuth();
+}
+
+function buildSoglie(l) {
+  const sl = document.getElementById('slist');
+  sl.innerHTML = '';
+  DATA.forEach((s, idx) => {
+    const unlocked = l >= s.minLv;
+    const card = document.createElement('div');
+    card.className = 'card';
+    const head = document.createElement('div');
+    head.className = 'sh';
+    head.innerHTML = `
+      <div style="width:4px;height:30px;border-radius:2px;background:${unlocked?s.col:'#333'};flex-shrink:0;"></div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:14px;font-weight:500;color:${unlocked?'var(--t1)':'var(--t3)'};">${s.name}</div>
+        <div style="font-size:11px;color:var(--t3);margin-top:1px;">${s.lv} · ${s.cap}</div>
+      </div>
+      <span style="font-size:11px;padding:2px 8px;border-radius:4px;background:${unlocked?s.col+'20':'#2a2825'};color:${unlocked?s.col:'var(--t3)'};">${unlocked?'Sbloccata':'Lv '+s.minLv}</span>
+      <i class="ti ti-chevron-down" id="chev${s.id}" style="font-size:15px;color:var(--t3);transition:transform .2s;flex-shrink:0;" aria-hidden="true"></i>`;
+    const body = document.createElement('div');
+    body.id = 'body' + s.id;
+    body.style.cssText = 'padding:0 14px 14px;display:none;';
+    if (unlocked) {
+      let html = '';
+      s.ab.forEach(a => {
+        html += `<div style="padding:7px 0;border-top:.5px solid var(--border);">
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+            <i class="ti ${a.ico}" style="font-size:15px;color:${s.col};" aria-hidden="true"></i>
+            <span style="font-size:14px;font-weight:500;color:var(--t1);">${a.n}</span>
+            <span class="atag">${a.tag}</span>
+            ${a.cost?`<span style="font-size:11px;padding:1px 6px;border-radius:4px;background:${s.col}20;color:${s.col};">${a.cost}</span>`:''}
+          </div>
+          ${a.trigger?`<div style="font-size:12px;color:var(--t3);margin-top:3px;font-style:italic;line-height:1.4;">Trigger: ${a.trigger}</div>`:''}
+          <div style="font-size:13px;color:var(--t2);margin-top:3px;line-height:1.55;">${a.t}</div>
+        </div>`;
+      });
+      s.dr.forEach(d => {
+        html += `<div style="margin-top:8px;padding:8px 10px;border-radius:var(--r-md);background:var(--warn-bg);border-left:3px solid var(--warn-border);">
+          <div style="font-size:13px;font-weight:500;color:var(--warn-fg);display:flex;align-items:center;gap:5px;">
+            <i class="ti ti-alert-triangle" style="font-size:13px;" aria-hidden="true"></i>${d.n}
+          </div>
+          <div style="font-size:13px;color:var(--t2);margin-top:2px;line-height:1.45;">${d.t}</div>
+        </div>`;
+      });
+      body.innerHTML = html;
+    } else {
+      body.innerHTML = `<div style="font-size:13px;color:var(--t3);padding:8px 0;">Disponibile al livello ${s.minLv}.</div>`;
+    }
+    let open = (idx === 0);
+    const toggle = () => {
+      open = !open;
+      body.style.display = open ? 'block' : 'none';
+      const ch = document.getElementById('chev' + s.id);
+      if (ch) ch.style.transform = open ? 'rotate(180deg)' : 'rotate(0deg)';
+    };
+    head.addEventListener('click', toggle);
+    if (open) { body.style.display = 'block'; }
+    card.appendChild(head);
+    card.appendChild(body);
+    sl.appendChild(card);
+    if (open) { const ch = document.getElementById('chev' + s.id); if (ch) ch.style.transform = 'rotate(180deg)'; }
+  });
+}
+
+function tog(bodyId, chevId) {
+  const b = document.getElementById(bodyId);
+  const c = document.getElementById(chevId);
+  const open = b.style.display !== 'none';
+  b.style.display = open ? 'none' : 'block';
+  if (c) c.style.transform = open ? '' : 'rotate(180deg)';
+}
+
+function aggiornaFaro() {
+  try {
+    const s = localStorage.getItem('artiglio');
+    const faroBox = document.getElementById('faro-desc');
+    const faroIco = document.getElementById('faro-ico');
+    if (!s) {
+      faroBox.textContent = 'Nessun dato — apri index.html nello stesso browser per sincronizzare.';
+      faroBox.style.color = 'var(--t3)';
+      faroIco.style.color = 'var(--t3)';
+      return;
+    }
+    const d = JSON.parse(s);
+    const sospiri = d.sospiri || 0;
+    const info = BEACON_FARO.find(x => sospiri >= x.min && sospiri <= x.max) || BEACON_FARO[BEACON_FARO.length - 1];
+    faroIco.style.color = info.col;
+    faroBox.innerHTML = `<strong style="color:${info.col}">${info.lbl}</strong> — ${sospiri} Sospir${sospiri !== 1 ? 'i' : 'o'} (Lv ${d.livello||'?'}, DES ${d.des||'?'})`;
+    faroBox.style.color = 'var(--t2)';
+    faroBox.style.fontStyle = 'normal';
+  } catch(e) {}
+}
+
+function saveRuth() {
+  try {
+    localStorage.setItem('ruth', JSON.stringify({
+      grazie,
+      condanne,
+      cicatrici: +document.getElementById('cic').value || 0,
+      livello: +document.getElementById('lvl').value || 1,
+      sag: +document.getElementById('sag').value || 1,
+    }));
+  } catch(e) {}
+}
+
+function loadRuth() {
+  try {
+    const s = localStorage.getItem('ruth');
+    if (!s) return;
+    const d = JSON.parse(s);
+    if (d.grazie    !== undefined) grazie    = d.grazie;
+    if (d.condanne  !== undefined) condanne  = d.condanne;
+    if (d.cicatrici !== undefined) document.getElementById('cic').value = d.cicatrici;
+    if (d.livello   !== undefined) document.getElementById('lvl').value = d.livello;
+    if (d.sag       !== undefined) document.getElementById('sag').value = d.sag;
+  } catch(e) {}
+}
+
+loadRuth();
+go();
+aggiornaFaro();
+</script>
+</body>
+</html>
