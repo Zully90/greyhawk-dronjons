@@ -49,8 +49,9 @@ Soglia V   #888780   grigio leggendario
 greyhawk-dronjons/
 ├── CLAUDE.md          ← questo file
 ├── README.md          ← descrizione GitHub
-├── index.html         ← Artiglio tracker (COMPLETO)
-└── spawn.html         ← Sistema spawn spiriti (DA COSTRUIRE)
+├── index.html         ← Artiglio tracker · Dronjons (COMPLETO)
+├── ruth.html          ← Arco di Ruth tracker · Rui Jin (COMPLETO)
+└── spawn.html         ← Sistema spawn spiriti · DM (COMPLETO)
 ```
 
 ---
@@ -197,6 +198,98 @@ Se disturbato: tiro 2.
 - Box risultato finale: nome creatura, grado, suggerimento DM in corsivo
 - Bottone "Ritira" e link a index.html
 - Stile coerente con index.html
+- **Vista DM — Risonanza Armi** (pannello collassabile): legge localStorage `artiglio` e `ruth`, mostra stato Faro + Verdetti di Rui Jin + note di risonanza attive
+
+---
+
+## ruth.html — L'Arco di Ruth
+
+**Stato: completo e funzionante.**
+**Destinatario: solo Rui Jin (Alessio) — non condividere con Dronjons.**
+
+### Cosa fa
+Tracker interattivo per l'arco scalante di Rui Jin, legato a Wee Jas (pantheon Suel).
+- Input: Livello PG + Mod. SAG + Cicatrici → calcola Max Verdetti e Max Grazie
+- Tracker duale: Grazie (bianco/avorio) e Condanne (rosso) come stack separati
+- Bilancio centrale colorato (positivo = verde, negativo = rosso)
+- Stato dell'Arco: indicatore colorato del peso del giudizio (aggiornamento real-time)
+- Azioni rapide: bottoni spesa (disabilitati se non sufficienti), alcuni aumentano Cicatrici automaticamente
+- 5 Soglie collassabili con lock/unlock per livello
+- Sezione "Come si accumulano i Verdetti" (collassabile)
+- Sezione "Risonanza con l'Artiglio" (regole meccaniche, **senza** dati live dell'Artiglio)
+
+### Materiali e costruzione
+- Legno di cipresso dell'Abisso (cresciuto su terra di morte)
+- Corda di crine di unicorno da Celestia (purezza)
+- Tre rune iniziali; nuove rune compaiono a ogni Soglia sbloccata
+- A 5+ Cicatrici: quinta runa (color sangue secco) — Eredità dei Sacrificati
+
+### Meccanica Verdetti
+Risorsa duale. Max totale = Livello + Mod. SAG. Max Grazie = Max totale − Cicatrici.
+
+| Azione | Effetto |
+|--------|---------|
+| Uccidere DEATH path | +1 Condanna |
+| Risparmiare LIFE path | +1 Grazia |
+| Intercedere per alleato | −1 Grazia (Soglia II) |
+| Ancorare l'Anima | −1 Grazia +1 Cicatrice (Soglia III) |
+| Il Dono della Pietà | −3 Grazie +1 Cicatrice, si sacrifica (Soglia IV) |
+| Morire e rinascere (Duskwalker) | Reset Bilancio a 0 |
+
+### Stato dell'Arco
+| Stato | Condizione | Effetto |
+|-------|-----------|---------|
+| Silente | 0 Verdetti totali | Nessuno |
+| Bilanciato | Grazie ≈ Condanne (±1) | Wee Jas osserva |
+| In Grazia | Grazie > Condanne +1 | La misericordia domina |
+| In Condanna | Condanne > Grazie +1 | Senza Grazia entro sessione: Drained 1 al riposo lungo |
+| Cortocircuito | Totale > Max Verdetti | Ogni azione diventa DEATH automaticamente fino al riposo lungo |
+
+### Cicatrici
+| Cicatrici | Effetto |
+|-----------|---------|
+| 0–2 | Nessun effetto meccanico |
+| 3–4 | −1 al tiro per colpire |
+| 5+ | −1 al tiro per colpire + Eredità dei Sacrificati (1/sessione guida da un alleato salvato) |
+
+### Le 5 Soglie (sintesi)
+
+**I — Il Giudice** (Lv 3-4)
+- Sentenza [Passiva]: LIFE (stabilizza + Maledetta Signora Oscura 24h) o DEATH (+danno Mod. SAG)
+- Lo Sguardo della Signora: senza Sentenza → Spaventato 1
+
+**II — Il Testimone** (Lv 5-8)
+- Vedere il Confine [Passiva]: percepisce ≤25% HP entro 30p
+- Freccia Testamento [Azione, 1V]: rivela 1 segreto della creatura colpita alla sua morte
+- Intercedere [Reazione, 1G]: trasferisce attacco su Rui Jin, danno dimezzato
+
+**III — Il Guardiano della Soglia** (Lv 9-12)
+- Scoccare nel Velo [Azione, 2V]: ignora copertura/incorporeità per 1 attacco
+- Ancorare l'Anima [Reazione, 1G+1Cic]: ancora anima alleato per 1 min (poi TS Tempra CD 18)
+- Interrogare il Confine [1 min, 1V]: domanda a Wee Jas su morte/anime
+- *Drawback*: soglia spawn +1 step (vedi spawn.html)
+
+**IV — Il Sacrificio Vivente** (Lv 13-16)
+- Il Dono della Pietà [3 Azioni, 3G+1Cic]: trasferisce morte imminente su Rui Jin, alleato a 1 PF
+- Freccia del Sacrificio [2 Azioni, tutteC]: 1d6 Vuoto/Condanna (max Mod.SAG×d6), azzera Condanne
+
+**V — L'Eterno** (Lv 17+)
+- Giudizio Finale [3 Azioni, tuttiV min5, 1/giorno]: Grazie salvano alleati, Condanne distruggono non-morti
+- La Memoria del Duskwalker [Passiva]: 1 ricordo/sessione da creature giudicate
+- Dissoluzione Pietosa [Azione, 1G]: dissolve non-morto debole senza combattimento
+
+### Risonanza con l'Artiglio (regole DM)
+
+| Trigger | Effetto |
+|---------|---------|
+| Rui Jin uccide spirito/non-morto (DEATH) | Faro scende 1 stato per 10 min; se era Sospiro di Dronjons → perde 1 Sospiro, Rui Jin +1 Grazia |
+| Rui Jin usa LIFE su creatura che Dronjons voleva catturare | Artiglio protesta: TS Volontà CD 16 o Dronjons Spaventato 1 |
+| Rui Jin usa Il Dono della Pietà | Faro sale 1 stato per 1 ora; spiriti nel raggio TS Volontà CD 18 o Terrorizzati 3 |
+
+### localStorage
+- Scrive: `ruth` → `{ grazie, condanne, cicatrici, livello, sag }`
+- Legge: nulla (nessun dato dell'Artiglio visibile al giocatore)
+- spawn.html legge `ruth` per il pannello DM Risonanza
 
 ---
 
