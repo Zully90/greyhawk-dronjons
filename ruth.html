@@ -237,6 +237,27 @@ footer {
   </div>
 </div>
 
+<div id="runa-card" style="border-radius:var(--r-lg);padding:11px 14px;margin-bottom:.875rem;border:.5px solid transparent;">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+    <div id="runa-dot" style="width:18px;height:18px;border-radius:50%;flex-shrink:0;border:2px solid var(--border2);transition:background .2s,border-color .2s;"></div>
+    <div style="flex:1;">
+      <div style="display:flex;align-items:baseline;gap:6px;">
+        <span style="font-size:13px;font-weight:500;color:var(--t2);">La Runa —</span>
+        <span id="runa-lbl" style="font-size:13px;font-weight:500;"></span>
+      </div>
+      <div id="runa-narrativa" style="font-size:11px;color:var(--t3);margin-top:1px;font-style:italic;"></div>
+    </div>
+    <div style="text-align:right;">
+      <div style="font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;">Profilo</div>
+      <div id="runa-profilo" style="font-size:13px;font-weight:500;color:var(--t1);"></div>
+    </div>
+  </div>
+  <div id="runa-effetti" style="font-size:12px;line-height:1.55;padding:7px 9px;border-radius:var(--r-md);"></div>
+  <div style="margin-top:8px;display:flex;justify-content:flex-end;">
+    <button id="runa-spenta-btn" onclick="resetRuna()" style="display:none;font-size:12px;height:26px;padding:0 10px;opacity:.7;">Runa Spenta</button>
+  </div>
+</div>
+
 <div id="stato-card" style="border-radius:var(--r-lg);padding:11px 14px;margin-bottom:.875rem;border:.5px solid transparent;">
   <div style="display:flex;align-items:center;gap:7px;margin-bottom:4px;">
     <i class="ti ti-bow" style="font-size:17px;" id="stato-ico" aria-hidden="true"></i>
@@ -340,6 +361,30 @@ footer {
 <script>
 let grazie = 0;
 let condanne = 0;
+let runaAttiva = 'grigia'; // 'grigia' | 'blu' | 'rossa'
+
+const RUNA_DATA = [
+  { minLv:3,  maxLv:4,  att:'+1', dadi:'1d6',
+    grigia:{txt:'1d6 piercing · range 60p · reload 0',col:'#6a6762',bg:'#1c1a17'},
+    blu:{txt:'Grievous · tutti i danni non-letali · Crit Spec auto',col:'#7ab8f0',bg:'#0a1f36'},
+    rossa:{txt:'2d6 piercing (greater striking per 1 attacco)',col:'#c04040',bg:'#2a0f0f'} },
+  { minLv:5,  maxLv:8,  att:'+1', dadi:'2d6',
+    grigia:{txt:'2d6 + Mod. SAG piercing',col:'#6a6762',bg:'#1c1a17'},
+    blu:{txt:'Grievous · non-letale · Crit Spec · Maledizione Signora (bersaglio non può morire per 24h tranne per mano di Rui Jin)',col:'#7ab8f0',bg:'#0a1f36'},
+    rossa:{txt:'3d6 piercing · bersaglio Spaventato 2',col:'#c04040',bg:'#2a0f0f'} },
+  { minLv:9,  maxLv:12, att:'+2', dadi:'3d6',
+    grigia:{txt:'3d6 + Mod. SAG piercing',col:'#6a6762',bg:'#1c1a17'},
+    blu:{txt:'Grievous · non-letale · Crit Spec · +1d6 Vuoto non-letale',col:'#7ab8f0',bg:'#0a1f36'},
+    rossa:{txt:'3d6 + 1d6 Vuoto letale · bersaglio Spaventato 2',col:'#c04040',bg:'#2a0f0f'} },
+  { minLv:13, maxLv:16, att:'+2', dadi:'3d6',
+    grigia:{txt:'3d6 + Mod. SAG + 1d6 Vuoto',col:'#6a6762',bg:'#1c1a17'},
+    blu:{txt:'Grievous · non-letale · Crit Spec · +1d6 Vuoto non-letale · bersaglio Intralciato 2',col:'#7ab8f0',bg:'#0a1f36'},
+    rossa:{txt:'4d6 + 1d6 Vuoto letale · bersaglio Drained 1',col:'#c04040',bg:'#2a0f0f'} },
+  { minLv:17, maxLv:20, att:'+3', dadi:'4d6',
+    grigia:{txt:'4d6 + Mod. SAG + 2d6 Vuoto',col:'#6a6762',bg:'#1c1a17'},
+    blu:{txt:'Grievous · non-letale · Crit Spec · +2d6 Vuoto non-letale · Ancora Anima automatica (niente Cicatrice)',col:'#7ab8f0',bg:'#0a1f36'},
+    rossa:{txt:'5d6 + 2d6 Vuoto letale · TS Volontà CD 20 o bersaglio Terrorizzato 3',col:'#c04040',bg:'#2a0f0f'} },
+];
 
 const DATA = [
   {id:1,name:'I — Il Giudice',lv:'Livello 3–4',minLv:3,col:'#9B3080',
@@ -424,10 +469,58 @@ function cV(tipo, delta) {
   if (tipo === 'grazia') {
     grazie = Math.max(0, grazie + delta);
     if (delta > 0 && grazie > maxG()) grazie = maxG();
+    if (delta > 0) runaAttiva = 'blu';
   } else {
     condanne = Math.max(0, condanne + delta);
+    if (delta > 0) runaAttiva = 'rossa';
   }
   go();
+}
+
+function resetRuna() {
+  runaAttiva = 'grigia';
+  go();
+}
+
+function buildRuna(l) {
+  const entry = RUNA_DATA.find(r => l >= r.minLv && l <= r.maxLv) || RUNA_DATA[RUNA_DATA.length - 1];
+  const stato = entry[runaAttiva];
+
+  const card = document.getElementById('runa-card');
+  card.style.background = stato.bg;
+  card.style.borderColor = 'transparent';
+
+  const dot = document.getElementById('runa-dot');
+  dot.style.background = stato.col;
+  dot.style.borderColor = stato.col;
+
+  const lbl = document.getElementById('runa-lbl');
+  lbl.style.color = stato.col;
+
+  const narrativa = document.getElementById('runa-narrativa');
+  if (runaAttiva === 'blu') {
+    lbl.textContent = 'Pietà';
+    narrativa.textContent = 'La Signora approva la misericordia — questa freccia non uccide, vincola.';
+  } else if (runaAttiva === 'rossa') {
+    lbl.textContent = 'Condanna';
+    narrativa.textContent = 'La sentenza è pronunciata. La Signora esige che sia eseguita.';
+  } else {
+    lbl.textContent = 'Grigia';
+    narrativa.textContent = 'Nessuna sentenza attiva. Profilo di combattimento base.';
+  }
+
+  document.getElementById('runa-profilo').textContent = `${entry.att} · ${entry.dadi}`;
+
+  const effetti = document.getElementById('runa-effetti');
+  effetti.style.background = stato.col + '18';
+  effetti.style.color = runaAttiva === 'grigia' ? 'var(--t3)' : stato.col;
+  effetti.style.border = `0.5px solid ${stato.col}40`;
+  effetti.textContent = stato.txt;
+
+  const btn = document.getElementById('runa-spenta-btn');
+  btn.style.display = runaAttiva !== 'grigia' ? 'inline-block' : 'none';
+  btn.style.borderColor = stato.col + '60';
+  btn.style.color = stato.col;
 }
 
 function statoArco() {
@@ -565,6 +658,7 @@ function go() {
   });
 
   buildSoglie(l);
+  buildRuna(l);
   saveRuth();
 }
 
@@ -644,6 +738,7 @@ function saveRuth() {
     localStorage.setItem('ruth', JSON.stringify({
       grazie,
       condanne,
+      runaAttiva,
       cicatrici: +document.getElementById('cic').value || 0,
       livello: +document.getElementById('lvl').value || 1,
       sag: +document.getElementById('sag').value || 1,
@@ -656,11 +751,12 @@ function loadRuth() {
     const s = localStorage.getItem('ruth');
     if (!s) return;
     const d = JSON.parse(s);
-    if (d.grazie    !== undefined) grazie    = d.grazie;
-    if (d.condanne  !== undefined) condanne  = d.condanne;
-    if (d.cicatrici !== undefined) document.getElementById('cic').value = d.cicatrici;
-    if (d.livello   !== undefined) document.getElementById('lvl').value = d.livello;
-    if (d.sag       !== undefined) document.getElementById('sag').value = d.sag;
+    if (d.grazie     !== undefined) grazie     = d.grazie;
+    if (d.condanne   !== undefined) condanne   = d.condanne;
+    if (d.runaAttiva !== undefined) runaAttiva = d.runaAttiva;
+    if (d.cicatrici  !== undefined) document.getElementById('cic').value = d.cicatrici;
+    if (d.livello    !== undefined) document.getElementById('lvl').value = d.livello;
+    if (d.sag        !== undefined) document.getElementById('sag').value = d.sag;
   } catch(e) {}
 }
 
