@@ -161,6 +161,10 @@ footer {
   color: var(--t3);
   font-style: italic;
 }
+@keyframes pulseRisonanza {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.82; }
+}
 </style>
 </head>
 <body>
@@ -268,6 +272,24 @@ footer {
   <div id="stato-desc" style="font-size:13px;line-height:1.5;"></div>
 </div>
 
+<div id="risonanza-bilancio-card" style="display:none;border-radius:var(--r-lg);padding:12px 14px;margin-bottom:.875rem;border:.5px solid transparent;transition:background .2s,border-color .2s;">
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+    <i id="risonanza-bilancio-ico" class="ti ti-scale" style="font-size:17px;" aria-hidden="true"></i>
+    <div style="flex:1;">
+      <div id="risonanza-bilancio-nome" style="font-size:14px;font-weight:500;line-height:1.2;"></div>
+      <div id="risonanza-bilancio-diff" style="font-size:11px;margin-top:1px;font-style:italic;"></div>
+    </div>
+  </div>
+  <div style="margin-bottom:6px;">
+    <div style="font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px;">▸ Bonus Attivo</div>
+    <div id="risonanza-bilancio-bonus" style="font-size:12px;line-height:1.55;padding:6px 9px;border-radius:var(--r-md);border:.5px solid transparent;"></div>
+  </div>
+  <div id="risonanza-bilancio-cons" style="display:none;padding:7px 10px;border-radius:var(--r-md);background:rgba(0,0,0,0.25);border-left:3px solid transparent;">
+    <div style="font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px;">⚠ Conseguenze Passive</div>
+    <div class="cons-txt" style="font-size:12px;color:var(--t2);line-height:1.5;"></div>
+  </div>
+</div>
+
 <div style="border-radius:var(--r-lg);border:.5px solid var(--border);margin-bottom:.875rem;overflow:hidden;">
   <div onclick="tog('risonanza-body','risonanza-chev')" style="display:flex;align-items:center;gap:8px;padding:11px 14px;background:var(--bg2);cursor:pointer;user-select:none;">
     <i class="ti ti-link" style="font-size:16px;color:var(--t2);" aria-hidden="true"></i>
@@ -296,16 +318,69 @@ footer {
 
 <div style="border-radius:var(--r-lg);border:.5px solid var(--border);margin-bottom:.875rem;overflow:hidden;">
   <div onclick="tog('verd-body','verd-chev')" style="display:flex;align-items:center;gap:8px;padding:11px 14px;background:var(--bg2);cursor:pointer;user-select:none;">
-    <i class="ti ti-scales" style="font-size:16px;color:var(--t2);" aria-hidden="true"></i>
-    <span style="font-size:14px;font-weight:500;color:var(--t1);">Come si accumulano i Verdetti</span>
+    <i class="ti ti-book" style="font-size:16px;color:var(--t2);" aria-hidden="true"></i>
+    <span style="font-size:14px;font-weight:500;color:var(--t1);">Come funziona l'Arco di Ruth</span>
     <i class="ti ti-chevron-down" id="verd-chev" style="font-size:15px;color:var(--t3);margin-left:auto;transition:transform .2s;" aria-hidden="true"></i>
   </div>
   <div id="verd-body" style="display:none;padding:12px 14px;">
-    <p style="font-size:13px;color:var(--t2);line-height:1.6;margin-bottom:12px;">L'arco non conta i morti — conta le <em>intenzioni</em>. Una Condanna pronunciata con consapevolezza pesa più di mille uccisioni accidentali. Una Grazia data a chi non la merita vale più di qualunque pietà spontanea.</p>
+    <p style="font-size:13px;color:var(--t2);line-height:1.6;margin-bottom:12px;font-style:italic;">L'arco non conta i morti — conta le <em>intenzioni</em>. Una Condanna pronunciata con consapevolezza pesa più di mille uccisioni accidentali. Una Grazia data a chi non la merita vale più di qualunque pietà spontanea.</p>
     <div style="display:grid;gap:8px;">
 
       <div style="padding:10px 12px;border-radius:var(--r-md);border:.5px solid var(--border);background:var(--bg2);">
-        <div style="display:flex;align-items:center;gap:7px;margin-bottom:5px;">
+        <div style="display:flex;align-items:center;gap:7px;margin-bottom:6px;">
+          <i class="ti ti-scales" style="font-size:15px;color:#9b3080;" aria-hidden="true"></i>
+          <span style="font-size:13px;font-weight:500;color:var(--t1);">① La Sentenza</span>
+        </div>
+        <div style="font-size:13px;color:var(--t2);line-height:1.55;">
+          Ogni volta che una creatura è ridotta a 0 PF entro 1 round, Rui Jin può pronunciare una Sentenza senza azioni aggiuntive.<br><br>
+          <strong style="color:var(--ruth-grazia);">LIFE (runa blu)</strong> — stabilizza il bersaglio e lo maledice: non può morire che per mano di Rui Jin per 24h. +1 Grazia.<br>
+          <strong style="color:var(--ruth-condanna);">DEATH (runa rossa)</strong> — consuma il bersaglio con danno bonus pari al Mod. SAG. +1 Condanna.<br><br>
+          <span style="color:var(--t3);">Non pronunciare Sentenza fa scattare Lo Sguardo della Signora: Rui Jin Spaventato 1 per 1 round.</span>
+        </div>
+      </div>
+
+      <div style="padding:10px 12px;border-radius:var(--r-md);border:.5px solid var(--border);background:var(--bg2);">
+        <div style="display:flex;align-items:center;gap:7px;margin-bottom:6px;">
+          <i class="ti ti-wand" style="font-size:15px;color:#6B3FA0;" aria-hidden="true"></i>
+          <span style="font-size:13px;font-weight:500;color:var(--t1);">② I Verdetti e la Runa</span>
+        </div>
+        <div style="font-size:13px;color:var(--t2);line-height:1.55;">
+          Ogni Sentenza aggiunge 1 Grazia o 1 Condanna e <strong style="color:var(--t1);">accende la Runa</strong> per il prossimo attacco.<br><br>
+          <strong style="color:#7ab8f0;">Runa Blu</strong> — bonus di precisione e controllo (grievous, non-letale, Crit Spec, effetti di soglia).<br>
+          <strong style="color:#c04040;">Runa Rossa</strong> — bonus di danno puro (dado striking extra, condizioni aggressive).<br><br>
+          Dopo aver risolto l'attacco: premi <em>Runa Spenta</em>. Il profilo scala automaticamente con la Soglia attuale.<br><br>
+          <span style="color:var(--t3);">Max Verdetti totali = Livello + Mod. SAG. Le Grazie si riducono di 1 per ogni Cicatrice permanente.</span>
+        </div>
+      </div>
+
+      <div style="padding:10px 12px;border-radius:var(--r-md);border:.5px solid var(--border);background:var(--bg2);">
+        <div style="display:flex;align-items:center;gap:7px;margin-bottom:6px;">
+          <i class="ti ti-scale" style="font-size:15px;color:#3A8A9F;" aria-hidden="true"></i>
+          <span style="font-size:13px;font-weight:500;color:var(--t1);">③ Il Bilancio e la Risonanza</span>
+        </div>
+        <div style="font-size:13px;color:var(--t2);line-height:1.55;">
+          La differenza tra Grazie e Condanne genera effetti <strong style="color:var(--t1);">persistenti</strong> che scalano con l'intensità — visibili nella card <em>Risonanza del Bilancio</em> sopra.<br><br>
+          Avere 2 Condanne in più dà un bonus discreto (+1d6 Vuoto). Averne 7 in più trasforma Rui Jin in qualcosa che non è più completamente lui — e <em>Wee Jas inizia a prendere decisioni al suo posto</em>.<br><br>
+          Stessa logica in direzione opposta: la misericordia accumulata diventa un'aura sempre più potente — e sempre più costrittiva. Con 7+ Grazie di surplus, Rui Jin non può più uccidere.
+        </div>
+      </div>
+
+      <div style="padding:10px 12px;border-radius:var(--r-md);border:.5px solid var(--border);background:var(--bg2);">
+        <div style="display:flex;align-items:center;gap:7px;margin-bottom:6px;">
+          <i class="ti ti-cut" style="font-size:15px;color:#8B7355;" aria-hidden="true"></i>
+          <span style="font-size:13px;font-weight:500;color:var(--t1);">④ Le Cicatrici</span>
+        </div>
+        <div style="font-size:13px;color:var(--t2);line-height:1.55;">
+          Ogni sacrificio volontario (<em>Ancorare l'Anima</em> a Soglia III, <em>Il Dono della Pietà</em> a Soglia IV) lascia una Cicatrice permanente sull'arco.<br><br>
+          <strong style="color:var(--t1);">1–2 Cicatrici</strong> — nessun effetto meccanico. L'arco sembra vissuto.<br>
+          <strong style="color:#8B7355;">3–4 Cicatrici</strong> — −1 al tiro per colpire. L'arco porta il peso dei sacrifici.<br>
+          <strong style="color:#8B7355;">5+ Cicatrici</strong> — quinta runa attiva: <em>Eredità dei Sacrificati</em> (1/sessione un alleato salvato suggerisce la mossa giusta).<br><br>
+          <span style="color:var(--t3);">Ogni Cicatrice riduce anche il max Grazie di 1 — il costo del sacrificio è ridurre la capacità di pietà futura.</span>
+        </div>
+      </div>
+
+      <div style="padding:10px 12px;border-radius:var(--r-md);border:.5px solid var(--border);background:var(--bg2);">
+        <div style="display:flex;align-items:center;gap:7px;margin-bottom:6px;">
           <i class="ti ti-heart" style="font-size:15px;color:var(--ruth-grazia);" aria-hidden="true"></i>
           <span style="font-size:13px;font-weight:500;color:var(--t1);">Guadagnare Grazie</span>
         </div>
@@ -313,30 +388,20 @@ footer {
           <strong style="color:var(--t1);">+1</strong> Risparmiare con LIFE path (Sentenza pronunciata).<br>
           <strong style="color:var(--t1);">+1</strong> Intercedere per un alleato (Soglia II).<br>
           <strong style="color:var(--t1);">+2</strong> Sacrificarsi con Il Dono della Pietà (Soglia IV).<br>
-          <strong style="color:var(--t1);">+1 bonus</strong> Dissoluzione Pietosa di un non-morto (Soglia V, può essere usata come Grazia o Condanna).
+          <strong style="color:var(--t1);">+1 bonus</strong> Dissoluzione Pietosa di un non-morto (Soglia V).
         </div>
       </div>
 
       <div style="padding:10px 12px;border-radius:var(--r-md);border:.5px solid var(--border);background:var(--bg2);">
-        <div style="display:flex;align-items:center;gap:7px;margin-bottom:5px;">
+        <div style="display:flex;align-items:center;gap:7px;margin-bottom:6px;">
           <i class="ti ti-skull" style="font-size:15px;color:var(--ruth-condanna);" aria-hidden="true"></i>
           <span style="font-size:13px;font-weight:500;color:var(--t1);">Guadagnare Condanne</span>
         </div>
         <div style="font-size:13px;color:var(--t2);line-height:1.5;">
           <strong style="color:var(--t1);">+1</strong> Uccidere con DEATH path (Sentenza pronunciata).<br>
-          <strong style="color:var(--t1);">+1 speciale</strong> Uccidere un non-morto/spirito con DEATH (attiva anche Risonanza con l'Artiglio).
-        </div>
-      </div>
-
-      <div style="padding:10px 12px;border-radius:var(--r-md);border:.5px solid var(--border);background:var(--bg2);">
-        <div style="display:flex;align-items:center;gap:7px;margin-bottom:5px;">
-          <i class="ti ti-refresh" style="font-size:15px;color:var(--t2);" aria-hidden="true"></i>
-          <span style="font-size:13px;font-weight:500;color:var(--t1);">Reset e variazioni</span>
-        </div>
-        <div style="font-size:13px;color:var(--t2);line-height:1.5;">
-          <strong style="color:var(--t1);">Reset a 0</strong> Rui Jin muore e rinascita come Duskwalker — torna con Bilancio a 0 (Grazie = Condanne = 0) più un bonus narrativo a scelta del DM.<br>
-          <strong style="color:var(--t1);">−tutto</strong> Freccia del Sacrificio azzera tutte le Condanne spendendole come arma.<br>
-          <strong style="color:var(--t1);">−tutto</strong> Giudizio Finale svuota entrambi gli stack (Soglia V, 1/giorno).
+          <strong style="color:var(--t1);">+1 speciale</strong> Uccidere un non-morto/spirito con DEATH (attiva Risonanza con l'Artiglio).<br>
+          <strong style="color:var(--t1);">Reset a 0</strong> Rui Jin muore e rinasce come Duskwalker — Bilancio a 0, bonus narrativo DM.<br>
+          <strong style="color:var(--t1);">−tutto</strong> Freccia del Sacrificio / Giudizio Finale svuotano lo stack.
         </div>
       </div>
 
@@ -453,13 +518,87 @@ const STATI = [
   {id:'bilanciato',lbl:'Bilanciato',tcol:'#7ab8f0',bg:'#0a1f36',
    d:'Grazie e Condanne si equivalgono. Wee Jas osserva in silenzio — non è soddisfatta, non è scontenta.'},
   {id:'grazia',lbl:'In Grazia',tcol:'#98C090',bg:'#0d1f0d',
-   d:'Le Grazie superano le Condanne. La Signora Oscura apprezza — ma la pietà non è debolezza, è scelta. Un giudice che non sa uccidere è solo un testimone.'},
+   d:'La misericordia guida la mano. Wee Jas riconosce la pietà pronunciata con intenzione — è giudizio tanto quanto la condanna.'},
   {id:'condanna',lbl:'In Condanna',tcol:'#f09595',bg:'#2a0f0f',
    d:'Le Condanne superano le Grazie. Wee Jas accetta la morte, ma esige equilibrio. Senza una Grazia pronunciata entro la sessione: Drained 1 al riposo lungo.'},
   {id:'cortocircuito',lbl:'Cortocircuito',tcol:'#f5c06a',bg:'#2d1a05',
    d:'Troppi Verdetti — l\'arco non contiene più il peso del giudizio. Ogni azione è automaticamente DEATH fino al riposo lungo.'},
 ];
 
+
+const RISONANZA_DATA = {
+  condanne: [
+    { minDiff:1, maxDiff:2, nome:"L'Ombra della Morte",
+      bonus:'+1d6 Vuoto a tutti gli attacchi.',
+      conseguenze:null,
+      col:'#c04040', bg:'#2a0f0f' },
+    { minDiff:3, maxDiff:4, nome:"L'Esecutore",
+      bonus:'+2d6 Vuoto · colpiti Spaventato 2 (TS Volontà CD 15).',
+      conseguenze:'Drained 1 su Rui Jin (persistente finché il bilancio non rientra).',
+      col:'#c04040', bg:'#2a0f0f' },
+    { minDiff:5, maxDiff:6, nome:'La Sentenza Incarnata',
+      bonus:'+3d6 Vuoto · Spaventato 3 · bersagli TS Tempra CD 18 o Drained 1.',
+      conseguenze:'Drained 2 su Rui Jin · non può pronunciare LIFE senza TS Volontà CD 16.',
+      col:'#a02020', bg:'#330a0a' },
+    { minDiff:7, maxDiff:99, nome:"L'Angelo Exterminans",
+      bonus:'+4d6 Vuoto · Terrorizzato 3 · Drained 2 ai bersagli · alleati entro 30p TS Volontà CD 14 o Spaventati 1.',
+      conseguenze:'Drained 3 su Rui Jin · ogni riposo lungo richiede 1 Condanna rituale o non recupera abilità · d20 a fine sessione: 1–5 → Wee Jas prende una decisione al posto suo.',
+      col:'#8b0000', bg:'#1a0505' },
+  ],
+  grazie: [
+    { minDiff:1, maxDiff:2, nome:'Il Tocco Pietoso',
+      bonus:'Crit Spec auto su tutti gli attacchi.',
+      conseguenze:null,
+      col:'#98C090', bg:'#0d1f0d' },
+    { minDiff:3, maxDiff:4, nome:'La Benedizione della Soglia',
+      bonus:'Crit Spec · alleati entro 30p guariscono 2 PF a ogni colpo · non-morti ≤ Lv PG−2 TS Volontà CD 14 o fuggono.',
+      conseguenze:'Wee Jas esige equilibrio — la prossima Sentenza deve essere DEATH o Rui Jin subisce Drained 1 al prossimo riposo.',
+      col:'#98C090', bg:'#0d1f0d' },
+    { minDiff:5, maxDiff:6, nome:'La Grazia della Signora',
+      bonus:'Crit Spec · non-morti di qualsiasi Lv TS CD 18 alla presenza · ogni colpo LIFE stabilizza automaticamente · alleati entro 30p +2 ai TS.',
+      conseguenze:'Rui Jin non può uccidere con DEATH senza TS Volontà CD 18 · a fine sessione Wee Jas esige 1 Condanna o perde la Sentenza LIFE temporaneamente.',
+      col:'#5a9f52', bg:'#0a1a0a' },
+    { minDiff:7, maxDiff:99, nome:'La Santità Costretta',
+      bonus:'Aura 60p: non-morti ≤ Lv 10 bloccati; alleati immuni a Paura · ogni colpo automaticamente non-letale · alleati a 0 PF entro 30p si stabilizzano al suo turno.',
+      conseguenze:'Rui Jin NON PUÒ uccidere — qualsiasi creatura a 0 PF si stabilizza · Wee Jas esige DEATH a ogni round o l\'aura collassa · TS Volontà CD 20 a fine sessione o perde la capacità di DEATH per 1 settimana.',
+      col:'#2a8c22', bg:'#05140a' },
+  ]
+};
+
+function buildRisonanza(diff) {
+  const card = document.getElementById('risonanza-bilancio-card');
+  if (!card) return;
+  const abs = Math.abs(diff);
+  if (diff === 0) { card.style.display = 'none'; return; }
+  const side = diff > 0 ? RISONANZA_DATA.grazie : RISONANZA_DATA.condanne;
+  const tier = side.find(t => abs >= t.minDiff && abs <= t.maxDiff);
+  if (!tier) { card.style.display = 'none'; return; }
+  card.style.display = 'block';
+  card.style.background = tier.bg;
+  card.style.borderColor = tier.col + (abs >= 7 ? '' : '70');
+  card.style.animation = abs >= 7 ? 'pulseRisonanza 2s ease-in-out infinite' : '';
+  const ico = document.getElementById('risonanza-bilancio-ico');
+  ico.style.color = tier.col;
+  const nome = document.getElementById('risonanza-bilancio-nome');
+  nome.textContent = tier.nome;
+  nome.style.color = tier.col;
+  const diffEl = document.getElementById('risonanza-bilancio-diff');
+  diffEl.textContent = `diff: ${diff > 0 ? '+' : ''}${diff} · surplus di ${diff > 0 ? 'Pietà' : 'Condanne'}`;
+  diffEl.style.color = tier.col + 'aa';
+  const bonusEl = document.getElementById('risonanza-bilancio-bonus');
+  bonusEl.textContent = tier.bonus;
+  bonusEl.style.color = tier.col;
+  bonusEl.style.background = tier.col + '15';
+  bonusEl.style.borderColor = tier.col + '40';
+  const consEl = document.getElementById('risonanza-bilancio-cons');
+  if (tier.conseguenze) {
+    consEl.style.display = 'block';
+    consEl.querySelector('.cons-txt').textContent = tier.conseguenze;
+    consEl.style.borderLeftColor = tier.col;
+  } else {
+    consEl.style.display = 'none';
+  }
+}
 
 function maxV() { return (+document.getElementById('lvl').value||1) + (+document.getElementById('sag').value||1); }
 function maxG() { return Math.max(0, maxV() - (+document.getElementById('cic').value||0)); }
@@ -581,10 +720,6 @@ function go() {
     if (condanne > grazie + 1) {
       wb.style.display = 'flex';
       document.getElementById('warn-bilancio-txt').textContent = `Bilancio negativo (${bilancio}) — senza una Grazia entro la sessione: Drained 1 al riposo lungo.`;
-    } else if (grazie > condanne + 1 && condanne === 0 && grazie > 2) {
-      wb.style.display = 'flex';
-      document.getElementById('warn-bilancio-txt').style.color = '#98C090';
-      document.getElementById('warn-bilancio-txt').textContent = `La misericordia pura non è equilibrio. Wee Jas osserva.`;
     } else {
       wb.style.display = 'none';
     }
@@ -659,6 +794,7 @@ function go() {
 
   buildSoglie(l);
   buildRuna(l);
+  buildRisonanza(bilancio);
   saveRuth();
 }
 
