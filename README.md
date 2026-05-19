@@ -5,10 +5,11 @@ Hostato su GitHub Pages. Zero dipendenze, zero build system.
 
 ## Pagine
 
-| File | Descrizione | Stato |
-|------|-------------|-------|
-| `index.html` | Artiglio del Collezionista di Sospiri — tracker interattivo | ✅ Completo |
-| `spawn.html` | Sistema spawn spiriti al calar del sole | 🚧 In costruzione |
+| File | Descrizione | Link | Stato |
+|------|-------------|------|-------|
+| `index.html` | Artiglio del Collezionista di Sospiri — tracker Dronjons | [Apri](https://zully90.github.io/greyhawk-dronjons/) | ✅ Completo |
+| `ruth.html` | L'Arco di Ruth — tracker Rui Jin | [Apri](https://zully90.github.io/greyhawk-dronjons/ruth.html) | ✅ Completo |
+| `spawn.html` | Calar del Sole — sistema spawn spiriti (DM) | [Apri](https://zully90.github.io/greyhawk-dronjons/spawn.html) | ✅ Completo |
 
 ## Sviluppo locale
 
