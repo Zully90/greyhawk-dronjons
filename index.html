@@ -400,6 +400,13 @@ function go(){
     }
   });
   buildSoglie(l);
+  try {
+    localStorage.setItem('artiglio', JSON.stringify({
+      sospiri: sN,
+      des: +document.getElementById('des').value || 1,
+      livello: l,
+    }));
+  } catch(e) {}
 }
 function buildSoglie(l){
   const sl=document.getElementById('slist');
@@ -462,6 +469,17 @@ function buildSoglie(l){
     if(open){const ch=document.getElementById('chev'+s.id);if(ch)ch.style.transform='rotate(180deg)';}
   });
 }
+function loadArtiglio() {
+  try {
+    const s = localStorage.getItem('artiglio');
+    if (!s) return;
+    const d = JSON.parse(s);
+    if (d.sospiri !== undefined) sN = d.sospiri;
+    if (d.des     !== undefined) document.getElementById('des').value = d.des;
+    if (d.livello !== undefined) document.getElementById('lvl').value = d.livello;
+  } catch(e) {}
+}
+loadArtiglio();
 go();
 </script>
 </body>
