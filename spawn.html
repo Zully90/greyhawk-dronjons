@@ -501,6 +501,31 @@ button:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
     </div>
   </div>
 
+  <!-- Pannello DM: risonanza armi -->
+  <div class="card" style="margin-bottom:10px;">
+    <div onclick="togDM()" style="display:flex;align-items:center;gap:8px;padding:11px 14px;background:var(--bg2);cursor:pointer;user-select:none;">
+      <i class="ti ti-eye" style="font-size:15px;color:var(--t3);" aria-hidden="true"></i>
+      <span style="font-size:13px;font-weight:500;color:var(--t2);">Vista DM — Risonanza Armi</span>
+      <button onclick="event.stopPropagation();aggiornaRisonanza()" style="margin-left:auto;font-size:11px;height:22px;padding:0 8px;">↺</button>
+      <i class="ti ti-chevron-down" id="dm-chev" style="font-size:14px;color:var(--t3);transition:transform .2s;" aria-hidden="true"></i>
+    </div>
+    <div id="dm-body" style="display:none;padding:12px 14px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+        <div style="padding:8px 10px;border-radius:7px;background:var(--bg2);border:.5px solid var(--border);">
+          <div style="font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Artiglio · Faro</div>
+          <div id="dm-faro" style="font-size:13px;color:var(--t2);">—</div>
+          <div id="dm-sospiri" style="font-size:11px;color:var(--t3);margin-top:2px;"></div>
+        </div>
+        <div style="padding:8px 10px;border-radius:7px;background:var(--bg2);border:.5px solid var(--border);">
+          <div style="font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Ruth · Verdetti</div>
+          <div id="dm-ruth" style="font-size:13px;color:var(--t2);">—</div>
+          <div id="dm-ruth-sub" style="font-size:11px;color:var(--t3);margin-top:2px;"></div>
+        </div>
+      </div>
+      <div id="dm-risonanza-note" style="font-size:12px;color:var(--t3);line-height:1.5;font-style:italic;"></div>
+    </div>
+  </div>
+
   <!-- Results area -->
   <div id="results-area"></div>
 
@@ -1144,6 +1169,68 @@ function appendToArea(area, html) {
 function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 // ── Init ─────────────────────────────────────────────────────────────────────
+
+const FARO_STATI = [
+  {min:0,max:0,lbl:'Silente',col:'#6a6762'},
+  {min:1,max:2,lbl:'Tepore',col:'#7ab8f0'},
+  {min:3,max:4,lbl:'Pulsante',col:'#f5c06a'},
+  {min:5,max:999,lbl:'Ardente',col:'#f09595'},
+];
+
+function togDM() {
+  const b = document.getElementById('dm-body');
+  const c = document.getElementById('dm-chev');
+  const open = b.style.display !== 'none';
+  b.style.display = open ? 'none' : 'block';
+  c.style.transform = open ? '' : 'rotate(180deg)';
+  if (!open) aggiornaRisonanza();
+}
+
+function aggiornaRisonanza() {
+  try {
+    const artiglio = JSON.parse(localStorage.getItem('artiglio') || 'null');
+    const ruth     = JSON.parse(localStorage.getItem('ruth')     || 'null');
+
+    const faroEl    = document.getElementById('dm-faro');
+    const sospiriEl = document.getElementById('dm-sospiri');
+    if (artiglio) {
+      const s = artiglio.sospiri || 0;
+      const st = FARO_STATI.find(x => s >= x.min && s <= x.max) || FARO_STATI[FARO_STATI.length-1];
+      faroEl.innerHTML = `<strong style="color:${st.col}">${st.lbl}</strong>`;
+      sospiriEl.textContent = `${s} Sospiri · Lv ${artiglio.livello||'?'} · DES ${artiglio.des||'?'}`;
+    } else {
+      faroEl.textContent = 'Nessun dato';
+      sospiriEl.textContent = 'Apri index.html nello stesso browser';
+    }
+
+    const ruthEl    = document.getElementById('dm-ruth');
+    const ruthSubEl = document.getElementById('dm-ruth-sub');
+    if (ruth) {
+      const g = ruth.grazie || 0;
+      const c = ruth.condanne || 0;
+      const bil = g - c;
+      const bilTxt = bil > 0 ? `+${bil}` : `${bil}`;
+      const bilCol = bil > 0 ? '#98C090' : bil < 0 ? '#f09595' : '#6a6762';
+      ruthEl.innerHTML = `<span style="color:#d4c4a8">${g}G</span> / <span style="color:#c04040">${c}C</span> · Bilancio <strong style="color:${bilCol}">${bilTxt}</strong>`;
+      ruthSubEl.textContent = `Lv ${ruth.livello||'?'} · SAG ${ruth.sag||'?'} · ${ruth.cicatrici||0} Cicatric${(ruth.cicatrici||0)===1?'e':'i'}`;
+    } else {
+      ruthEl.textContent = 'Nessun dato';
+      ruthSubEl.textContent = 'Apri ruth.html nello stesso browser';
+    }
+
+    const noteEl = document.getElementById('dm-risonanza-note');
+    const notes = [];
+    if (artiglio && ruth) {
+      const s = artiglio.sospiri || 0;
+      const c = ruth.condanne || 0;
+      if (s >= 5 && c >= 3) notes.push('⚠ Faro Ardente + Condanne alte: notte ad alto rischio.');
+      if (c >= 3) notes.push(`Soglia spawn +1 step per Portale del Marchio (Condanne: ${c}).`);
+      if (ruth.cicatrici >= 1) notes.push(`Cicatrici: ${ruth.cicatrici} — ricorda il −${ruth.cicatrici>=3?'1':'0'} al tiro per colpire di Rui Jin.`);
+      if (notes.length === 0) notes.push('Nessuna risonanza attiva al momento.');
+    }
+    noteEl.textContent = notes.join(' ');
+  } catch(e) {}
+}
 
 loadFromStorage();
 updateFaro();

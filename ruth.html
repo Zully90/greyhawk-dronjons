@@ -255,17 +255,6 @@ footer {
   </div>
   <div id="risonanza-body" style="display:none;padding:12px 14px;">
 
-    <div id="faro-box" style="padding:10px 12px;border-radius:var(--r-md);margin-bottom:10px;border:.5px solid var(--border);background:var(--bg2);">
-      <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
-        <i class="ti ti-broadcast" style="font-size:15px;" id="faro-ico" aria-hidden="true"></i>
-        <span style="font-size:12px;color:var(--t2);">Faro dell'Artiglio</span>
-        <button onclick="aggiornaFaro()" style="margin-left:auto;font-size:11px;height:22px;padding:0 8px;">↺ Aggiorna</button>
-      </div>
-      <div id="faro-desc" style="font-size:13px;color:var(--t3);line-height:1.4;font-style:italic;">
-        Nessun dato — apri index.html nello stesso browser per sincronizzare.
-      </div>
-    </div>
-
     <div style="display:grid;gap:7px;">
       <div style="padding:8px 10px;border-radius:var(--r-md);background:var(--bg2);border:.5px solid var(--border);">
         <div style="font-size:12px;font-weight:500;color:var(--ruth-grazia);margin-bottom:2px;"><i class="ti ti-arrow-down" style="vertical-align:-2px;" aria-hidden="true"></i> Morte Pulita</div>
@@ -342,8 +331,6 @@ footer {
 <div id="slist"></div>
 
 <div style="text-align:center;margin-top:1.5rem;font-size:12px;color:var(--t3);">
-  <a href="index.html" style="color:var(--t3);text-decoration:none;opacity:.7;">← L'Artiglio di Dronjons</a>
-  &nbsp;·&nbsp;
   <a href="spawn.html" style="color:var(--t3);text-decoration:none;opacity:.7;">Calar del Sole →</a>
 </div>
 
@@ -428,12 +415,6 @@ const STATI = [
    d:'Troppi Verdetti — l\'arco non contiene più il peso del giudizio. Ogni azione è automaticamente DEATH fino al riposo lungo.'},
 ];
 
-const BEACON_FARO = [
-  {min:0,max:0,lbl:'Silente',col:'#6a6762'},
-  {min:1,max:2,lbl:'Tepore',col:'#7ab8f0'},
-  {min:3,max:4,lbl:'Pulsante',col:'#f5c06a'},
-  {min:5,max:999,lbl:'Ardente',col:'#f09595'},
-];
 
 function maxV() { return (+document.getElementById('lvl').value||1) + (+document.getElementById('sag').value||1); }
 function maxG() { return Math.max(0, maxV() - (+document.getElementById('cic').value||0)); }
@@ -657,26 +638,6 @@ function tog(bodyId, chevId) {
   if (c) c.style.transform = open ? '' : 'rotate(180deg)';
 }
 
-function aggiornaFaro() {
-  try {
-    const s = localStorage.getItem('artiglio');
-    const faroBox = document.getElementById('faro-desc');
-    const faroIco = document.getElementById('faro-ico');
-    if (!s) {
-      faroBox.textContent = 'Nessun dato — apri index.html nello stesso browser per sincronizzare.';
-      faroBox.style.color = 'var(--t3)';
-      faroIco.style.color = 'var(--t3)';
-      return;
-    }
-    const d = JSON.parse(s);
-    const sospiri = d.sospiri || 0;
-    const info = BEACON_FARO.find(x => sospiri >= x.min && sospiri <= x.max) || BEACON_FARO[BEACON_FARO.length - 1];
-    faroIco.style.color = info.col;
-    faroBox.innerHTML = `<strong style="color:${info.col}">${info.lbl}</strong> — ${sospiri} Sospir${sospiri !== 1 ? 'i' : 'o'} (Lv ${d.livello||'?'}, DES ${d.des||'?'})`;
-    faroBox.style.color = 'var(--t2)';
-    faroBox.style.fontStyle = 'normal';
-  } catch(e) {}
-}
 
 function saveRuth() {
   try {
@@ -705,7 +666,6 @@ function loadRuth() {
 
 loadRuth();
 go();
-aggiornaFaro();
 </script>
 </body>
 </html>
