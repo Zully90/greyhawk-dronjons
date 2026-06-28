@@ -1212,6 +1212,9 @@ function orchestra(delta) {
   const a = Grimorio.get('artiglio');
   const sospiri = Math.max(0, (a.sospiri || 0) + delta);
   Grimorio.patch('artiglio', { sospiri });
+  // allinea la UI del roller del DM al nuovo stato condiviso (anche per cdCtx)
+  document.getElementById('inp-sospiri').value = sospiri;
+  updateFaro();
   aggiornaRisonanza();
 }
 

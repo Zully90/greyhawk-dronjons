@@ -37,6 +37,20 @@
   var listeners = [];
   var bc = null;
 
+  /* Permessi per scope: rende reale (non solo convenzionale) il muro asimmetrico.
+     L'Artiglio non può leggere lo slice 'ruth' nemmeno per errore di codice.
+     N.B. resta enforcement client-side: vedi README per i limiti con Firebase. */
+  var SCOPE_PERMS = {
+    artiglio: { read: ['artiglio'], write: ['artiglio'] },
+    ruth: { read: ['ruth'], write: ['ruth'] },
+    dm: { read: ['artiglio', 'ruth', 'meta'], write: ['artiglio', 'ruth', 'meta'] }
+  };
+  var myScope = 'dm';
+  function can(action, slice) {
+    var perms = SCOPE_PERMS[myScope] || SCOPE_PERMS.dm;
+    return perms[action].indexOf(slice) !== -1;
+  }
+
   function clone(o) { return JSON.parse(JSON.stringify(o)); }
   function num(v, d) { return (v === undefined || v === null || isNaN(+v)) ? d : +v; }
   function keyFor() { return STORAGE_KEY + ':' + SESSION; }
@@ -95,10 +109,11 @@
     }
   }
 
-  /* Cambi ESTERNI (altra tab / altro device): aggiorna e notifica i listener. */
+  /* Cambi ESTERNI (altra tab / altro device): aggiorna, PERSISTI e notifica. */
   function ingestExternal(incoming) {
     if (!incoming) return;
     mergeInto(state, incoming);
+    persistLocal(); // così un reload non torna a uno stato vecchio prima del prossimo snapshot
     notify();
   }
 
@@ -152,6 +167,7 @@
 
     init: function (opts) {
       opts = opts || {};
+      myScope = SCOPE_PERMS[opts.scope] ? opts.scope : 'dm';
       var hadUnified = loadLocal();
       if (!hadUnified) {
         if (migrateLegacy()) persistLocal();
@@ -180,13 +196,16 @@
       return Grimorio;
     },
 
-    get: function (slice) { return clone(state[slice]); },
+    get: function (slice) {
+      if (!can('read', slice) || !state[slice]) return null;
+      return clone(state[slice]);
+    },
 
     /* Scrive uno slice: persiste e propaga AGLI ALTRI (broadcast + firebase),
        ma NON richiama il listener locale — chi ha chiamato patch ha già
        aggiornato la propria UI. Questo evita ricorsione e ping-pong tra tab. */
     patch: function (slice, partial) {
-      if (!state[slice] || !partial) return;
+      if (!can('write', slice) || !state[slice] || !partial) return;
       for (var p in partial) { if (partial.hasOwnProperty(p)) state[slice][p] = partial[p]; }
       state.meta.updatedAt = Date.now();
       state.meta.writer = CLIENT; // marca la scrittura come nostra (per ignorarne l'eco)

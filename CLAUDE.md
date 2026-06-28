@@ -56,8 +56,8 @@ greyhawk-dronjons/
 └── assets/
     ├── core.js                     ← stato condiviso (window.Grimorio) + motore CD dinamico
     └── js/
-        ├── firebase-config.example.js  ← modello config Firebase (il reale è gitignorato)
-        └── firebase-config.js          ← (opzionale, non versionato) config del progetto
+        ├── firebase-config.example.js  ← modello config Firebase
+        └── firebase-config.js          ← config del progetto (VERSIONATA: chiavi web pubbliche)
 ```
 
 ---

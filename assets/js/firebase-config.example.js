@@ -1,11 +1,12 @@
-/* COPIA questo file in assets/js/firebase-config.js e inserisci i valori del
-   TUO progetto Firebase. Il file reale è gitignorato.
-   Poi, in ogni pagina (index.html, ruth.html, spawn.html), aggiungi questa
-   riga PRIMA di <script src="assets/core.js">:
+/* Modello di riferimento. In QUESTO repo il file reale assets/js/firebase-config.js
+   è già presente e VERSIONATO (le chiavi web Firebase sono pubbliche per definizione;
+   la sicurezza è data dalle regole Firestore + auth). Per un altro progetto, copia
+   qui i valori del tuo Firebase.
+   L'include è già nelle pagine, PRIMA di <script src="assets/core.js">:
 
        <script src="assets/js/firebase-config.js"></script>
 
-   Senza questo file/config, gli strumenti funzionano comunque in locale
+   Senza config, gli strumenti funzionano comunque in locale
    (localStorage + sincronizzazione tra tab dello stesso dispositivo). */
 window.FIREBASE_CONFIG = {
   apiKey: "AIza...",

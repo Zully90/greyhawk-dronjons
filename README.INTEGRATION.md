@@ -27,22 +27,26 @@ Dronjons vede cambiare il Faro senza sapere perché.
 
 ## Abilitare il sync multi-dispositivo (Firebase)
 
+In questo repo Firebase è **già configurato e attivo**: `assets/js/firebase-config.js`
+è **versionato** (la config web è pubblica per definizione, vedi nota sicurezza sotto)
+ed è già incluso nelle tre pagine prima di `core.js`. Per rifarlo da zero su un altro
+progetto:
+
 1. Crea un progetto su <https://console.firebase.google.com/> e abilita
-   **Firestore** e **Authentication → Sign-in anonimo**.
-2. Copia `assets/js/firebase-config.example.js` in
-   `assets/js/firebase-config.js` e inserisci i valori del progetto.
-   (Il file reale è gitignorato.)
-3. In `index.html`, `ruth.html`, `spawn.html` aggiungi questa riga **prima** di
+   **Firestore Database** (modalità produzione) e **Authentication → Sign-in anonimo**.
+2. Sostituisci i valori in `assets/js/firebase-config.js` con quelli del tuo progetto
+   (`assets/js/firebase-config.example.js` è il modello di riferimento).
+3. L'include è già presente in `index.html`, `ruth.html`, `spawn.html`, **prima** di
    `<script src="assets/core.js"></script>`:
 
    ```html
    <script src="assets/js/firebase-config.js"></script>
    ```
 
-4. Tutti i dispositivi che aprono le pagine con lo stesso parametro
-   `?session=ID` (default `dronjons`) condividono lo stato in tempo reale.
+4. Pubblica le regole (sotto). Tutti i dispositivi che aprono le pagine con lo stesso
+   parametro `?session=ID` (default `dronjons`) condividono lo stato in tempo reale.
 
-### Regole Firestore minime (per il tavolo)
+### Regole Firestore (per il tavolo)
 
 ```
 rules_version = '2';
@@ -55,11 +59,21 @@ service cloud.firestore {
 }
 ```
 
-> **Nota privacy:** con il documento condiviso la separazione Ruth↔Artiglio è
-> garantita a livello di interfaccia, non di dato — un giocatore esperto con i
-> devtools potrebbe leggere lo slice `ruth` dal documento. Per il tavolo è
-> accettabile (anti-spoiler). L'enforcement duro richiederebbe documenti
-> separati + regole dedicate: estensione futura.
+> ⚠️ **Sicurezza (leggere):** con la config versionata + auth **anonima** + questa
+> regola, *chiunque conosca il projectId* (pubblico nel codice) può di fatto
+> leggere/scrivere il documento della sessione. È **accettabile solo per uso privato
+> e a basso rischio** come un tavolo di gioco (al peggio: vandalismo dei dati di
+> sessione). Sul piano **Spark** non può generare costi (le quote bloccano, non
+> addebitano). Per blindare l'accesso ai soli vostri account servirebbe login
+> **Google** + una regola tipo `allow read, write: if request.auth.token.email in [...]`
+> (richiede una modifica al codice per fare il login Google invece dell'anonimo).
+
+> **Nota privacy:** il muro Ruth↔Artiglio è applicato a livello di **API** (lo scope
+> in `core.js` impedisce a `index.html` di leggere lo slice `ruth` via `get`), ma
+> **non a livello di dato**: il documento Firestore è condiviso, quindi un giocatore
+> esperto con i devtools potrebbe leggerlo comunque. Per il tavolo è accettabile
+> (anti-spoiler). L'enforcement duro richiederebbe documenti separati + regole
+> dedicate: estensione futura.
 
 ## Migrazione
 
