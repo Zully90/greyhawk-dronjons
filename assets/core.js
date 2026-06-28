@@ -22,11 +22,14 @@
     catch (e) { return 'dronjons'; }
   })();
 
+  // id univoco di questa scheda/dispositivo: distingue le nostre scritture da quelle altrui
+  var CLIENT = Math.random().toString(36).slice(2) + Date.now().toString(36);
+
   function defaults() {
     return {
       artiglio: { sospiri: 0, des: 4, livello: 5 },
       ruth: { grazie: 0, condanne: 0, cicatrici: 0, livello: 8, sag: 4, runaAttiva: 'grigia' },
-      meta: { updatedAt: 0, sessione: SESSION }
+      meta: { updatedAt: 0, sessione: SESSION, writer: '' }
     };
   }
 
@@ -186,6 +189,7 @@
       if (!state[slice] || !partial) return;
       for (var p in partial) { if (partial.hasOwnProperty(p)) state[slice][p] = partial[p]; }
       state.meta.updatedAt = Date.now();
+      state.meta.writer = CLIENT; // marca la scrittura come nostra (per ignorarne l'eco)
       persistLocal();
       if (bc) { try { bc.postMessage({ type: 'state', state: state }); } catch (e) {} }
       if (typeof Grimorio._pushFirebase === 'function') {
@@ -214,20 +218,19 @@
       var db = fs.getFirestore(app);
       try { fbAuth.signInAnonymously(fbAuth.getAuth(app)); } catch (e) {}
       var ref = fs.doc(db, 'sessions', session);
-      var lastPushed = 0;
 
       Grimorio._pushFirebase = function (s) {
-        lastPushed = s.meta.updatedAt;
         try { fs.setDoc(ref, { state: s }, { merge: true }); } catch (e) {}
       };
 
       fs.onSnapshot(ref, function (snap) {
         if (!snap.exists()) { Grimorio._pushFirebase(liveState); return; } // doc vuoto → seed con lo stato locale
         var data = snap.data();
-        if (data && data.state) {
-          var remoteTs = (data.state.meta && data.state.meta.updatedAt) || 0;
-          if (remoteTs !== lastPushed) ingest(data.state); // ignora l'eco delle nostre scritture; non sovrascrive un remoto più recente
-        }
+        if (!data || !data.state) return;
+        // ingerisci solo le scritture di ALTRI client; ignora l'eco delle nostre
+        // (anche intermedie ancora in volo) — niente gare sui timestamp.
+        if (data.state.meta && data.state.meta.writer === CLIENT) return;
+        ingest(data.state);
       });
     }).catch(function (e) {
       console.warn('Firebase non attivo, sync solo locale:', e);

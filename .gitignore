@@ -1,8 +1,8 @@
 # macOS
 .DS_Store
 
-# Firebase: config reale con le chiavi del progetto (usa il .example come modello)
-assets/js/firebase-config.js
+# Firebase: la config web è pubblica per definizione (protetta da regole + auth),
+# quindi è versionata — serve anche al sito su GitHub Pages.
 
 # Anteprima locale
 .claude/launch.json
