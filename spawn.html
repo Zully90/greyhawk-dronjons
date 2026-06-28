@@ -1205,7 +1205,7 @@ function buildFinalHTML(manif, grado, hazardEntry, hazardRoll, livelloPG) {
         <div class="hazard-block-title">
           <i class="ti ti-skull" aria-hidden="true"></i>
           HAZARD attivo
-          ${manif.hazardFisso === undefined ? `<span style="font-size:10px;color:var(--t3);">(d10 = ${hazardRoll})</span>` : ''}
+          ${manif.hazardFisso === undefined ? `<span style="font-size:10px;color:var(--t3);">(d${HAZARDS.length - 1} = ${hazardRoll})</span>` : ''}
           ${aonLink}
         </div>
         <div class="hazard-block-name">${hazardEntry.nome}</div>
