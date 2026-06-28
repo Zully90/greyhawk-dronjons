@@ -181,7 +181,7 @@ UI: rivelazione drammatica a tre step animati.
 | 3       | 12+         | 45%    |
 | 4       | 9+          | 60%    |
 | 5+      | 6+          | 75%    |
-| Overflow (> Mod. DES) | 4+, automatico su 1-3 | ~quasi certo |
+| Overflow (> Mod. DES) | 4+, automatico su 1-3 | 100% |
 
 > Soglie tarate "leggermente più frequenti" rispetto al design originale
 > (era 20/17/14/10/6). Valori in `getSoglia()` di spawn.html.
