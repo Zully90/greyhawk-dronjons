@@ -1,0 +1,8 @@
+# macOS
+.DS_Store
+
+# Firebase: la config web è pubblica per definizione (protetta da regole + auth),
+# quindi è versionata — serve anche al sito su GitHub Pages.
+
+# Anteprima locale
+.claude/launch.json

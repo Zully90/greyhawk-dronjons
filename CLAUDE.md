@@ -47,12 +47,53 @@ Soglia V   #888780   grigio leggendario
 
 ```
 greyhawk-dronjons/
-├── CLAUDE.md          ← questo file
-├── README.md          ← descrizione GitHub
-├── index.html         ← Artiglio tracker · Dronjons (COMPLETO)
-├── ruth.html          ← Arco di Ruth tracker · Rui Jin (COMPLETO)
-└── spawn.html         ← Sistema spawn spiriti · DM (COMPLETO)
+├── CLAUDE.md                       ← questo file
+├── README.md                       ← descrizione GitHub
+├── README.INTEGRATION.md           ← architettura stato condiviso + setup Firebase
+├── index.html                      ← Artiglio tracker · Dronjons (COMPLETO)
+├── ruth.html                       ← Arco di Ruth tracker · Rui Jin (COMPLETO)
+├── spawn.html                      ← Sistema spawn spiriti · DM (COMPLETO)
+└── assets/
+    ├── core.js                     ← stato condiviso (window.Grimorio) + motore CD dinamico
+    └── js/
+        ├── firebase-config.example.js  ← modello config Firebase
+        └── firebase-config.js          ← config del progetto (VERSIONATA: chiavi web pubbliche)
 ```
+
+---
+
+## Stato condiviso — `assets/core.js` (window.Grimorio)
+
+Le tre pagine condividono **un unico stato** tramite `core.js` (script classico, path
+relativi, niente `type=module` perché le pagine usano `onclick` inline). Vedi
+`README.INTEGRATION.md` per i dettagli.
+
+- **Chiave unica:** `greyhawk:v1:<sessione>` (sessione default `dronjons`, override `?session=ID`).
+- **Sync a cascata:** localStorage (persistenza) → BroadcastChannel + evento `storage`
+  (live tra tab dello stesso device) → Firebase Firestore (live cross-device, **opzionale**).
+- **Migrazione:** le vecchie chiavi separate `artiglio`/`ruth` vengono importate al primo avvio.
+- **API:** `Grimorio.get(slice)`, `Grimorio.patch(slice, partial)`, `Grimorio.faro()`,
+  `Grimorio.cd` (motore CD), `Grimorio.subscribe(cb)`.
+
+### Permessi asimmetrici (IMPORTANTE — sostituisce la vecchia regola privacy)
+
+| Pagina | Legge | Scrive |
+|--------|-------|--------|
+| `index.html` (Artiglio) | **solo** `artiglio` | `artiglio` |
+| `ruth.html` (Arco) | `ruth` + `Grimorio.faro()` (mostra il Faro) | `ruth` |
+| `spawn.html` (DM) | tutto | tutto (orchestratore) |
+
+Ruth **vede** il Faro dell'Artiglio; l'Artiglio non legge **mai** dati di Ruth.
+L'influenza Ruth→Artiglio passa dai pulsanti orchestratore in `spawn.html` che mutano
+i Sospiri dell'Artiglio (Dronjons vede cambiare il Faro senza sapere perché).
+
+### CD dinamiche
+
+Le difficoltà non sono più costanti: `Grimorio.cd` le calcola da **livello + stato
+dell'arma** (Faro per l'Artiglio, Bilancio/Cicatrici per Ruth). Nelle stringhe delle
+abilità si usano token `{{cdCatturaMorte}}`, `{{cdFaro}}`, `{{cdGuanto}}`, `{{cdProtesta}}`,
+`{{cdAncorare}}`, `{{cdInCondanna}}`, `{{cdLivello}}`, interpolati al render. Le CD `16/18/20`
+citate nelle sezioni qui sotto sono quindi **valori storici di riferimento**, non più fissi.
 
 ---
 
@@ -198,7 +239,7 @@ Se disturbato: tiro 2.
 - Box risultato finale: nome creatura, grado, suggerimento DM in corsivo
 - Bottone "Ritira" e link a index.html
 - Stile coerente con index.html
-- **Vista DM — Risonanza Armi** (pannello collassabile): legge localStorage `artiglio` e `ruth`, mostra stato Faro + Verdetti di Rui Jin + note di risonanza attive
+- **Vista DM — Risonanza Armi** (pannello collassabile): legge via `Grimorio` gli slice `artiglio` e `ruth`, mostra stato Faro + Verdetti di Rui Jin + note di risonanza attive. Include i **pulsanti orchestratore** che mutano i Sospiri dell'Artiglio (effetti di Rui Jin → Faro), unico canale dell'influenza Ruth→Artiglio.
 
 ---
 
@@ -286,9 +327,10 @@ Risorsa duale. Max totale = Livello + Mod. SAG. Max Grazie = Max totale − Cica
 | Rui Jin usa LIFE su creatura che Dronjons voleva catturare | Artiglio protesta: TS Volontà CD 16 o Dronjons Spaventato 1 |
 | Rui Jin usa Il Dono della Pietà | Faro sale 1 stato per 1 ora; spiriti nel raggio TS Volontà CD 18 o Terrorizzati 3 |
 
-### localStorage
-- Scrive: `ruth` → `{ grazie, condanne, cicatrici, livello, sag }`
-- Legge: nulla (nessun dato dell'Artiglio visibile al giocatore)
+### Stato (via `Grimorio`, vedi sezione "Stato condiviso")
+- Scrive: slice `ruth` → `{ grazie, condanne, cicatrici, livello, sag, runaAttiva }`
+- Legge: `ruth` + `Grimorio.faro()` — **mostra lo stato del Faro dell'Artiglio** (indicatore
+  live "L'Arco percepisce l'Artiglio"). Non legge i numeri grezzi dell'Artiglio.
 - spawn.html legge `ruth` per il pannello DM Risonanza
 
 ---
