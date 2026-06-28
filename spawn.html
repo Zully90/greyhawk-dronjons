@@ -1142,7 +1142,8 @@ function buildStep3HTML(d20, manif, hazardRoll, hazardEntry) {
 
   let hazardReveal = '';
   if (hazardEntry) {
-    const hazardLabel = manif.hazardFisso !== undefined ? `fisso` : `d10 = ${hazardRoll}`;
+    const hazardDie = HAZARDS.length - 1;
+    const hazardLabel = manif.hazardFisso !== undefined ? `fisso` : `d${hazardDie} = ${hazardRoll}`;
     hazardReveal = `
       <div style="margin-top:10px;padding:10px 12px;background:#1a0e06;border:0.5px solid #6a3010;border-radius:7px;font-size:13px;">
         <div style="color:#f08040;font-size:10px;letter-spacing:.15em;text-transform:uppercase;margin-bottom:4px;">
