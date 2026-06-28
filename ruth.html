@@ -276,6 +276,14 @@ footer {
   </div>
   <div id="risonanza-body" style="display:none;padding:12px 14px;">
 
+    <div id="ruth-faro" style="display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:var(--r-md);background:var(--bg2);border:.5px solid var(--border);margin-bottom:10px;">
+      <div id="ruth-faro-dot" style="width:11px;height:11px;border-radius:50%;flex-shrink:0;background:#6a6762;"></div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;">L'Arco percepisce l'Artiglio</div>
+        <div id="ruth-faro-lbl" style="font-size:13px;font-weight:500;color:var(--t2);">—</div>
+      </div>
+    </div>
+
     <div style="display:grid;gap:7px;">
       <div style="padding:8px 10px;border-radius:var(--r-md);background:var(--bg2);border:.5px solid var(--border);">
         <div style="font-size:12px;font-weight:500;color:var(--ruth-grazia);margin-bottom:2px;"><i class="ti ti-arrow-down" style="vertical-align:-2px;" aria-hidden="true"></i> Morte Pulita</div>
@@ -283,11 +291,11 @@ footer {
       </div>
       <div style="padding:8px 10px;border-radius:var(--r-md);background:var(--bg2);border:.5px solid var(--border);">
         <div style="font-size:12px;font-weight:500;color:var(--warn-fg);margin-bottom:2px;"><i class="ti ti-alert-circle" style="vertical-align:-2px;" aria-hidden="true"></i> Condanna Condivisa</div>
-        <div style="font-size:12px;color:var(--t2);line-height:1.5;">Rui Jin usa LIFE su una creatura che Dronjons stava per catturare → l'Artiglio protesta (TS Volontà CD 16 o Dronjons Spaventato 1). Le due armi si percepiscono a vicenda da Soglia III.</div>
+        <div style="font-size:12px;color:var(--t2);line-height:1.5;">Rui Jin usa LIFE su una creatura che Dronjons stava per catturare → l'Artiglio protesta (TS Volontà CD <span data-cd="protesta">—</span> o Dronjons Spaventato 1). Le due armi si percepiscono a vicenda da Soglia III.</div>
       </div>
       <div style="padding:8px 10px;border-radius:var(--r-md);background:var(--bg2);border:.5px solid var(--border);">
         <div style="font-size:12px;font-weight:500;color:var(--ruth-condanna);margin-bottom:2px;"><i class="ti ti-arrow-up" style="vertical-align:-2px;" aria-hidden="true"></i> Sacrificio e Faro</div>
-        <div style="font-size:12px;color:var(--t2);line-height:1.5;">Rui Jin usa Il Dono della Pietà → il Faro sale di 1 stato per 1 ora (evento planare). Gli spiriti nel raggio devono TS Volontà CD 18 o Terrorizzati 3 (la morte volontaria li spaventa).</div>
+        <div style="font-size:12px;color:var(--t2);line-height:1.5;">Rui Jin usa Il Dono della Pietà → il Faro sale di 1 stato per 1 ora (evento planare). Gli spiriti nel raggio devono TS Volontà CD <span data-cd="protesta">—</span> o Terrorizzati 3 (la morte volontaria li spaventa).</div>
       </div>
     </div>
 
@@ -358,10 +366,12 @@ footer {
 <footer>Campagna Greyhawk di Marcello · Rui Jin · PF2e</footer>
 </div>
 
+<script src="assets/core.js"></script>
 <script>
 let grazie = 0;
 let condanne = 0;
 let runaAttiva = 'grigia'; // 'grigia' | 'blu' | 'rossa'
+let applyingExternal = false; // sopprime il salvataggio durante un sync esterno
 
 const RUNA_DATA = [
   { minLv:3,  maxLv:4,  att:'+1', dadi:'1d6',
@@ -383,7 +393,7 @@ const RUNA_DATA = [
   { minLv:17, maxLv:20, att:'+3', dadi:'4d6',
     grigia:{txt:'4d6 + Mod. SAG + 2d6 Vuoto',col:'#6a6762',bg:'#1c1a17'},
     blu:{txt:'Grievous · non-letale · Crit Spec · +2d6 Vuoto non-letale · Ancora Anima automatica (niente Cicatrice)',col:'#7ab8f0',bg:'#0a1f36'},
-    rossa:{txt:'5d6 + 2d6 Vuoto letale · TS Volontà CD 20 o bersaglio Terrorizzato 3',col:'#c04040',bg:'#2a0f0f'} },
+    rossa:{txt:'5d6 + 2d6 Vuoto letale · TS Volontà CD {{cdLivello}} o bersaglio Terrorizzato 3',col:'#c04040',bg:'#2a0f0f'} },
 ];
 
 const DATA = [
@@ -417,7 +427,7 @@ const DATA = [
      t:'La freccia viaggia attraverso il piano etereo per un singolo attacco: ignora copertura totale, pareti non magiche, e l\'immunità all\'Incorporeità.'},
     {n:'Ancorare l\'Anima',tag:'Reazione',ico:'ti-anchor',cost:'1 Grazia + 1 Cicatrice',
      trigger:'Un alleato fallisce il TS Recupero (0 PF, sta morendo)',
-     t:'L\'anima dell\'alleato viene ancorata per 1 minuto — rimane a 0 PF ma non muore. Trascorso il minuto: TS Tempra CD 18 o morte definitiva. Ogni uso lascia una Cicatrice permanente sull\'arco.'},
+     t:'L\'anima dell\'alleato viene ancorata per 1 minuto — rimane a 0 PF ma non muore. Trascorso il minuto: TS Tempra CD {{cdAncorare}} o morte definitiva. Ogni uso lascia una Cicatrice permanente sull\'arco.'},
     {n:'Interrogare il Confine',tag:'1 minuto',ico:'ti-message-question',cost:'1 Verdetto',
      t:'Pone una domanda a Wee Jas tramite l\'arco. Risponde se la domanda riguarda morte, transizione anime, o la sorte di un\'anima specifica. Risposta vera ma obliqua — la Signora non mente, ma non semplifica.'},
    ],
@@ -437,7 +447,7 @@ const DATA = [
    cap:'Max Verdetti: Livello + Mod. SAG',
    ab:[
     {n:'Giudizio Finale',tag:'3 Azioni',ico:'ti-scale',cost:'Tutti i Verdetti (min 5) · 1/giorno',
-     t:'Spende tutti i Verdetti. Per ogni Grazia: un alleato a 0 PF si stabilizza e guadagna 10 PF temporanei. Per ogni Condanna: ogni non-morto/spirito entro 30p subisce danno Vuoto pari al Livello PG (TS Tempra CD 20 per dimezzare). Dopo l\'uso l\'arco è Silente per 24h.'},
+     t:'Spende tutti i Verdetti. Per ogni Grazia: un alleato a 0 PF si stabilizza e guadagna 10 PF temporanei. Per ogni Condanna: ogni non-morto/spirito entro 30p subisce danno Vuoto pari al Livello PG (TS Tempra CD {{cdLivello}} per dimezzare). Dopo l\'uso l\'arco è Silente per 24h.'},
     {n:'La Memoria del Duskwalker',tag:'Passiva',ico:'ti-brain',
      t:'Rui Jin ricorda la morte di ogni creatura che ha giudicato. Può invocare un ricordo una volta per sessione per ottenere 1 informazione che quella creatura conosceva.'},
     {n:'Dissoluzione Pietosa',tag:'Azione',ico:'ti-sparkles',cost:'1 Grazia',
@@ -515,7 +525,7 @@ function buildRuna(l) {
   effetti.style.background = stato.col + '18';
   effetti.style.color = runaAttiva === 'grigia' ? 'var(--t3)' : stato.col;
   effetti.style.border = `0.5px solid ${stato.col}40`;
-  effetti.textContent = stato.txt;
+  effetti.textContent = Grimorio.cd.interpola(stato.txt, { livello: l });
 
   const btn = document.getElementById('runa-spenta-btn');
   btn.style.display = runaAttiva !== 'grigia' ? 'inline-block' : 'none';
@@ -665,6 +675,8 @@ function go() {
 function buildSoglie(l) {
   const sl = document.getElementById('slist');
   sl.innerHTML = '';
+  const ctx = { livello: l, faro: Grimorio.faroIdx(), sbil: Math.abs(grazie - condanne), cic: +document.getElementById('cic').value || 0 };
+  const cd = (txt) => Grimorio.cd.interpola(txt, ctx);
   DATA.forEach((s, idx) => {
     const unlocked = l >= s.minLv;
     const card = document.createElement('div');
@@ -692,8 +704,8 @@ function buildSoglie(l) {
             <span class="atag">${a.tag}</span>
             ${a.cost?`<span style="font-size:11px;padding:1px 6px;border-radius:4px;background:${s.col}20;color:${s.col};">${a.cost}</span>`:''}
           </div>
-          ${a.trigger?`<div style="font-size:12px;color:var(--t3);margin-top:3px;font-style:italic;line-height:1.4;">Trigger: ${a.trigger}</div>`:''}
-          <div style="font-size:13px;color:var(--t2);margin-top:3px;line-height:1.55;">${a.t}</div>
+          ${a.trigger?`<div style="font-size:12px;color:var(--t3);margin-top:3px;font-style:italic;line-height:1.4;">Trigger: ${cd(a.trigger)}</div>`:''}
+          <div style="font-size:13px;color:var(--t2);margin-top:3px;line-height:1.55;">${cd(a.t)}</div>
         </div>`;
       });
       s.dr.forEach(d => {
@@ -701,7 +713,7 @@ function buildSoglie(l) {
           <div style="font-size:13px;font-weight:500;color:var(--warn-fg);display:flex;align-items:center;gap:5px;">
             <i class="ti ti-alert-triangle" style="font-size:13px;" aria-hidden="true"></i>${d.n}
           </div>
-          <div style="font-size:13px;color:var(--t2);margin-top:2px;line-height:1.45;">${d.t}</div>
+          <div style="font-size:13px;color:var(--t2);margin-top:2px;line-height:1.45;">${cd(d.t)}</div>
         </div>`;
       });
       body.innerHTML = html;
@@ -734,34 +746,45 @@ function tog(bodyId, chevId) {
 
 
 function saveRuth() {
-  try {
-    localStorage.setItem('ruth', JSON.stringify({
-      grazie,
-      condanne,
-      runaAttiva,
-      cicatrici: +document.getElementById('cic').value || 0,
-      livello: +document.getElementById('lvl').value || 1,
-      sag: +document.getElementById('sag').value || 1,
-    }));
-  } catch(e) {}
+  if (applyingExternal) return;
+  Grimorio.patch('ruth', {
+    grazie,
+    condanne,
+    runaAttiva,
+    cicatrici: +document.getElementById('cic').value || 0,
+    livello: +document.getElementById('lvl').value || 1,
+    sag: +document.getElementById('sag').value || 1,
+  });
 }
 
-function loadRuth() {
-  try {
-    const s = localStorage.getItem('ruth');
-    if (!s) return;
-    const d = JSON.parse(s);
-    if (d.grazie     !== undefined) grazie     = d.grazie;
-    if (d.condanne   !== undefined) condanne   = d.condanne;
-    if (d.runaAttiva !== undefined) runaAttiva = d.runaAttiva;
-    if (d.cicatrici  !== undefined) document.getElementById('cic').value = d.cicatrici;
-    if (d.livello    !== undefined) document.getElementById('lvl').value = d.livello;
-    if (d.sag        !== undefined) document.getElementById('sag').value = d.sag;
-  } catch(e) {}
+function updateFaroLive() {
+  const f = Grimorio.faro();          // unica finestra di Ruth sull'Artiglio
+  document.getElementById('ruth-faro-dot').style.background = f.col;
+  const lbl = document.getElementById('ruth-faro-lbl');
+  lbl.textContent = f.lbl;
+  lbl.style.color = f.col;
+  // CD di risonanza: scalano col Faro dell'Artiglio
+  document.querySelectorAll('[data-cd="protesta"]').forEach(el => {
+    el.textContent = Grimorio.cd.protesta(f.idx);
+  });
 }
 
-loadRuth();
-go();
+function syncFromStore() {
+  const d = Grimorio.get('ruth');
+  applyingExternal = true;
+  grazie     = d.grazie;
+  condanne   = d.condanne;
+  if (d.runaAttiva !== undefined) runaAttiva = d.runaAttiva;
+  document.getElementById('cic').value = d.cicatrici;
+  document.getElementById('lvl').value = d.livello;
+  document.getElementById('sag').value = d.sag;
+  go();                 // render; saveRuth() interno è soppresso dal guard
+  applyingExternal = false;
+  updateFaroLive();     // riflette lo stato del Faro dell'Artiglio dal vivo
+}
+
+Grimorio.init({ scope:'ruth', onChange: syncFromStore });
+syncFromStore();
 </script>
 </body>
 </html>

@@ -523,6 +523,15 @@ button:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
         </div>
       </div>
       <div id="dm-risonanza-note" style="font-size:12px;color:var(--t3);line-height:1.5;font-style:italic;"></div>
+
+      <div style="margin-top:11px;padding-top:10px;border-top:.5px solid var(--border);">
+        <div style="font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">Orchestratore — Rui Jin agisce sull'Artiglio</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <button onclick="orchestra(-1)" style="font-size:12px;">Morte Pulita −1 Sospiro</button>
+          <button onclick="orchestra(1)" style="font-size:12px;">Dono della Pietà +1 (picco)</button>
+        </div>
+        <div style="font-size:11px;color:var(--t3);margin-top:6px;font-style:italic;">Muta i Sospiri di Dronjons in tempo reale. Lui vede cambiare il Faro — non sa perché.</div>
+      </div>
     </div>
   </div>
 
@@ -539,6 +548,7 @@ button:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
 
 </div>
 
+<script src="assets/core.js"></script>
 <script>
 // ── Data tables ────────────────────────────────────────────────────────────
 
@@ -779,7 +789,7 @@ const MANIFESTAZIONI = [
   {
     d20: 19, nome: "Il Gregge si rivolta", hazard: false,
     desc: "Qualcosa si muove dentro l'Artiglio — un Sospiro prigioniero spinge per uscire, disperato.",
-    hint: "CD 18 Volontà per Dronjons. Fallimento: Grabbed + perde 1 Sospiro. Nessuna creatura esterna.",
+    hint: "CD {{cdFaro}} Volontà per Dronjons. Fallimento: Grabbed + perde 1 Sospiro. Nessuna creatura esterna.",
     creature: [],
     reskin: null,
     ambientale: "Dronjons sente le voci diventare più forti — non da fuori, da dentro. Il guanto pulsa contro il palmo come un secondo cuore fuori ritmo."
@@ -808,8 +818,8 @@ const HAZARDS = [
   { d6: 1, nome: "Freddo spettrale",          desc: "−2 a tutte le prove fisiche per 1 ora", aonUrl: null },
   { d6: 2, nome: "Oggetti in volo",            desc: "1d4 oggetti/round su bersagli casuali (1d6 danni contundenti)", aonUrl: `${AON}/Monsters.aspx?ID=330` },
   { d6: 3, nome: "Zona di Morte",              desc: "Nessun recupero PF né magie curative per 3 round", aonUrl: null },
-  { d6: 4, nome: "Sussurri Amplificati",       desc: "Tutti Spaventati 1 — TS Volontà CD 16 per resistere", aonUrl: null },
-  { d6: 5, nome: "Possessione tentata",        desc: "Bersaglio casuale nel gruppo, TS Volontà CD 18", aonUrl: `${AON}/Search.aspx?q=possession` },
+  { d6: 4, nome: "Sussurri Amplificati",       desc: "Tutti Spaventati 1 — TS Volontà CD {{cdFaro}} per resistere", aonUrl: null },
+  { d6: 5, nome: "Possessione tentata",        desc: "Bersaglio casuale nel gruppo, TS Volontà CD {{cdGuanto}}", aonUrl: `${AON}/Search.aspx?q=possession` },
   { d6: 6, nome: "Artiglio in cortocircuito", desc: "Dronjons usa Mietere il Tormento sul primo alleato che subisce danni quel round", aonUrl: null },
 ];
 
@@ -860,9 +870,8 @@ function creatureConsigliate(manif, grado, livelloPG) {
 
 function loadFromStorage() {
   try {
-    const s = localStorage.getItem('artiglio');
-    if (!s) return;
-    const d = JSON.parse(s);
+    const d = Grimorio.get('artiglio');
+    if (!d) return;
     if (d.sospiri !== undefined) document.getElementById('inp-sospiri').value = d.sospiri;
     if (d.des     !== undefined) document.getElementById('inp-des').value     = d.des;
     if (d.livello !== undefined) document.getElementById('inp-lv').value      = d.livello;
@@ -1028,7 +1037,7 @@ function buildStep3HTML(d20, manif, hazardRoll, hazardEntry) {
           <i class="ti ti-dice" style="font-size:11px;" aria-hidden="true"></i> Hazard (${hazardLabel})
         </div>
         <strong style="color:var(--t1);">${hazardEntry.nome}</strong>
-        <span style="color:var(--t3);margin-left:6px;">— ${hazardEntry.desc}</span>
+        <span style="color:var(--t3);margin-left:6px;">— ${interpCD(hazardEntry.desc)}</span>
       </div>`;
   }
 
@@ -1088,7 +1097,7 @@ function buildFinalHTML(manif, grado, hazardEntry, hazardRoll, livelloPG) {
           ${aonLink}
         </div>
         <div class="hazard-block-name">${hazardEntry.nome}</div>
-        <div class="hazard-block-desc">${hazardEntry.desc}</div>
+        <div class="hazard-block-desc">${interpCD(hazardEntry.desc)}</div>
       </div>`;
   })() : '';
 
@@ -1124,7 +1133,7 @@ function buildFinalHTML(manif, grado, hazardEntry, hazardRoll, livelloPG) {
       ${hazardBlock}
       <div class="result-hint">
         <i class="ti ti-shield-half-filled" style="font-size:12px;vertical-align:middle;margin-right:5px;" aria-hidden="true"></i>
-        <strong style="color:var(--t2);font-style:normal;">DM:</strong> ${manif.hint}
+        <strong style="color:var(--t2);font-style:normal;">DM:</strong> ${interpCD(manif.hint)}
       </div>
     </div>`;
 }
@@ -1186,10 +1195,29 @@ function togDM() {
   if (!open) aggiornaRisonanza();
 }
 
+/* Contesto CD per le tabelle del DM: livello PG dell'input + Faro dai Sospiri del tiro. */
+function cdCtx() {
+  return {
+    livello: +document.getElementById('inp-lv').value || 1,
+    faro: Grimorio.cd.faroIdx(+document.getElementById('inp-sospiri').value || 0)
+  };
+}
+function interpCD(t) { return Grimorio.cd.interpola(t, cdCtx()); }
+
+/* Orchestratore: applica un effetto di Rui Jin mutando i SOSPIRI dell'Artiglio.
+   index.html (Dronjons) legge solo il proprio slice → vede il Faro cambiare
+   senza mai accedere ai dati di Ruth. */
+function orchestra(delta) {
+  const a = Grimorio.get('artiglio');
+  const sospiri = Math.max(0, (a.sospiri || 0) + delta);
+  Grimorio.patch('artiglio', { sospiri });
+  aggiornaRisonanza();
+}
+
 function aggiornaRisonanza() {
   try {
-    const artiglio = JSON.parse(localStorage.getItem('artiglio') || 'null');
-    const ruth     = JSON.parse(localStorage.getItem('ruth')     || 'null');
+    const artiglio = Grimorio.get('artiglio');
+    const ruth     = Grimorio.get('ruth');
 
     const faroEl    = document.getElementById('dm-faro');
     const sospiriEl = document.getElementById('dm-sospiri');
@@ -1232,8 +1260,10 @@ function aggiornaRisonanza() {
   } catch(e) {}
 }
 
+Grimorio.init({ scope:'dm', onChange: aggiornaRisonanza });
 loadFromStorage();
 updateFaro();
+aggiornaRisonanza();
 
 document.getElementById('inp-sospiri').addEventListener('input', updateFaro);
 document.getElementById('inp-des').addEventListener('input', updateFaro);

@@ -1,0 +1,8 @@
+# macOS
+.DS_Store
+
+# Firebase: config reale con le chiavi del progetto (usa il .example come modello)
+assets/js/firebase-config.js
+
+# Anteprima locale
+.claude/launch.json

@@ -169,11 +169,11 @@ footer {
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
     <div>
       <label style="font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px;">Livello PG</label>
-      <input type="number" id="lvl" min="1" max="20" value="5" oninput="go()">
+      <input type="number" id="lvl" min="1" max="20" value="5" oninput="save()">
     </div>
     <div>
       <label style="font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px;">Mod. DES</label>
-      <input type="number" id="des" min="1" max="6" value="4" oninput="go()">
+      <input type="number" id="des" min="1" max="6" value="4" oninput="save()">
     </div>
   </div>
   <div style="border-top:.5px solid var(--border);padding-top:11px;">
@@ -221,7 +221,7 @@ footer {
           <span style="font-size:11px;padding:1px 6px;border-radius:4px;background:#378ADD20;color:#378ADD;margin-left:auto;">Reazione</span>
         </div>
         <div style="font-size:12px;color:var(--t3);margin-bottom:4px;font-style:italic;">Trigger: creatura ridotta a 0 PF</div>
-        <div style="font-size:13px;color:var(--t2);line-height:1.5;">Prova Furtività o Occultismo vs CD Tempra della creatura. La più comune — ma la preda è già morta. <em>Interrogare il Catturato</em> raccoglie solo l'eco residua: ricordi frammentati, niente segreti sepolti in profondità.</div>
+        <div style="font-size:13px;color:var(--t2);line-height:1.5;">Prova Furtività o Occultismo vs CD <span data-cd="catturaMorte">—</span> (Tempra della creatura). La più comune — ma la preda è già morta. <em>Interrogare il Catturato</em> raccoglie solo l'eco residua: ricordi frammentati, niente segreti sepolti in profondità.</div>
       </div>
 
       <div style="padding:10px 12px;border-radius:var(--border-radius-md);border:.5px solid var(--border);background:var(--bg2);">
@@ -231,7 +231,7 @@ footer {
           <span style="font-size:11px;padding:1px 6px;border-radius:4px;background:#1D9E7520;color:#1D9E75;margin-left:auto;">Azione</span>
         </div>
         <div style="font-size:12px;color:var(--t3);margin-bottom:4px;font-style:italic;">Trigger: creatura viva con PF pari o inferiori a metà del suo massimo</div>
-        <div style="font-size:13px;color:var(--t2);line-height:1.5;">Prova Furtività o Occultismo vs CD Tempra +4. Più difficile — la preda si difende. Ma lo spirito rimane integro: <em>Interrogare il Catturato</em> ha accesso a ricordi completi, segreti, nomi, luoghi. Ideale per fantasmi che sanno qualcosa di utile.</div>
+        <div style="font-size:13px;color:var(--t2);line-height:1.5;">Prova Furtività o Occultismo vs CD <span data-cd="catturaAttiva">—</span> (Tempra della creatura +4). Più difficile — la preda si difende. Ma lo spirito rimane integro: <em>Interrogare il Catturato</em> ha accesso a ricordi completi, segreti, nomi, luoghi. Ideale per fantasmi che sanno qualcosa di utile.</div>
       </div>
 
       <div style="padding:10px 12px;border-radius:var(--border-radius-md);border:.5px solid var(--border);background:var(--bg2);">
@@ -266,6 +266,7 @@ footer {
 
 </div>
 
+<script src="assets/core.js"></script>
 <script>
 let sN=0;
 const DATA=[
@@ -276,7 +277,7 @@ const DATA=[
      t:'Percepisce la direzione di entità Spirit/Undead/Demone entro 60 piedi. Direzione, non distanza né numero.'},
     {n:'Mietere il Tormento',tag:'Reazione',ico:'ti-bolt',
      trigger:'Creatura Spirit/Demone/Undead entro 30p ridotta a 0 PF, o tenta di manifestarsi attraverso il Marchio di Rui Jin.',
-     t:'Furtività o Occultismo vs CD Tempra. ✓✓ 2 Sospiri. ✓ 1 Sospiro. ✗ Spirito proiettato 30p casuale. ✗✗ Artiglio Grabbed 1 round.'},
+     t:'Furtività o Occultismo vs CD {{cdCatturaMorte}}. ✓✓ 2 Sospiri. ✓ 1 Sospiro. ✗ Spirito proiettato 30p casuale. ✗✗ Artiglio Grabbed 1 round.'},
     {n:'Impeto Predatorio',tag:'Azione',ico:'ti-flame',cost:'1 Sospiro',
      t:'+2 status ad Attacco e Danni per 1 minuto. I danni diventano Mentale o Vuoto (scelta di Dronjons).'},
    ],
@@ -292,7 +293,7 @@ const DATA=[
     {n:'Interrogare il Catturato',tag:'1 minuto',ico:'ti-message-question',cost:'1 Sospiro',
      t:'Una domanda a uno spirito consumato. DM risponde onestamente in max una frase — ciò che lo spirito sapeva alla morte. Non funziona su spiriti privi di linguaggio.'},
    ],
-   dr:[{n:'Corruzione Fisica',t:'Fine Riposo Lungo con Artiglio al massimo: CD 16 Tempra o Drained 1, permanente finché non si liberano almeno metà dei Sospiri.'}]
+   dr:[{n:'Corruzione Fisica',t:'Fine Riposo Lungo con Artiglio al massimo: CD {{cdFaro}} Tempra o Drained 1, permanente finché non si liberano almeno metà dei Sospiri.'}]
   },
   {id:3,name:'III — Il Collezionista',lv:'Livello 9–12',minLv:9,col:'#BA7517',
    cap:'Max Sospiri: Mod. DES + Livello÷2 (↓)',
@@ -300,11 +301,11 @@ const DATA=[
     {n:'Liberare il Gregge',tag:'2 Azioni',ico:'ti-wind',cost:'Tutti (min 3)',
      t:'Esplosione spettrale 20 piedi: 2d6 Vuoto per ogni Sospiro rilasciato (Tempra base, dimezzato al successo). Creature Spirit/Undead: Volontà o Terrorizzate 3.'},
     {n:'L\'Artiglio Sceglie',tag:'Passiva',ico:'ti-hand-stop',
-     t:'L\'Artiglio può rifiutare di catturare spiriti specifici, o tentare di catturarne di non bersagliati. CD 14 Volontà per resistere all\'impulso.'},
+     t:'L\'Artiglio può rifiutare di catturare spiriti specifici, o tentare di catturarne di non bersagliati. CD {{cdProtesta}} Volontà per resistere all\'impulso.'},
    ],
    dr:[
     {n:'Il Faro si Manifesta',t:'Gli effetti del Faro diventano attivi anche tra le sessioni. I cacciatori di Reliquie possono tracciare il gruppo da una sessione all\'altra.'},
-    {n:'Il Gregge Parla',t:'Dopo un Riposo Lungo con spiriti: CD 14 Volontà o Disorientato 1 fino al primo incontro.'}
+    {n:'Il Gregge Parla',t:'Dopo un Riposo Lungo con spiriti: CD {{cdFaro}} Volontà o Disorientato 1 fino al primo incontro.'}
    ]
   },
   {id:4,name:'IV — L\'Eredità',lv:'Livello 13–16',minLv:13,col:'#D85A30',
@@ -315,9 +316,9 @@ const DATA=[
     {n:'Patto con il Gregge',tag:'3 Azioni',ico:'ti-users',cost:'4+ Sospiri',
      t:'Per 1 minuto: ogni 2 Sospiri crea 1 Spirito Gregge (come Shadow senza drenaggio FOR; PF = 10 + Livello). Svaniscono allo scadere del tempo o se distrutti.'},
     {n:'Il Guanto Sussurra',tag:'Passiva',ico:'ti-ear',
-     t:'Entità planari di livello < 10: CD 18 Volontà o Intimidite dall\'Artiglio. I Non-Morti intelligenti lo conoscono — e lo temono.'},
+     t:'Entità planari di livello < 10: CD {{cdGuanto}} Volontà o Intimidite dall\'Artiglio. I Non-Morti intelligenti lo conoscono — e lo temono.'},
    ],
-   dr:[{n:'L\'Identità si Stempera',t:'Dopo scontri con Forma Predatore o Patto Gregge: CD 18 Volontà. Fallimento: tratto di personalità di un Sospiro per 24 ore (DM sceglie quale).'}]
+   dr:[{n:'L\'Identità si Stempera',t:'Dopo scontri con Forma Predatore o Patto Gregge: CD {{cdFaro}} Volontà. Fallimento: tratto di personalità di un Sospiro per 24 ore (DM sceglie quale).'}]
   },
   {id:5,name:'V — Il Collezionista Completo',lv:'Livello 17+',minLv:17,col:'#888780',
    cap:'Max Sospiri: illimitata — oltre Mod. DES il Faro si attiva automaticamente',
@@ -350,7 +351,7 @@ function cS(delta){
   const mx=maxS();
   const cap=mx===Infinity?Math.max(sN+20,20):mx;
   sN=Math.max(0,Math.min(cap,sN+delta));
-  go();
+  save();
 }
 function go(){
   const l=+document.getElementById('lvl').value||1;
@@ -406,17 +407,36 @@ function go(){
     }
   });
   buildSoglie(l);
-  try {
-    localStorage.setItem('artiglio', JSON.stringify({
-      sospiri: sN,
-      des: +document.getElementById('des').value || 1,
-      livello: l,
-    }));
-  } catch(e) {}
+  updateStaticCD(l);
+}
+function updateStaticCD(l){
+  const f=Grimorio.faroIdx();
+  document.querySelectorAll('[data-cd]').forEach(el=>{
+    const k=el.getAttribute('data-cd');
+    if(k==='catturaMorte')  el.textContent=Grimorio.cd.catturaMorte(l,f);
+    if(k==='catturaAttiva') el.textContent=Grimorio.cd.catturaAttiva(l,f);
+  });
+}
+function save(){
+  Grimorio.patch('artiglio', {
+    sospiri: sN,
+    des: +document.getElementById('des').value || 1,
+    livello: +document.getElementById('lvl').value || 1,
+  });
+  go();
+}
+function syncFromStore(){
+  const a = Grimorio.get('artiglio');
+  sN = a.sospiri;
+  document.getElementById('des').value = a.des;
+  document.getElementById('lvl').value = a.livello;
+  go();
 }
 function buildSoglie(l){
   const sl=document.getElementById('slist');
   sl.innerHTML='';
+  const ctx={livello:l, faro:Grimorio.faroIdx()};
+  const cd=(txt)=>Grimorio.cd.interpola(txt, ctx);
   DATA.forEach((s,idx)=>{
     const unlocked=l>=s.minLv;
     const card=document.createElement('div');
@@ -444,8 +464,8 @@ function buildSoglie(l){
             <span class="atag">${a.tag}</span>
             ${a.cost?`<span style="font-size:11px;padding:1px 6px;border-radius:4px;background:${s.col}20;color:${s.col};">${a.cost}</span>`:''}
           </div>
-          ${a.trigger?`<div style="font-size:12px;color:var(--t3);margin-top:3px;font-style:italic;line-height:1.4;">Trigger: ${a.trigger}</div>`:''}
-          <div style="font-size:13px;color:var(--t2);margin-top:3px;line-height:1.55;">${a.t}</div>
+          ${a.trigger?`<div style="font-size:12px;color:var(--t3);margin-top:3px;font-style:italic;line-height:1.4;">Trigger: ${cd(a.trigger)}</div>`:''}
+          <div style="font-size:13px;color:var(--t2);margin-top:3px;line-height:1.55;">${cd(a.t)}</div>
         </div>`;
       });
       s.dr.forEach(d=>{
@@ -453,7 +473,7 @@ function buildSoglie(l){
           <div style="font-size:13px;font-weight:500;color:var(--warn-fg);display:flex;align-items:center;gap:5px;">
             <i class="ti ti-alert-triangle" style="font-size:13px;" aria-hidden="true"></i>${d.n}
           </div>
-          <div style="font-size:13px;color:var(--t2);margin-top:2px;line-height:1.45;">${d.t}</div>
+          <div style="font-size:13px;color:var(--t2);margin-top:2px;line-height:1.45;">${cd(d.t)}</div>
         </div>`;
       });
       body.innerHTML=html;
@@ -475,18 +495,8 @@ function buildSoglie(l){
     if(open){const ch=document.getElementById('chev'+s.id);if(ch)ch.style.transform='rotate(180deg)';}
   });
 }
-function loadArtiglio() {
-  try {
-    const s = localStorage.getItem('artiglio');
-    if (!s) return;
-    const d = JSON.parse(s);
-    if (d.sospiri !== undefined) sN = d.sospiri;
-    if (d.des     !== undefined) document.getElementById('des').value = d.des;
-    if (d.livello !== undefined) document.getElementById('lvl').value = d.livello;
-  } catch(e) {}
-}
-loadArtiglio();
-go();
+Grimorio.init({ scope:'artiglio', onChange: syncFromStore });
+syncFromStore();
 </script>
 </body>
 </html>
