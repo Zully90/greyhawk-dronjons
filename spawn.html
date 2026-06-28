@@ -546,6 +546,15 @@ button:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
     </button>
   </div>
 
+  <!-- Ricordi & Preveggenze: pesca a richiesta del DM -->
+  <div style="margin-top:18px;padding-top:14px;border-top:.5px solid var(--border);">
+    <button onclick="estraiRicordoStandalone()" style="width:100%;padding:9px;font-size:12px;letter-spacing:.04em;border-radius:8px;">
+      <i class="ti ti-eye-bolt" style="vertical-align:middle;margin-right:6px;" aria-hidden="true"></i>
+      Estrai un Ricordo / Preveggenza
+    </button>
+    <div id="ricordo-standalone"></div>
+  </div>
+
 </div>
 
 <script src="assets/js/firebase-config.js"></script>
@@ -616,7 +625,11 @@ const MANIFESTAZIONI = [
     desc: "Un frammento confuso di coscienza si materializza, si guarda attorno e si dissolve se ignorato.",
     hint: "Se i PG non interagiscono, sparisce. Se attaccato, combatte brevemente poi svanisce.",
     creature: POOL.spettro,
-    reskin: "Un frammento di Sospiro fuggito dall'Artiglio — troppo piccolo per essere catturato, troppo confuso per essere pericoloso.",
+    reskin: [
+      "Un frammento di Sospiro fuggito dall'Artiglio — troppo piccolo per essere catturato, troppo confuso per essere pericoloso.",
+      "L'ultimo pensiero di un pellegrino morto sulla strada per il Libero Comune: cercava una città che, per lui, non è mai arrivata.",
+      "Una scintilla baklunish persa nel Cataclismo: ripete in una lingua morta il nome di un'oasi che non esiste più."
+    ],
     ambientale: "Una luce pallida rimbalza tra le superfici senza provenire da nessuna direzione precisa. Fa freddo dove non dovrebbe."
   },
   {
@@ -632,7 +645,11 @@ const MANIFESTAZIONI = [
     desc: "Una singola ombra strappata dal suo portatore emerge dall'oscurità, affamata di forza vitale.",
     hint: "Incontro singolo. Scala il tipo di non-morto al livello del gruppo.",
     creature: POOL.ombra,
-    reskin: "L'ombra di un soldato keolandese caduto — il suo nome era inciso su uno scudo, ma il metallo è arrugginito e il nome illeggibile.",
+    reskin: [
+      "L'ombra di un soldato keolandese caduto — il suo nome era inciso su uno scudo, ma il metallo è arrugginito e il nome illeggibile.",
+      "L'ombra di un disertore delle Guerre di Greyhawk: fugge ancora da un nemico che non c'è più.",
+      "L'ombra di un minatore dei Cairn Hills, sepolto vivo in un cunicolo che dava su qualcosa di più antico della pietra."
+    ],
     ambientale: "Le ombre di tutti i presenti si muovono un mezzo passo in ritardo. Non succede mai quando si guarda direttamente — solo fuori angolo."
   },
   {
@@ -648,7 +665,11 @@ const MANIFESTAZIONI = [
     desc: "Due ombre emergono in sincronia — a quanto pare legate in vita, indissolubili anche nella morte.",
     hint: "Due creature identiche. Scala il tipo al livello del gruppo — anche 2 Wraith o 2 Bodak.",
     creature: POOL.ombra,
-    reskin: "Due fratelli morti nello stesso istante — le loro ombre si cercano ancora nell'oscurità.",
+    reskin: [
+      "Due fratelli morti nello stesso istante — le loro ombre si cercano ancora nell'oscurità.",
+      "Due guardie del Libero Comune cadute nello stesso turno di ronda: continuano la pattuglia su un muro che non esiste più.",
+      "Due amanti separati dal Cataclismo Suel — una morì nel fuoco, l'altra in esilio — e si ritrovano solo qui, nel Velo."
+    ],
     ambientale: "Due punti freddi nel buio, separati di tre metri esatti. Non si muovono finché non li guardi direttamente."
   },
   {
@@ -674,11 +695,15 @@ const MANIFESTAZIONI = [
     ambientale: "Prima del primo oggetto che vola c'è un secondo di silenzio totale. Come se l'aria trattenesse il respiro."
   },
   {
-    d20: 10, nome: "Spettro", hazard: false,
+    d20: 10, nome: "Spettro", hazard: false, ricordo: true,
     desc: "Ricorda il momento della propria morte nei minimi dettagli. Non vuole combattere — vuole testimoni.",
     hint: "Può essere non ostile. Se i PG ascoltano, potrebbe rivelare informazioni sulla zona.",
     creature: POOL.spettro,
-    reskin: "Una testimone di guerra — ha visto qualcosa che non doveva vedere e non riesce a smettere di vederlo, in loop eterno.",
+    reskin: [
+      "Una testimone di guerra — ha visto qualcosa che non doveva vedere e non riesce a smettere di vederlo, in loop eterno.",
+      "Un cronista del Cerchio degli Otto morto mentre annotava un segreto: stringe ancora una penna che gocciola inchiostro nero.",
+      "Un sopravvissuto alla Devastazione Invocata: morì decenni dopo, ma il suo spettro è rimasto al giorno in cui il cielo cadde."
+    ],
     ambientale: "Odore di cera bruciata. La temperatura scende di tre gradi in meno di un round. Poi la figura appare, ferma."
   },
   {
@@ -690,7 +715,7 @@ const MANIFESTAZIONI = [
     ambientale: "L'aria si rapprende visibilmente. Chi tenta di lanciare magie curative sente la formula sfaldarsi tra le dita prima ancora di completarla."
   },
   {
-    d20: 12, nome: "Apparizione ancorata", hazard: false,
+    d20: 12, nome: "Apparizione ancorata", hazard: false, ricordo: true,
     desc: "Un'entità legata a questo luogo specifico — potrebbe non essere ostile, dipende da cosa le hanno fatto.",
     hint: "Valuta se è ostile in base al luogo. A livelli alti potrebbe essere un Graveknight o un Dybbuk.",
     creature: [
@@ -704,11 +729,15 @@ const MANIFESTAZIONI = [
       { nome: "Nightwing",    livello: 16, aonUrl: `${AON}/Search.aspx?q=nightwing` },
       { nome: "Lich",         livello: 17, aonUrl: `${AON}/Search.aspx?q=lich` },
     ],
-    reskin: "L'eco di chi è morto qui senza capire perché. Non sa di essere morto — o lo sa e non lo accetta.",
+    reskin: [
+      "L'eco di chi è morto qui senza capire perché. Non sa di essere morto — o lo sa e non lo accetta.",
+      "Il custode di una soglia che non esiste più: difende ancora una porta murata da secoli.",
+      "Una vittima dei Cavalieri di Kas, lasciata a guardia di un luogo come monito a chi cerca le Reliquie."
+    ],
     ambientale: "Un punto preciso della stanza è sempre più freddo degli altri. Oggetti trovati spostati: libri aperti a pagine vuote, sedie girate verso il muro."
   },
   {
-    d20: 13, nome: "Allip", hazard: false,
+    d20: 13, nome: "Allip", hazard: false, ricordo: true,
     desc: "Irradia follia come un'aura — non attacca fisicamente, ma la sua presenza corrode la mente.",
     hint: "Non attacca fisicamente. La follia è il pericolo. A livelli alti usa Dybbuk o Mohrg.",
     creature: [
@@ -739,7 +768,7 @@ const MANIFESTAZIONI = [
     ambientale: "Le torce si spengono nell'ordine sbagliato. Poi i muri iniziano a tremare. Poi arrivano le ombre — e con loro, i proiettili."
   },
   {
-    d20: 15, nome: "Apparizione del Marchio", hazard: false,
+    d20: 15, nome: "Apparizione del Marchio", hazard: false, ricordo: true,
     desc: "Riconosce il Marchio di Rui Jin — ignorando completamente gli altri, punta diritto a lui.",
     hint: "Attacca solo Rui Jin. A livelli alti usa Thanadaemon o Dybbuk — entità legate a Vecna.",
     creature: [
@@ -780,7 +809,7 @@ const MANIFESTAZIONI = [
     ambientale: "Entra attraverso il pavimento senza rumore. L'unica cosa che lo tradisce: le monete nelle borse diventano fredde."
   },
   {
-    d20: 18, nome: "Spettro guerriero", hazard: true, hazardFisso: 5,
+    d20: 18, nome: "Spettro guerriero", hazard: true, hazardFisso: 5, ricordo: true,
     desc: "Un combattente in vita, ora guerriero della morte — porta con sé il tentativo di una possessione.",
     hint: "Doppia minaccia: combattimento + Possessione. A livelli alti Graveknight, Thanadaemon o Lich.",
     creature: POOL.guerriero,
@@ -796,7 +825,7 @@ const MANIFESTAZIONI = [
     ambientale: "Dronjons sente le voci diventare più forti — non da fuori, da dentro. Il guanto pulsa contro il palmo come un secondo cuore fuori ritmo."
   },
   {
-    d20: 20, nome: "Il Collezionista Precedente", hazard: false,
+    d20: 20, nome: "Il Collezionista Precedente", hazard: false, ricordo: true,
     desc: "Un altro cacciatore di spiriti, morto con l'Artiglio in pugno. Parla. Contratta. Combatte solo se attaccato.",
     hint: "Trattativa prima della violenza. A livelli alti era potente in vita: Graveknight, Lich.",
     creature: [
@@ -816,12 +845,16 @@ const MANIFESTAZIONI = [
 
 const HAZARDS = [
   null, // 0
-  { d6: 1, nome: "Freddo spettrale",          desc: "−2 a tutte le prove fisiche per 1 ora", aonUrl: null },
-  { d6: 2, nome: "Oggetti in volo",            desc: "1d4 oggetti/round su bersagli casuali (1d6 danni contundenti)", aonUrl: `${AON}/Monsters.aspx?ID=330` },
-  { d6: 3, nome: "Zona di Morte",              desc: "Nessun recupero PF né magie curative per 3 round", aonUrl: null },
-  { d6: 4, nome: "Sussurri Amplificati",       desc: "Tutti Spaventati 1 — TS Volontà CD {{cdFaro}} per resistere", aonUrl: null },
-  { d6: 5, nome: "Possessione tentata",        desc: "Bersaglio casuale nel gruppo, TS Volontà CD {{cdGuanto}}", aonUrl: `${AON}/Search.aspx?q=possession` },
-  { d6: 6, nome: "Artiglio in cortocircuito", desc: "Dronjons usa Mietere il Tormento sul primo alleato che subisce danni quel round", aonUrl: null },
+  { nome: "Freddo spettrale",          desc: "−2 a tutte le prove fisiche per 1 ora", aonUrl: null },
+  { nome: "Oggetti in volo",            desc: "1d4 oggetti/round su bersagli casuali (1d6 danni contundenti)", aonUrl: `${AON}/Monsters.aspx?ID=330` },
+  { nome: "Zona di Morte",              desc: "Nessun recupero PF né magie curative per 3 round", aonUrl: null },
+  { nome: "Sussurri Amplificati",       desc: "Tutti Spaventati 1 — TS Volontà CD {{cdFaro}} per resistere", aonUrl: null },
+  { nome: "Possessione tentata",        desc: "Bersaglio casuale nel gruppo, TS Volontà CD {{cdGuanto}}", aonUrl: `${AON}/Search.aspx?q=possession` },
+  { nome: "Artiglio in cortocircuito", desc: "Dronjons usa Mietere il Tormento sul primo alleato che subisce danni quel round", aonUrl: null },
+  { nome: "Nebbia di Vecna",            desc: "Nebbia necrotica: 1d6 danni negativi a fine turno a chi resta fermo; le cure sono dimezzate finché la nebbia persiste (1d4 round)", aonUrl: null },
+  { nome: "Eco di un grido",            desc: "Un lamento riecheggia dal Velo: tutti TS Volontà CD {{cdFaro}} o Spaventati 2 (Assordati 1 al fallimento critico)", aonUrl: null },
+  { nome: "Gelo dell'Oltretomba",      desc: "Brina spettrale ricopre l'area: terreno difficile + 1d6 freddo a chi finisce prono o viene spinto", aonUrl: null },
+  { nome: "Sussurri di Kas",           desc: "Discordia tagliente: ogni PG TS Volontà CD {{cdGuanto}} o, al suo prossimo turno, deve compiere un attacco contro l'alleato più vicino", aonUrl: null },
 ];
 
 const GRADI = [
@@ -833,18 +866,96 @@ const GRADI = [
   { max: 999, id: "catastrofico", label: "Catastrofico", cls: "grade-catastrofico", desc: "Tiro su tabella speciale",                   livOffset: 4  },
 ];
 
+// ── Ricordi & Preveggenze ───────────────────────────────────────────────────
+// Frammenti che uno spirito "comunicativo" potrebbe portare: eco del passato di
+// Greyhawk o lampi sul futuro. Mescolano lore generale e fili della campagna.
+const RICORDI = [
+  // — Cataclismi Gemelli / Suel-Baklunish —
+  { tipo: "Ricordo",     txt: "«Il cielo divenne fuoco senza colore. In un battito, un impero intero fu cenere. Noi Suel correvamo verso est, ma la cenere correva più veloce.»" },
+  { tipo: "Ricordo",     txt: "«La Devastazione Invocata venne dal nulla e mangiò la carne lasciando le ossa a camminare. Io ero una di quelle ossa, per un po'.»" },
+  { tipo: "Preveggenza", txt: "«Un secondo fuoco senza colore dorme sotto la sabbia. Qualcuno con le mani sbagliate sta imparando a svegliarlo.»" },
+  // — Vecna, Kas, le Reliquie —
+  { tipo: "Ricordo",     txt: "«Lo vidi quando era ancora un uomo, prima della lich, prima del dio. Aveva già gli occhi di chi ha deciso che la morte è un'opinione altrui.»" },
+  { tipo: "Ricordo",     txt: "«Kas amava il suo signore più di chiunque. Per questo la lama che gli tagliò la mano fu forgiata dall'amore, non dall'odio. Lo capii troppo tardi.»" },
+  { tipo: "Preveggenza", txt: "«La Mano cerca l'Occhio. L'Occhio cerca la Mano. Quando il bambino che li porta dormirà, si chiameranno a vicenda — e qualcosa risponderà.»" },
+  { tipo: "Preveggenza", txt: "«Il Sussurrato sa già il vostro nome. Non quello che usate: quello vero, quello che pronuncerete morendo.»" },
+  // — Guerre di Greyhawk / Rary / Cerchio degli Otto —
+  { tipo: "Ricordo",     txt: "«Le Guerre presero mio figlio a Molag e mia figlia a Critwall. Le presero lo stesso giorno, a province di distanza. Il Velo non distingue le distanze.»" },
+  { tipo: "Ricordo",     txt: "«Eravamo otto a tenere il mondo. Poi uno di noi decise che tenere non bastava, e nel deserto due dei nostri morirono per la sua ambizione.»" },
+  { tipo: "Preveggenza", txt: "«Il traditore del deserto cerca ancora il Pozzo delle Anime. Cerca un bambino che non invecchia. Si avvicina.»" },
+  // — Iuz, Iggwilv, il Male —
+  { tipo: "Ricordo",     txt: "«Iggwilv aprì il Corno e ne uscì suo figlio, e il figlio era peggio della madre. Io custodivo la soglia. Non bastai.»" },
+  { tipo: "Preveggenza", txt: "«Il Vecchio di Dorakaa ride: ogni anima che l'Artiglio raccoglie è una candela che gli indica la strada verso di voi.»" },
+  // — Geoff, i Giganti —
+  { tipo: "Ricordo",     txt: "«I giganti scesero da Hateful Wars con re a guidarli. Geoff cadde in una stagione. Sento ancora il passo che fa tremare la valle.»" },
+  // — Marut / immortalità non guadagnata —
+  { tipo: "Preveggenza", txt: "«Gli Inevitabili dalla pelle d'ottone hanno annusato una vita che dura da troppi secoli. Camminano già. Non si stancano, non dormono, non perdonano.»" },
+  // — Fili di campagna: i dispersi, i nodi —
+  { tipo: "Preveggenza", txt: "«Tre nomi vi mancano — uno nel fuoco, uno nella pietra, uno nell'acqua. Sono vivi nei nodi, e qualcuno li sta prosciugando come otri.»" },
+  { tipo: "Ricordo",     txt: "«C'era un cuore tradito a Thornward e un occhio di pietra in una Greyhawk che non esiste più. Chi li unisce, trova i perduti. O li condanna.»" },
+  // — L'Artiglio stesso —
+  { tipo: "Ricordo",     txt: "«Conobbi un collezionista prima del tuo, portatore. Sorrideva come te. Il guanto sorride ancora con la sua bocca.»" },
+  { tipo: "Preveggenza", txt: "«Il Faro che porti non chiama solo i morti. Un giorno chiamerà qualcosa che si crede vivo — e avrà ragione di crederlo.»" },
+  // — Generici inquietanti —
+  { tipo: "Ricordo",     txt: "«Ricordo la mia morte meglio della mia vita. È l'unica cosa che il Velo lascia intatta: l'ultimo istante, in loop, per sempre.»" },
+  { tipo: "Preveggenza", txt: "«Uno di voi non vedrà l'alba che cerca. Non dico chi. Non lo so. So solo che il Velo ha già contato un posto vuoto.»" },
+];
+
+function pickRicordo() { return RICORDI[Math.floor(Math.random() * RICORDI.length)]; }
+
+function ricordoBoxHTML(r) {
+  const isPrev = r.tipo === "Preveggenza";
+  const col = isPrev ? "#b08fd8" : "#8fb0d8";
+  const ico = isPrev ? "ti-eye-bolt" : "ti-history";
+  return `
+    <div class="ricordo-box" style="margin-top:10px;padding:10px 12px;border-radius:7px;background:#120e1a;border:.5px solid ${col}55;">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px;">
+        <i class="ti ${ico}" style="font-size:12px;color:${col};" aria-hidden="true"></i>
+        <span class="ricordo-tipo" style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:${col};">${r.tipo} dello spirito</span>
+        <button onclick="rerollRicordo(this)" style="margin-left:auto;font-size:10px;height:20px;padding:0 7px;">Estrai un altro</button>
+      </div>
+      <div class="ricordo-txt" style="font-size:13px;color:var(--t2);line-height:1.55;font-style:italic;">${r.txt}</div>
+    </div>`;
+}
+
+function rerollRicordo(btn) {
+  const box = btn.closest('.ricordo-box');
+  if (!box) return;
+  const r = pickRicordo();
+  const isPrev = r.tipo === "Preveggenza";
+  const col = isPrev ? "#b08fd8" : "#8fb0d8";
+  const ico = isPrev ? "ti-eye-bolt" : "ti-history";
+  box.style.borderColor = col + '55';
+  const tipoEl = box.querySelector('.ricordo-tipo');
+  tipoEl.textContent = r.tipo + ' dello spirito';
+  tipoEl.style.color = col;
+  const iEl = box.querySelector('i');
+  iEl.className = 'ti ' + ico;
+  iEl.style.color = col;
+  box.querySelector('.ricordo-txt').textContent = r.txt;
+}
+
+// pulsante autonomo nel pannello: pesca un Ricordo a richiesta del DM
+function estraiRicordoStandalone() {
+  const target = document.getElementById('ricordo-standalone');
+  target.innerHTML = ricordoBoxHTML(pickRicordo());
+}
+
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
 function rand(n) { return Math.floor(Math.random() * n) + 1; }
 
+// pesca un elemento a caso; se non è un array, lo restituisce così com'è
+function pick(v) { return Array.isArray(v) ? v[Math.floor(Math.random() * v.length)] : v; }
+
 function getSoglia(sospiri, overflow) {
   if (sospiri === 0) return null;
   if (overflow)      return { min: 4, autoBelow: 3 };
-  if (sospiri === 1) return { min: 20 };
-  if (sospiri === 2) return { min: 17 };
-  if (sospiri === 3) return { min: 14 };
-  if (sospiri === 4) return { min: 10 };
-  return { min: 6 };
+  if (sospiri === 1) return { min: 19 }; // ~10%
+  if (sospiri === 2) return { min: 16 }; // ~25%
+  if (sospiri === 3) return { min: 12 }; // ~45%
+  if (sospiri === 4) return { min: 9 };  // ~60%
+  return { min: 6 };                     // ~75%
 }
 
 function getGrado(totale) {
@@ -958,7 +1069,7 @@ async function eseguiRoll() {
       hazardEntry = HAZARDS[manifEntry.hazardFisso];
       hazardRoll  = manifEntry.hazardFisso;
     } else {
-      hazardRoll  = rand(6);
+      hazardRoll  = rand(HAZARDS.length - 1);
       hazardEntry = HAZARDS[hazardRoll];
     }
   }
@@ -1031,7 +1142,8 @@ function buildStep3HTML(d20, manif, hazardRoll, hazardEntry) {
 
   let hazardReveal = '';
   if (hazardEntry) {
-    const hazardLabel = manif.hazardFisso !== undefined ? `fisso` : `d6 = ${hazardRoll}`;
+    const hazardDie = HAZARDS.length - 1;
+    const hazardLabel = manif.hazardFisso !== undefined ? `fisso` : `d${hazardDie} = ${hazardRoll}`;
     hazardReveal = `
       <div style="margin-top:10px;padding:10px 12px;background:#1a0e06;border:0.5px solid #6a3010;border-radius:7px;font-size:13px;">
         <div style="color:#f08040;font-size:10px;letter-spacing:.15em;text-transform:uppercase;margin-bottom:4px;">
@@ -1094,7 +1206,7 @@ function buildFinalHTML(manif, grado, hazardEntry, hazardRoll, livelloPG) {
         <div class="hazard-block-title">
           <i class="ti ti-skull" aria-hidden="true"></i>
           HAZARD attivo
-          ${manif.hazardFisso === undefined ? `<span style="font-size:10px;color:var(--t3);">(d6 = ${hazardRoll})</span>` : ''}
+          ${manif.hazardFisso === undefined ? `<span style="font-size:10px;color:var(--t3);">(d${HAZARDS.length - 1} = ${hazardRoll})</span>` : ''}
           ${aonLink}
         </div>
         <div class="hazard-block-name">${hazardEntry.nome}</div>
@@ -1107,20 +1219,25 @@ function buildFinalHTML(manif, grado, hazardEntry, hazardRoll, livelloPG) {
     ? buildCreatureBlock(listaCreature, grado, livelloPG)
     : '';
 
-  const reskinBlock = manif.reskin ? `
+  const reskinTxt = pick(manif.reskin);
+  const reskinBlock = reskinTxt ? `
     <div class="creature-reskin">
       <i class="ti ti-wand" style="font-size:11px;vertical-align:middle;margin-right:4px;" aria-hidden="true"></i>
-      Reskin: ${manif.reskin}
+      Reskin: ${reskinTxt}
     </div>` : '';
 
-  const ambientaleBlock = manif.ambientale ? `
+  const ambientaleTxt = pick(manif.ambientale);
+  const ambientaleBlock = ambientaleTxt ? `
     <div class="ambientale-block">
       <div class="ambientale-block-title">
         <i class="ti ti-eye" style="font-size:10px;" aria-hidden="true"></i>
         Dettaglio ambientale
       </div>
-      <div class="ambientale-block-text">${manif.ambientale}</div>
+      <div class="ambientale-block-text">${ambientaleTxt}</div>
     </div>` : '';
+
+  // Ricordo/Preveggenza: solo spiriti "comunicativi", con probabilità
+  const ricordoBlock = (manif.ricordo && Math.random() < 0.6) ? ricordoBoxHTML(pickRicordo()) : '';
 
   return `
     <div class="result-final anim-in">
@@ -1132,6 +1249,7 @@ function buildFinalHTML(manif, grado, hazardEntry, hazardRoll, livelloPG) {
       ${reskinBlock}
       ${ambientaleBlock}
       ${hazardBlock}
+      ${ricordoBlock}
       <div class="result-hint">
         <i class="ti ti-shield-half-filled" style="font-size:12px;vertical-align:middle;margin-right:5px;" aria-hidden="true"></i>
         <strong style="color:var(--t2);font-style:normal;">DM:</strong> ${interpCD(manif.hint)}

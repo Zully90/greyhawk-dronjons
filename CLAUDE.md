@@ -173,15 +173,18 @@ UI: rivelazione drammatica a tre step animati.
 
 ### Tiro 1 — Il Velo si assottiglia? (d20 vs soglia)
 
-| Sospiri | Disturbo su |
-|---------|-------------|
-| 0       | — immune    |
-| 1       | 20          |
-| 2       | 17+         |
-| 3       | 14+         |
-| 4       | 10+         |
-| 5+      | 6+          |
-| Overflow (> Mod. DES) | 4+, automatico su 1-3 |
+| Sospiri | Disturbo su | ~prob. |
+|---------|-------------|--------|
+| 0       | — immune    | 0%     |
+| 1       | 19+         | 10%    |
+| 2       | 16+         | 25%    |
+| 3       | 12+         | 45%    |
+| 4       | 9+          | 60%    |
+| 5+      | 6+          | 75%    |
+| Overflow (> Mod. DES) | 4+, automatico su 1-3 | 100% |
+
+> Soglie tarate "leggermente più frequenti" rispetto al design originale
+> (era 20/17/14/10/6). Valori in `getSoglia()` di spawn.html.
 
 Se non disturbato: notte tranquilla, fine.
 Se disturbato: tiro 2.
@@ -218,16 +221,29 @@ Se disturbato: tiro 2.
 | 19   | **Il Gregge si rivolta** — Sospiro interno cerca di uscire, CD 18 Volontà o Grabbed + perde 1 Sospiro |
 | 20   | **Il Collezionista Precedente** — altro cacciatore morto, parla e contratta, combatte solo se attaccato |
 
-### Tabella Hazard (d6, quando indicato dalla Manifestazione)
+### Tabella Hazard (d10, quando indicato dalla Manifestazione)
 
-| d6 | Hazard |
-|----|--------|
+| d10 | Hazard |
+|-----|--------|
 | 1  | Freddo spettrale: −2 a tutte le prove fisiche per 1 ora |
 | 2  | Oggetti in volo: 1d4 oggetti/round su bersagli casuali (1d6 danni contundenti) |
 | 3  | Zona di Morte: nessun recupero PF né magie curative per 3 round |
-| 4  | Sussurri Amplificati: tutti Spaventati 1 (TS Volontà CD 16 per resistere) |
-| 5  | Possessione tentata: bersaglio casuale nel gruppo, TS Volontà CD 18 |
+| 4  | Sussurri Amplificati: tutti Spaventati 1 (TS Volontà CD dinamica) |
+| 5  | Possessione tentata: bersaglio casuale nel gruppo, TS Volontà CD dinamica |
 | 6  | Artiglio in cortocircuito: Dronjons usa Mietere il Tormento sul primo alleato che subisce danni quel round |
+| 7  | Nebbia di Vecna: 1d6 negativi a chi resta fermo, cure dimezzate (1d4 round) |
+| 8  | Eco di un grido: tutti TS Volontà o Spaventati 2 (Assordati 1 al critico) |
+| 9  | Gelo dell'Oltretomba: terreno difficile + 1d6 freddo a chi finisce prono |
+| 10 | Sussurri di Kas: discordia — TS Volontà o attacchi l'alleato più vicino |
+
+> Gli `hazardFisso` delle manifestazioni 11/14/18 puntano agli indici 3/2/5
+> (Zona di Morte / Oggetti in volo / Possessione), invariati.
+
+### Ricordi & Preveggenze (RICORDI in spawn.html)
+Gli spiriti "comunicativi" (Spettro, Apparizione, Allip, Marchio, Spettro guerriero,
+Collezionista) possono portare un **Ricordo** (passato) o una **Preveggenza** (futuro)
+ancorati alla storia di Greyhawk e ai fili della campagna. Compaiono nel riquadro
+risultato (~60%) e si possono pescare a richiesta con un pulsante dedicato.
 
 ### UI spawn.html
 - Input: Sospiri correnti, Mod. DES, Livello PG (prefill da index se possibile via localStorage)
