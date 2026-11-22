@@ -84,8 +84,30 @@ relativi, niente `type=module` perché le pagine usano `onclick` inline). Vedi
 | `spawn.html` (DM) | tutto | tutto (orchestratore) |
 
 Ruth **vede** il Faro dell'Artiglio; l'Artiglio non legge **mai** dati di Ruth.
-L'influenza Ruth→Artiglio passa dai pulsanti orchestratore in `spawn.html` che mutano
-i Sospiri dell'Artiglio (Dronjons vede cambiare il Faro senza sapere perché).
+L'influenza Ruth→Artiglio passa da `Grimorio.risonanza(evento)` in `core.js` (il
+**mediatore fidato**: muta l'Artiglio dall'interno aggirando gli scope) e dai pulsanti
+orchestratore in `spawn.html`. Dronjons vede cambiare il Faro / riceve un'`eco`
+senza sapere perché (mistero preservato: la causa non risale mai all'Artiglio).
+
+### Risonanza automatica (Arco→Artiglio, senza DM)
+
+`Grimorio.risonanza(evento)` è invocabile solo da scope `ruth`/`dm`, scrive in
+`artiglio` una proprietà `eco = { k, nonce, ts }` e ritorna al massimo il bit
+`{ risuonato }` verso Ruth (nessun dato grezzo dell'Artiglio risale mai). Eventi:
+
+| Evento | Trigger in `ruth.html` | Effetto su `artiglio` | Eco / notifica a Dronjons |
+|--------|------------------------|-----------------------|---------------------------|
+| `morte-spirito` | bottone «DEATH · spirito/non-morto» | `sospiri−1` se >0 (→ `risuonato:true` → Ruth +1 Grazia) | *"Un Sospiro si è dissolto. Non sai come."* |
+| `protesta` | bottone «LIFE · su una preda» | `turbato=true` | *"Il Guanto freme…"* + azioni rapide bloccate (Spaventato 1) finché «Scuoto il turbamento» |
+| `sacrificio` | azione «Dono della Pietà» | `faroBump={until:+1h}` → Faro +1 stato effettivo | *"Il Faro arde oltre il suo peso. Non sai perché."* |
+
+- **Faro effettivo**: `Grimorio.faro()`/`faroIdx()` includono `faroBump` (best-effort,
+  scade da solo). `index.html` sceglie il Beacon da `faroIdx()`, così può ardere oltre
+  i Sospiri mostrati. `spawn.html` legge ancora i Sospiri grezzi (il bump non vi appare).
+- **Gate su Faro proprio** (nessuna asimmetria): a Faro Ardente (idx 3) il «Velo di
+  Ombre» è disabilitato in `index.html`.
+- **Toast**: le notifiche si attivano solo su ingest *esterno* (confronto `eco.nonce`
+  con l'ultimo visto); al load l'eco corrente è marcata come già vista.
 
 ### CD dinamiche
 
@@ -255,7 +277,7 @@ risultato (~60%) e si possono pescare a richiesta con un pulsante dedicato.
 - Box risultato finale: nome creatura, grado, suggerimento DM in corsivo
 - Bottone "Ritira" e link a index.html
 - Stile coerente con index.html
-- **Vista DM — Risonanza Armi** (pannello collassabile): legge via `Grimorio` gli slice `artiglio` e `ruth`, mostra stato Faro + Verdetti di Rui Jin + note di risonanza attive. Include i **pulsanti orchestratore** che mutano i Sospiri dell'Artiglio (effetti di Rui Jin → Faro), unico canale dell'influenza Ruth→Artiglio.
+- **Vista DM — Risonanza Armi** (pannello collassabile): legge via `Grimorio` gli slice `artiglio` e `ruth`, mostra stato Faro + Verdetti di Rui Jin + note di risonanza attive. Include i **pulsanti orchestratore** che mutano i Sospiri dell'Artiglio (effetti di Rui Jin → Faro), canale manuale del DM in aggiunta alla risonanza automatica di `ruth.html` (vedi `Grimorio.risonanza`).
 
 ---
 
@@ -337,11 +359,25 @@ Risorsa duale. Max totale = Livello + Mod. SAG. Max Grazie = Max totale − Cica
 
 ### Risonanza con l'Artiglio (regole DM)
 
+Le tre righe sono ora **automatizzate senza DM** via `Grimorio.risonanza` (vedi
+"Risonanza automatica" nella sezione Stato condiviso). Qui restano come riferimento
+narrativo/meccanico al tavolo.
+
 | Trigger | Effetto |
 |---------|---------|
 | Rui Jin uccide spirito/non-morto (DEATH) | Faro scende 1 stato per 10 min; se era Sospiro di Dronjons → perde 1 Sospiro, Rui Jin +1 Grazia |
 | Rui Jin usa LIFE su creatura che Dronjons voleva catturare | Artiglio protesta: TS Volontà CD 16 o Dronjons Spaventato 1 |
 | Rui Jin usa Il Dono della Pietà | Faro sale 1 stato per 1 ora; spiriti nel raggio TS Volontà CD 18 o Terrorizzati 3 |
+
+### Sviluppi futuri risonanza (da discutere — NON implementati)
+
+Condizioni aggiuntive proposte, in attesa di design:
+- **Ruth In Condanna** → l'Artiglio fiuta sangue: Impeto Predatorio gratis per Dronjons quella notte.
+- **Overflow Sospiri** (Dronjons > Mod. DES) → l'Arco riceve un presagio: indicatore "L'Arco è inquieto".
+- **Dronjons rifiuta una cattura** ("L'Artiglio Sceglie") → lo spirito sfugge al giudizio → Rui Jin +1 Grazia.
+- **Dono della Pietà** → oltre al `faroBump`, flag letto da `spawn.html` per forzare "spiriti Terrorizzati 3" nel prossimo spawn.
+- **Faro Ardente + Ruth In Condanna** → "Congiunzione": lo spawn notturno parte a uno step peggiore.
+- **Cicatrici di Ruth ≥5** → +1 step Faro per una notte.
 
 ### Stato (via `Grimorio`, vedi sezione "Stato condiviso")
 - Scrive: slice `ruth` → `{ grazie, condanne, cicatrici, livello, sag, runaAttiva }`

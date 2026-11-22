@@ -152,6 +152,12 @@ footer {
 </style>
 </head>
 <body>
+<style>
+  #toast-wrap{position:fixed;left:0;right:0;bottom:18px;display:flex;flex-direction:column;align-items:center;gap:8px;z-index:9999;pointer-events:none;padding:0 16px;}
+  .toast{max-width:440px;background:var(--bg2);border:.5px solid var(--border2);border-left:3px solid #7ab8f0;border-radius:10px;padding:11px 14px;color:var(--t1);font-size:13.5px;line-height:1.45;box-shadow:0 8px 28px rgba(0,0,0,.5);opacity:0;transform:translateY(12px);transition:opacity .35s,transform .35s;font-style:italic;}
+  .toast.show{opacity:1;transform:translateY(0);}
+</style>
+<div id="toast-wrap" aria-live="polite"></div>
 <div class="wrap">
 
 <div class="page-header">
@@ -252,6 +258,11 @@ footer {
   </div>
 </div>
 
+<div id="turbato-banner" style="display:none;align-items:center;gap:8px;flex-wrap:wrap;background:var(--danger-bg);border:.5px solid #5a1a1a;border-radius:var(--border-radius-md);padding:9px 12px;margin-bottom:.75rem;">
+  <i class="ti ti-alert-hexagon" style="font-size:16px;color:var(--danger-fg);flex:none;" aria-hidden="true"></i>
+  <span style="font-size:13px;color:var(--danger-fg);flex:1;min-width:180px;">Il Guanto freme — <strong>Spaventato 1</strong>. Qualcosa contesta la tua presa. Le azioni rapide sono bloccate finché non ti riprendi.</span>
+  <button onclick="scuotiTurbamento()" style="height:26px;font-size:12px;flex:none;">Scuoto il turbamento</button>
+</div>
 <div id="qa" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1.1rem;"></div>
 
 <div id="slist"></div>
@@ -372,7 +383,14 @@ function go(){
   const sus=document.getElementById('sus');
   if(sN>0){sus.style.display='flex';document.getElementById('susV').textContent=`−${sN} ai TS Follia e Percezione`;}
   else{sus.style.display='none';}
-  const b=BEACON.find(x=>sN>=x.min&&sN<=x.max)||BEACON[BEACON.length-1];
+  // Faro EFFETTIVO (include il bump planare del Dono della Pietà di Ruth):
+  // il Faro può ardere oltre ciò che i Sospiri mostrati giustificano → mistero.
+  const fIdx=Grimorio.faroIdx();
+  const b=BEACON[fIdx];
+  const a0=Grimorio.get('artiglio');
+  const turbato=!!(a0&&a0.turbato);
+  const tb=document.getElementById('turbato-banner');
+  if(tb)tb.style.display=turbato?'flex':'none';
   const bc=document.getElementById('bcard');
   bc.style.background=b.bg;
   bc.style.borderColor='transparent';
@@ -389,7 +407,7 @@ function go(){
   qa.innerHTML='';
   const acts=[
     {lbl:'Impeto Predatorio −1',minLv:3,spend:1},
-    {lbl:'Velo di Ombre −2',minLv:5,spend:2},
+    {lbl:'Velo di Ombre −2',minLv:5,spend:2,faroBlock:3,why:'Il Faro troppo acceso ti tradisce: non puoi dissolverti nell\'ombra'},
     {lbl:'Interrogare −1',minLv:5,spend:1},
     {lbl:'Nutrire la Lama −tutto',minLv:5,spend:sN},
     {lbl:'Liberare il Gregge −tutto',minLv:9,spend:sN,minSpend:3},
@@ -401,8 +419,11 @@ function go(){
       const btn=document.createElement('button');
       btn.textContent=a.lbl;
       btn.style.fontSize='12px';
-      const canDo=sN>=a.spend&&(a.minSpend===undefined||sN>=a.minSpend);
+      const faroBloccata=a.faroBlock!==undefined&&fIdx>=a.faroBlock;
+      const canDo=sN>=a.spend&&(a.minSpend===undefined||sN>=a.minSpend)&&!faroBloccata&&!turbato;
       btn.disabled=!canDo;
+      if(turbato)btn.title='Spaventato 1 — scuoti il turbamento per agire';
+      else if(faroBloccata)btn.title=a.why;
       btn.onclick=()=>{cS(-a.spend);};
       qa.appendChild(btn);
     }
@@ -432,6 +453,38 @@ function syncFromStore(){
   document.getElementById('des').value = a.des;
   document.getElementById('lvl').value = a.livello;
   go();
+  checkEco(a);
+}
+
+/* --- Eco: notifiche "a effetto" senza rivelare la causa (mistero Ruth→Artiglio) --- */
+let lastEcoNonce = 0;
+function checkEco(a){
+  const eco = a && a.eco;
+  if(!eco || !eco.nonce) return;
+  if(eco.nonce === lastEcoNonce) return;   // già vista (o segnata al load)
+  lastEcoNonce = eco.nonce;
+  const msg = eco.k==='sospiro-svanito' ? 'Un Sospiro si è dissolto dal Guanto. Non sai come.'
+            : eco.k==='protesta'        ? 'Il Guanto freme — qualcosa contesta la tua presa. Non sai cosa.'
+            : eco.k==='faro-arde'       ? 'Il Faro arde oltre il suo peso. Non sai perché.'
+            : null;
+  if(msg) toast(msg);
+}
+
+function scuotiTurbamento(){
+  Grimorio.patch('artiglio', { turbato:false });   // Dronjons azzera il PROPRIO flag
+  go();
+}
+
+/* Toast effimero, coerente col tema. */
+function toast(txt){
+  const c=document.getElementById('toast-wrap');
+  if(!c) return;
+  const t=document.createElement('div');
+  t.className='toast';
+  t.textContent=txt;
+  c.appendChild(t);
+  requestAnimationFrame(()=>t.classList.add('show'));
+  setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),400);},5200);
 }
 function buildSoglie(l){
   const sl=document.getElementById('slist');
@@ -497,6 +550,9 @@ function buildSoglie(l){
   });
 }
 Grimorio.init({ scope:'artiglio', onChange: syncFromStore });
+// segna l'eco corrente come già vista: al load non riproponiamo un evento storico,
+// ma lo stato (Sospiri/Faro/turbamento) resta comunque riflesso.
+try { const a0=Grimorio.get('artiglio'); if(a0&&a0.eco&&a0.eco.nonce) lastEcoNonce=a0.eco.nonce; } catch(e){}
 syncFromStore();
 </script>
 </body>

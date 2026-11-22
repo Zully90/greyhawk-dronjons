@@ -103,15 +103,31 @@
     try { localStorage.setItem(keyFor(), JSON.stringify(state)); } catch (e) {}
   }
 
+  /* Timestamp strettamente monotòno per-tab: garantisce che scritture multiple
+     nello stesso millisecondo (es. le più azioni di una Risonanza) restino
+     ordinabili, così la guardia anti-eco-stale non scarta aggiornamenti validi. */
+  function nextStamp() {
+    var t = Date.now();
+    return (t <= state.meta.updatedAt) ? state.meta.updatedAt + 1 : t;
+  }
+
   function notify() {
     for (var i = 0; i < listeners.length; i++) {
       try { listeners[i](state); } catch (e) {}
     }
   }
 
-  /* Cambi ESTERNI (altra tab / altro device): aggiorna, PERSISTI e notifica. */
-  function ingestExternal(incoming) {
+  /* Cambi ESTERNI (altra tab / altro device): aggiorna, PERSISTI e notifica.
+     guardStale: sui canali same-device (BroadcastChannel + storage) ignora le eco
+     NON più recenti del nostro stato. Serve quando un'azione fa più scritture
+     ravvicinate (es. Risonanza): senza guardia, un'eco intermedia più vecchia
+     — che trasporta l'intero stato — può arrivare in ritardo e sovrascrivere i
+     campi già aggiornati. Non applicata a Firebase per non cadere su clock skew. */
+  function ingestExternal(incoming, opts) {
     if (!incoming) return;
+    if (opts && opts.guardStale && incoming.meta &&
+        typeof incoming.meta.updatedAt === 'number' &&
+        incoming.meta.updatedAt <= state.meta.updatedAt) return;
     mergeInto(state, incoming);
     persistLocal(); // così un reload non torna a uno stato vecchio prima del prossimo snapshot
     notify();
@@ -125,7 +141,17 @@
     { idx: 3, lbl: 'Faro Ardente', col: '#f09595' }
   ];
   function faroIdx(s) { s = num(s, 0); return s === 0 ? 0 : s <= 2 ? 1 : s <= 4 ? 2 : 3; }
-  function faroState() { return FARO[faroIdx(state.artiglio.sospiri)]; }
+  // Bump planare temporaneo (Dono della Pietà di Ruth): alza di 1 stato il Faro
+  // finché dura. Best-effort senza DM: scade da solo al prossimo render/evento.
+  function bumpAttivo() {
+    var b = state.artiglio && state.artiglio.faroBump;
+    return !!(b && b.until && Date.now() < b.until);
+  }
+  function faroIdxEff() {
+    var base = faroIdx(state.artiglio.sospiri);
+    return bumpAttivo() ? Math.min(3, base + 1) : base;
+  }
+  function faroState() { return FARO[faroIdxEff()]; }
 
   /* ---- Motore CD dinamico (usato dalla Fase 3) ----
      Base di livello + modulazione per stato dell'arma. */
@@ -178,14 +204,14 @@
         try {
           bc = new BroadcastChannel(CHANNEL + ':' + SESSION);
           bc.onmessage = function (ev) {
-            if (ev.data && ev.data.type === 'state') ingestExternal(ev.data.state);
+            if (ev.data && ev.data.type === 'state') ingestExternal(ev.data.state, { guardStale: true });
           };
         } catch (e) { bc = null; }
       }
 
       window.addEventListener('storage', function (ev) {
         if (ev.key === keyFor() && ev.newValue) {
-          try { ingestExternal(JSON.parse(ev.newValue)); } catch (e) {}
+          try { ingestExternal(JSON.parse(ev.newValue), { guardStale: true }); } catch (e) {}
         }
       });
 
@@ -207,7 +233,7 @@
     patch: function (slice, partial) {
       if (!can('write', slice) || !state[slice] || !partial) return;
       for (var p in partial) { if (partial.hasOwnProperty(p)) state[slice][p] = partial[p]; }
-      state.meta.updatedAt = Date.now();
+      state.meta.updatedAt = nextStamp();
       state.meta.writer = CLIENT; // marca la scrittura come nostra (per ignorarne l'eco)
       persistLocal();
       if (bc) { try { bc.postMessage({ type: 'state', state: state }); } catch (e) {} }
@@ -216,8 +242,41 @@
       }
     },
 
+    /* ---- Risonanza Arco→Artiglio (senza DM, mistero preservato) ----
+       core.js è il mediatore fidato: muta l'Artiglio DALL'INTERNO (aggira gli
+       scope di proposito, come il motore cd) e deposita un'`eco` nello slice
+       artiglio. Dronjons legge solo il proprio slice → vede l'effetto, mai la
+       causa. Ritorna il solo bit { risuonato } verso Ruth (ricompensa Grazia);
+       non espone MAI i numeri dell'Artiglio. Invocabile solo da ruth/dm. */
+    risonanza: function (evento) {
+      if (myScope !== 'ruth' && myScope !== 'dm') return { risuonato: false };
+      var a = state.artiglio;
+      var ts = nextStamp();
+      var out = { risuonato: false };
+      if (evento === 'morte-spirito') {
+        if (num(a.sospiri, 0) > 0) { a.sospiri = a.sospiri - 1; out.risuonato = true; }
+        a.eco = { k: 'sospiro-svanito', nonce: ts, ts: ts };
+      } else if (evento === 'protesta') {
+        a.turbato = true;
+        a.eco = { k: 'protesta', nonce: ts, ts: ts };
+      } else if (evento === 'sacrificio') {
+        a.faroBump = { until: Date.now() + 3600000 }; // +1 stato Faro per 1 ora
+        a.eco = { k: 'faro-arde', nonce: ts, ts: ts };
+      } else {
+        return out;
+      }
+      state.meta.updatedAt = ts;
+      state.meta.writer = CLIENT;
+      persistLocal();
+      if (bc) { try { bc.postMessage({ type: 'state', state: state }); } catch (e) {} }
+      if (typeof Grimorio._pushFirebase === 'function') {
+        try { Grimorio._pushFirebase(state); } catch (e) {}
+      }
+      return out;
+    },
+
     faro: faroState,
-    faroIdx: function () { return faroIdx(state.artiglio.sospiri); },
+    faroIdx: function () { return faroIdxEff(); },
     subscribe: function (cb) { if (typeof cb === 'function') listeners.push(cb); },
     cd: cd
   };
