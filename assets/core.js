@@ -30,7 +30,9 @@
       // patto: Patto del Teschio (sessione 88) — Rui conta +1 Sospiro ai soli
       //        fini del Faro. vistaUsata: cooldown di "Vista condivisa" (1/giorno).
       artiglio: { sospiri: 0, des: 4, livello: 5, patto: true, vistaUsata: false },
-      ruth: { grazie: 0, condanne: 0, cicatrici: 0, livello: 8, sag: 4, runaAttiva: 'grigia' },
+      // richiamo: "ciò che dorme sotto il tempio" (0–3, leva DM per luogo).
+      // bisaccia: contenitore di Vecna intatto → Argine 4; se cede → Argine 2.
+      ruth: { grazie: 0, condanne: 0, cicatrici: 0, livello: 8, sag: 4, runaAttiva: 'grigia', richiamo: 0, bisaccia: true },
       meta: { updatedAt: 0, sessione: SESSION, writer: '' }
     };
   }
@@ -164,6 +166,33 @@
   }
   function faroState() { return FARO[faroIdxEff()]; }
 
+  /* ---- Vuoto di Rui (sessione 88) ----
+     Valore DERIVATO dallo slice ruth, nessun contatore da gestire a mano:
+       Vuoto  = max(0, Condanne + Cicatrici + Richiamo − Grazie)
+       Argine = bisaccia intatta ? 4 : 2   (Argine di Wee Jas)
+     La misericordia lo trattiene; condanne, cicatrici e "ciò che dorme sotto il
+     tempio" lo scavano. NUMERI PROVVISORI — da tarare (backlog in CLAUDE.md). */
+  var VUOTO = [
+    { idx: 0, lbl: 'Quiescente', col: '#6a6762' },
+    { idx: 1, lbl: 'Sommesso', col: '#b08fd8' },
+    { idx: 2, lbl: 'Teso', col: '#f5c06a' },
+    { idx: 3, lbl: 'Breccia', col: '#f09595' }
+  ];
+  function vuotoVal() {
+    var r = state.ruth;
+    var v = num(r.condanne, 0) + num(r.cicatrici, 0) + num(r.richiamo, 0) - num(r.grazie, 0);
+    return v < 0 ? 0 : v;
+  }
+  function vuotoArgine() { return state.ruth.bisaccia === false ? 2 : 4; }
+  function vuotoIdx() {
+    var v = vuotoVal(), a = vuotoArgine();
+    if (v <= 0) return 0;   // Quiescente
+    if (v < a) return 1;    // Sommesso
+    if (v === a) return 2;  // Teso
+    return 3;               // Breccia
+  }
+  function vuotoSev() { return Math.max(0, vuotoVal() - vuotoArgine()); }
+
   /* ---- Motore CD dinamico (usato dalla Fase 3) ----
      Base di livello + modulazione per stato dell'arma. */
   var cd = {
@@ -176,13 +205,15 @@
     inCondanna: function (sbil) { return 14 + Math.min(num(sbil, 0), 6); },
     ancorare: function (L, cic) { return this.cdLiv(L) + (num(cic, 0) >= 3 ? 1 : 0); },
     protesta: function (f) { return 14 + num(f, 0); },
+    vuoto: function (L, sev) { return this.cdLiv(L) + num(sev, 0); }, // Breccia del Vuoto (provvisoria)
     /* Sostituisce i token {{cd...}} nel testo col valore corrente.
        ctx: { livello, faro, sbil, cic } */
     interpola: function (text, ctx) {
       if (text == null) return text;
       ctx = ctx || {};
       var L = num(ctx.livello, 1), f = num(ctx.faro, 0),
-          sbil = num(ctx.sbil, 0), cic = num(ctx.cic, 0);
+          sbil = num(ctx.sbil, 0), cic = num(ctx.cic, 0),
+          vsev = num(ctx.vuotoSev, 0);
       var map = {
         cdLivello: this.cdLiv(L),
         cdCatturaMorte: this.catturaMorte(L, f),
@@ -191,7 +222,8 @@
         cdGuanto: this.guanto(L, f),
         cdInCondanna: this.inCondanna(sbil),
         cdAncorare: this.ancorare(L, cic),
-        cdProtesta: this.protesta(f)
+        cdProtesta: this.protesta(f),
+        cdVuoto: this.vuoto(L, vsev)
       };
       return String(text).replace(/\{\{(\w+)\}\}/g, function (m, k) {
         return map.hasOwnProperty(k) ? map[k] : m;
@@ -284,6 +316,63 @@
         try { Grimorio._pushFirebase(state); } catch (e) {}
       }
       return out;
+    },
+
+    /* ---- Vuoto di Rui → Artiglio (mediatore fidato, come risonanza) ----
+       Ruth lo invoca dopo ogni render. Rivaluta lo stato del Vuoto e lo riversa
+       sull'Artiglio SENZA esporre la causa:
+         Teso/Breccia → faroBump (Faro +1 stato, rinfrescato finché dura)
+         Breccia      → artiglio.congiunzione = { sev } (letto da spawn.html)
+         salita in Teso/Breccia → eco 'vuoto' a Dronjons (una volta per salita)
+       Scrive solo quando qualcosa cambia; non ritorna dati dell'Artiglio. */
+    vuotoSync: function () {
+      if (myScope !== 'ruth' && myScope !== 'dm') return;
+      var a = state.artiglio;
+      var idx = vuotoIdx();
+      var prev = num(a.vuotoStato, 0);
+      var ts = nextStamp();
+      var changed = false;
+      if (idx >= 2) {
+        var b = a.faroBump;
+        // rinfresca solo se scade entro 50 min: evita scritture a ogni render
+        if (!b || !b.until || b.until - Date.now() < 3000000) {
+          a.faroBump = { until: Date.now() + 3600000 };
+          changed = true;
+        }
+      }
+      if (idx === 3) {
+        var sev = vuotoSev();
+        if (!a.congiunzione || a.congiunzione.sev !== sev) {
+          a.congiunzione = { sev: sev, ts: ts };
+          changed = true;
+        }
+      } else if (a.congiunzione) {
+        delete a.congiunzione;
+        changed = true;
+      }
+      if (idx >= 2 && idx > prev) {
+        a.eco = { k: 'vuoto', nonce: ts, ts: ts };
+        changed = true;
+      }
+      if (idx !== prev) { a.vuotoStato = idx; changed = true; }
+      if (!changed) return;
+      state.meta.updatedAt = ts;
+      state.meta.writer = CLIENT;
+      persistLocal();
+      if (bc) { try { bc.postMessage({ type: 'state', state: state }); } catch (e) {} }
+      if (typeof Grimorio._pushFirebase === 'function') {
+        try { Grimorio._pushFirebase(state); } catch (e) {}
+      }
+    },
+
+    /* Letture del Vuoto: solo ruth/dm. Lo scope artiglio vede sempre "Quiescente"
+       (il muro asimmetrico resta reale anche per errore di codice). */
+    vuoto: {
+      val: function () { return myScope === 'artiglio' ? 0 : vuotoVal(); },
+      argine: function () { return myScope === 'artiglio' ? 0 : vuotoArgine(); },
+      sev: function () { return myScope === 'artiglio' ? 0 : vuotoSev(); },
+      idx: function () { return myScope === 'artiglio' ? 0 : vuotoIdx(); },
+      stato: function () { return VUOTO[myScope === 'artiglio' ? 0 : vuotoIdx()]; }
     },
 
     faro: faroState,

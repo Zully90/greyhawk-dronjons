@@ -131,8 +131,46 @@ Flag nello slice `artiglio`: `patto` (default `true`) e `vistaUsata` (cooldown d
 
 La scheda **Vuoto di Rui** in `index.html` è nota narrativa statica (non legge lo slice
 `ruth`): Argine di Wee Jas dalla s.88, la bisaccia (Vecna) che trattiene, «ciò che dorme
-sotto il tempio» che attira. Meccaniche dell'arco: **DA DEFINIRE con Marcello** (nessun
-numero inventato).
+sotto il tempio» che attira. La meccanica viva sta in `ruth.html` (vedi sotto).
+
+### Vuoto di Rui (meccanica derivata, `ruth.html`)
+
+Nessun contatore manuale: il Vuoto si **deriva** dallo slice `ruth`.
+
+```
+Vuoto  = max(0, Condanne + Cicatrici + Richiamo − Grazie)
+Argine = bisaccia intatta ? 4 : 2          (Argine di Wee Jas)
+```
+
+Leve DM nello slice `ruth`: `richiamo` (0–3, «ciò che dorme sotto il tempio», per luogo)
+e `bisaccia` (bool, il contenitore di Vecna). Motore in `core.js`: `Grimorio.vuoto.{val,
+argine,sev,idx,stato}` (lo scope `artiglio` riceve sempre «Quiescente») e token `{{cdVuoto}}`
+= `14 + livello + (Vuoto − Argine)`.
+
+| Stato | Condizione | Rui | Riversato sull'Artiglio (`Grimorio.vuotoSync`) |
+|-------|-----------|-----|------------------------------------------------|
+| Quiescente | 0 | — | — |
+| Sommesso | 1 … Argine−1 | percepisce morti/morenti (rafforza Vedere il Confine) | — |
+| Teso | = Argine | prossimo Verdetto della scena costa +1 | `faroBump` (Faro +1 stato) + `eco:'vuoto'` alla salita |
+| Breccia | > Argine | TS Volontà `{{cdVuoto}}` o Drained 1 al riposo; DM valuta Richiamo +1 | come Teso + `artiglio.congiunzione={sev}` → `spawn.html` +1 al Faro per Tiro 1 e 2 |
+
+`vuotoSync` è chiamato da `ruth.html` a ogni render: scrive solo se lo stato cambia
+(`artiglio.vuotoStato` ricorda l'ultimo applicato), l'eco parte solo in **salita**, la
+Congiunzione si toglie da sola sotto la Breccia. L'escalation del Richiamo resta manuale.
+
+### Backlog — da tarare insieme
+
+- [ ] **Numeri del Vuoto provvisori**: Argine 4/2, Richiamo 0–3, pesi 1:1 di
+  Condanne/Cicatrici/Grazie. Verificare che reggano a ogni Soglia (a Lv alti le Condanne
+  crescono: il Vuoto rischia di stare sempre in Breccia?). Valutare Argine scalato su
+  livello o Mod. SAG.
+- [ ] **`cdVuoto` = 14 + livello + sev**: confrontare con le CD per livello PF2e
+  (tabella DC-by-level) e con le altre CD del motore (`cdLiv`, `faro`, `protesta`).
+- [ ] **Effetto Teso** («prossimo Verdetto costa +1») e **Breccia** (Drained 1): confermare
+  intensità e durata; deciderne il tracciamento (oggi solo testo).
+- [ ] **Congiunzione** = +1 piatto al Faro dello spawn: valutare se scalare con `sev`.
+- [ ] Interazione col drawback *Il Portale del Marchio* (Soglia III, anch'esso +1 step
+  spawn): cumulabili?
 
 ### CD dinamiche
 
@@ -405,7 +443,7 @@ Condizioni aggiuntive proposte, in attesa di design:
 - **Cicatrici di Ruth ≥5** → +1 step Faro per una notte.
 
 ### Stato (via `Grimorio`, vedi sezione "Stato condiviso")
-- Scrive: slice `ruth` → `{ grazie, condanne, cicatrici, livello, sag, runaAttiva }`
+- Scrive: slice `ruth` → `{ grazie, condanne, cicatrici, livello, sag, runaAttiva, richiamo, bisaccia }`
 - Legge: `ruth` + `Grimorio.faro()` — **mostra lo stato del Faro dell'Artiglio** (indicatore
   live "L'Arco percepisce l'Artiglio"). Non legge i numeri grezzi dell'Artiglio.
 - spawn.html legge `ruth` per il pannello DM Risonanza

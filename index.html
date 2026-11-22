@@ -293,8 +293,8 @@ footer {
       </div>
     </div>
 
-    <div style="margin-top:10px;padding:8px 10px;border-radius:var(--border-radius-md);background:var(--warn-bg);border-left:3px solid var(--warn-border);">
-      <div style="font-size:13px;color:var(--warn-fg);line-height:1.5;"><i class="ti ti-pencil" style="font-size:13px;vertical-align:-2px;" aria-hidden="true"></i> <strong>Meccaniche dell'arco: DA DEFINIRE.</strong> Numeri e regole dell'arco e del vuoto li concordiamo prima di scriverli — nessun valore inventato.</div>
+    <div style="margin-top:10px;padding:8px 10px;border-radius:var(--border-radius-md);background:var(--bg2);border-left:3px solid #b08fd8;">
+      <div style="font-size:12.5px;color:var(--t2);line-height:1.5;font-style:italic;"><i class="ti ti-skull" style="font-size:12px;color:#d85a5a;vertical-align:-1px;" aria-hidden="true"></i> Il Guanto non conosce la misura del vuoto — ne sente solo la pressione. Quando preme sull'argine, il teschio si scalda e il Faro arde più in alto.</div>
     </div>
   </div>
 </div>
@@ -578,6 +578,7 @@ function checkEco(a){
   const msg = eco.k==='sospiro-svanito' ? 'Un Sospiro si è dissolto dal Guanto. Non sai come.'
             : eco.k==='protesta'        ? 'Il Guanto freme — qualcosa contesta la tua presa. Non sai cosa.'
             : eco.k==='faro-arde'       ? 'Il Faro arde oltre il suo peso. Non sai perché.'
+            : eco.k==='vuoto'           ? 'Il teschio sul dorso del Guanto si scalda: qualcosa preme contro un argine lontano.'
             : null;
   if(msg) toast(msg);
 }

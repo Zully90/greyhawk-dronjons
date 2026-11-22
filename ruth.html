@@ -280,6 +280,34 @@ footer {
   <div id="stato-desc" style="font-size:13px;line-height:1.5;"></div>
 </div>
 
+<!-- Vuoto di Rui (sessione 88): derivato da Condanne + Cicatrici + Richiamo − Grazie -->
+<div id="vuoto-card" style="border-radius:var(--r-lg);padding:11px 14px;margin-bottom:.875rem;border:.5px solid var(--border);background:#120e1a;">
+  <div style="display:flex;align-items:center;gap:7px;margin-bottom:8px;">
+    <i class="ti ti-circle-dashed" id="vuoto-ico" style="font-size:17px;" aria-hidden="true"></i>
+    <span style="font-size:13px;font-weight:500;color:var(--t2);">Il Vuoto —</span>
+    <span id="vuoto-lbl" style="font-size:13px;font-weight:500;"></span>
+    <span id="vuoto-badge" style="font-size:11px;padding:2px 8px;border-radius:4px;margin-left:auto;"></span>
+  </div>
+  <div id="vuoto-pips" style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;min-height:14px;margin-bottom:6px;"></div>
+  <div id="vuoto-formula" style="font-size:11px;color:var(--t3);margin-bottom:8px;"></div>
+  <div id="vuoto-desc" style="font-size:13px;line-height:1.5;margin-bottom:10px;"></div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;border-top:.5px solid var(--border);padding-top:10px;">
+    <div>
+      <label style="font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px;">Richiamo <span style="text-transform:none;letter-spacing:0;">· ciò che dorme sotto il tempio</span></label>
+      <input type="number" id="richiamo" min="0" max="3" value="0" oninput="go()">
+    </div>
+    <div>
+      <label style="font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px;">Bisaccia <span style="text-transform:none;letter-spacing:0;">· Vecna trattiene</span></label>
+      <button id="bisaccia-tgl" onclick="togBisaccia()" style="width:100%;height:36px;"></button>
+    </div>
+  </div>
+
+  <div style="margin-top:10px;padding:7px 9px;border-radius:var(--r-md);background:var(--warn-bg);border-left:3px solid var(--warn-border);font-size:12px;color:var(--warn-fg);line-height:1.5;">
+    <i class="ti ti-pencil" style="font-size:12px;vertical-align:-1px;" aria-hidden="true"></i> <strong>Numeri provvisori</strong> (Argine 4/2, Richiamo 0–3, CD della Breccia): da tarare sulle CD di livello.
+  </div>
+</div>
+
 <div style="border-radius:var(--r-lg);border:.5px solid var(--border);margin-bottom:.875rem;overflow:hidden;">
   <div onclick="tog('risonanza-body','risonanza-chev')" style="display:flex;align-items:center;gap:8px;padding:11px 14px;background:var(--bg2);cursor:pointer;user-select:none;">
     <i class="ti ti-link" style="font-size:16px;color:var(--t2);" aria-hidden="true"></i>
@@ -385,6 +413,15 @@ let grazie = 0;
 let condanne = 0;
 let runaAttiva = 'grigia'; // 'grigia' | 'blu' | 'rossa'
 let applyingExternal = false; // sopprime il salvataggio durante un sync esterno
+let bisaccia = true;          // contenitore di Vecna: intatto → Argine 4, ceduto → Argine 2
+
+/* Effetti del Vuoto per stato (indice da Grimorio.vuoto.idx()). PROVVISORI. */
+const VUOTO_DESC = [
+  'Il vuoto tace. L\'occhio è solo un occhio.',
+  'L\'occhio lacrima nero: Rui percepisce morti e morenti vicini (rafforza <em>Vedere il Confine</em>). Nessun costo.',
+  'Il vuoto preme sull\'Argine. <strong>Il prossimo Verdetto della scena costa +1.</strong> L\'Artiglio lo sente: il suo Faro arde un gradino più in alto.',
+  'Il vuoto trabocca oltre l\'Argine (+{{sev}}). <strong>TS Volontà CD {{cdVuoto}}</strong> o Drained 1 al prossimo riposo lungo. <strong>Congiunzione:</strong> lo spawn notturno parte un gradino peggio. <em>DM: ciò che dorme sotto il tempio si avvicina — valuta Richiamo +1.</em>',
+];
 
 const RUNA_DATA = [
   { minLv:3,  maxLv:4,  att:'+1', dadi:'1d6',
@@ -686,6 +723,63 @@ function go() {
   buildSoglie(l);
   buildRuna(l);
   saveRuth();
+  buildVuoto(l);          // legge lo slice ruth appena salvato
+  Grimorio.vuotoSync();   // riversa Teso/Breccia sull'Artiglio (senza svelare la causa)
+  updateFaroLive();       // il Faro percepito può essere salito per il Vuoto
+}
+
+function buildVuoto(l) {
+  const v = Grimorio.vuoto.val(), arg = Grimorio.vuoto.argine();
+  const sev = Grimorio.vuoto.sev(), st = Grimorio.vuoto.stato();
+  document.getElementById('vuoto-ico').style.color = st.col;
+  const lbl = document.getElementById('vuoto-lbl');
+  lbl.textContent = st.lbl;
+  lbl.style.color = st.col;
+  const badge = document.getElementById('vuoto-badge');
+  badge.textContent = `${v} / Argine ${arg}`;
+  badge.style.background = st.col;
+  badge.style.color = '#111';
+
+  const pips = document.getElementById('vuoto-pips');
+  pips.innerHTML = '';
+  const tot = Math.min(Math.max(arg + 2, v), 14);
+  for (let i = 1; i <= tot; i++) {
+    const p = document.createElement('div');
+    p.className = 'pip';
+    if (i <= v) {
+      const c = i > arg ? '#f09595' : '#b08fd8';
+      p.style.background = c; p.style.borderColor = c;
+    } else if (i > arg) {
+      p.style.borderStyle = 'dashed';
+    }
+    pips.appendChild(p);
+    if (i === arg) {   // marcatore dell'Argine di Wee Jas
+      const m = document.createElement('div');
+      m.title = 'Argine di Wee Jas';
+      m.style.cssText = 'width:2px;height:18px;background:#d4c4a8;border-radius:1px;margin:0 3px;';
+      pips.appendChild(m);
+    }
+  }
+
+  const ric = +document.getElementById('richiamo').value || 0;
+  const cic = +document.getElementById('cic').value || 0;
+  document.getElementById('vuoto-formula').textContent =
+    `Condanne ${condanne} + Cicatrici ${cic} + Richiamo ${ric} − Grazie ${grazie} = ${v}`;
+
+  const txt = VUOTO_DESC[st.idx].replace('{{sev}}', sev);
+  const desc = document.getElementById('vuoto-desc');
+  desc.innerHTML = Grimorio.cd.interpola(txt, { livello: l, vuotoSev: sev });
+  desc.style.color = st.idx === 0 ? 'var(--t3)' : st.col;
+
+  const bt = document.getElementById('bisaccia-tgl');
+  bt.textContent = bisaccia ? 'Intatta · Argine 4' : 'Ceduta · Argine 2';
+  bt.style.color = bisaccia ? '#7ab8f0' : 'var(--danger-fg)';
+  bt.style.borderColor = bisaccia ? '#2a4a6a' : '#6a2020';
+}
+
+function togBisaccia() {
+  bisaccia = !bisaccia;
+  go();
 }
 
 function buildSoglie(l) {
@@ -770,6 +864,8 @@ function saveRuth() {
     cicatrici: +document.getElementById('cic').value || 0,
     livello: +document.getElementById('lvl').value || 1,
     sag: +document.getElementById('sag').value || 1,
+    richiamo: Math.max(0, Math.min(3, +document.getElementById('richiamo').value || 0)),
+    bisaccia,
   });
 }
 
@@ -827,6 +923,8 @@ function syncFromStore() {
   document.getElementById('cic').value = d.cicatrici;
   document.getElementById('lvl').value = d.livello;
   document.getElementById('sag').value = d.sag;
+  document.getElementById('richiamo').value = d.richiamo || 0;
+  bisaccia = d.bisaccia !== false;
   go();                 // render; saveRuth() interno è soppresso dal guard
   applyingExternal = false;
   updateFaroLive();     // riflette lo stato del Faro dell'Artiglio dal vivo
