@@ -151,12 +151,14 @@ argine,sev,idx,stato}` (lo scope `artiglio` riceve sempre «Quiescente») e toke
 |-------|-----------|-----|------------------------------------------------|
 | Quiescente | 0 | — | — |
 | Sommesso | 1 … Argine−1 | percepisce morti/morenti (rafforza Vedere il Confine) | — |
-| Teso | = Argine | prossimo Verdetto della scena costa +1 | `faroBump` (Faro +1 stato) + `eco:'vuoto'` alla salita |
+| Teso | = Argine | prossimo Verdetto della scena costa +1 | `artiglio.vuotoStato` (Faro +1 stato) + `eco:'vuoto'` alla salita |
 | Breccia | > Argine | TS Volontà `{{cdVuoto}}` o Drained 1 al riposo; DM valuta Richiamo +1 | come Teso + `artiglio.congiunzione={sev}` → `spawn.html` +1 al Faro per Tiro 1 e 2 |
 
 `vuotoSync` è chiamato da `ruth.html` a ogni render: scrive solo se lo stato cambia
 (`artiglio.vuotoStato` ricorda l'ultimo applicato), l'eco parte solo in **salita**, la
-Congiunzione si toglie da sola sotto la Breccia. L'escalation del Richiamo resta manuale.
+Congiunzione si azzera nello stato condiviso sotto la Breccia. Sotto Teso il Faro perde
+il bonus del Vuoto. Il bonus temporaneo del Dono della Pietà ha una durata indipendente
+e i due bonus non si sommano. L'escalation del Richiamo resta manuale.
 
 ### Backlog — da tarare insieme
 

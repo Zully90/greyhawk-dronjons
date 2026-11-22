@@ -998,15 +998,13 @@ function loadFromStorage() {
     if (d.sospiri !== undefined) document.getElementById('inp-sospiri').value = d.sospiri;
     if (d.des     !== undefined) document.getElementById('inp-des').value     = d.des;
     if (d.livello !== undefined) document.getElementById('inp-lv').value      = d.livello;
-    // Patto del Teschio: default ON; rispecchia lo stato condiviso dell'Artiglio
-    document.getElementById('chk-patto').checked = (d.patto !== false);
   } catch(e) {}
 }
 
 // ── UI updates ───────────────────────────────────────────────────────────────
 
 // Patto del Teschio: l'interruttore applica il +1 Sospiro al Faro (Tiro 1 e 2).
-function pattoOn()   { return !!document.getElementById('chk-patto').checked; }
+function pattoOn()   { return Grimorio.patto(); }
 // Congiunzione: Breccia del Vuoto di Rui (scritta da core.js → artiglio.congiunzione).
 function congiunzione() {
   const a = Grimorio.get('artiglio');
@@ -1025,6 +1023,7 @@ function faroBreakdown(s) {
 }
 
 function updateFaro() {
+  document.getElementById('chk-patto').checked = pattoOn();
   const sospiri    = parseInt(document.getElementById('inp-sospiri').value) || 0;
   const des        = parseInt(document.getElementById('inp-des').value)     || 0;
   const faroS      = faroSospiriInput();            // Sospiri + 1 se Patto attivo

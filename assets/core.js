@@ -162,7 +162,8 @@
   }
   function faroIdxEff() {
     var base = faroIdx(faroSospiri());
-    return bumpAttivo() ? Math.min(3, base + 1) : base;
+    var vuotoAttivo = num(state.artiglio.vuotoStato, 0) >= 2;
+    return (bumpAttivo() || vuotoAttivo) ? Math.min(3, base + 1) : base;
   }
   function faroState() { return FARO[faroIdxEff()]; }
 
@@ -321,7 +322,7 @@
     /* ---- Vuoto di Rui → Artiglio (mediatore fidato, come risonanza) ----
        Ruth lo invoca dopo ogni render. Rivaluta lo stato del Vuoto e lo riversa
        sull'Artiglio SENZA esporre la causa:
-         Teso/Breccia → faroBump (Faro +1 stato, rinfrescato finché dura)
+         Teso/Breccia → artiglio.vuotoStato (Faro +1 finché il Vuoto è attivo)
          Breccia      → artiglio.congiunzione = { sev } (letto da spawn.html)
          salita in Teso/Breccia → eco 'vuoto' a Dronjons (una volta per salita)
        Scrive solo quando qualcosa cambia; non ritorna dati dell'Artiglio. */
@@ -332,14 +333,6 @@
       var prev = num(a.vuotoStato, 0);
       var ts = nextStamp();
       var changed = false;
-      if (idx >= 2) {
-        var b = a.faroBump;
-        // rinfresca solo se scade entro 50 min: evita scritture a ogni render
-        if (!b || !b.until || b.until - Date.now() < 3000000) {
-          a.faroBump = { until: Date.now() + 3600000 };
-          changed = true;
-        }
-      }
       if (idx === 3) {
         var sev = vuotoSev();
         if (!a.congiunzione || a.congiunzione.sev !== sev) {
@@ -347,7 +340,8 @@
           changed = true;
         }
       } else if (a.congiunzione) {
-        delete a.congiunzione;
+        // Le merge locali e Firestore propagano null, ma ignorano i campi omessi.
+        a.congiunzione = null;
         changed = true;
       }
       if (idx >= 2 && idx > prev) {
