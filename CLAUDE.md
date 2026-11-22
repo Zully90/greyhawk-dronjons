@@ -171,6 +171,13 @@ Congiunzione si toglie da sola sotto la Breccia. L'escalation del Richiamo resta
 - [ ] **Congiunzione** = +1 piatto al Faro dello spawn: valutare se scalare con `sev`.
 - [ ] Interazione col drawback *Il Portale del Marchio* (Soglia III, anch'esso +1 step
   spawn): cumulabili?
+- [ ] **Sovrapposizione con la Risonanza del Bilancio** (`RISONANZA_DATA` in `ruth.html`):
+  entrambe leggono Grazie/Condanne, quindi con molte Condanne Rui paga due volte
+  (L'Esecutore → Drained 1, La Sentenza Incarnata → Drained 2, L'Angelo Exterminans →
+  Drained 3, **più** Drained 1 dalla Breccia del Vuoto). Decidere se i Drained si
+  sommano o se vale il più alto, oppure differenziare i ruoli: la Risonanza come
+  effetto in combattimento, il Vuoto come pressione sull'Argine e sul mondo (Faro,
+  spawn, Richiamo).
 
 ### CD dinamiche
 
