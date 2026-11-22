@@ -27,7 +27,9 @@
 
   function defaults() {
     return {
-      artiglio: { sospiri: 0, des: 4, livello: 5 },
+      // patto: Patto del Teschio (sessione 88) — Rui conta +1 Sospiro ai soli
+      //        fini del Faro. vistaUsata: cooldown di "Vista condivisa" (1/giorno).
+      artiglio: { sospiri: 0, des: 4, livello: 5, patto: true, vistaUsata: false },
       ruth: { grazie: 0, condanne: 0, cicatrici: 0, livello: 8, sag: 4, runaAttiva: 'grigia' },
       meta: { updatedAt: 0, sessione: SESSION, writer: '' }
     };
@@ -141,6 +143,15 @@
     { idx: 3, lbl: 'Faro Ardente', col: '#f09595' }
   ];
   function faroIdx(s) { s = num(s, 0); return s === 0 ? 0 : s <= 2 ? 1 : s <= 4 ? 2 : 3; }
+  // Patto del Teschio (sessione 88): finché è attivo, Rui vale +1 Sospiro ai soli
+  // fini del Faro. Il conteggio reale dei Sospiri non cambia (overflow, catture,
+  // azioni rapide restano sui Sospiri veri) — solo la soglia del Faro sale di 1.
+  function pattoAttivo() {
+    return !!(state.artiglio && state.artiglio.patto);
+  }
+  function faroSospiri() {
+    return num(state.artiglio && state.artiglio.sospiri, 0) + (pattoAttivo() ? 1 : 0);
+  }
   // Bump planare temporaneo (Dono della Pietà di Ruth): alza di 1 stato il Faro
   // finché dura. Best-effort senza DM: scade da solo al prossimo render/evento.
   function bumpAttivo() {
@@ -148,7 +159,7 @@
     return !!(b && b.until && Date.now() < b.until);
   }
   function faroIdxEff() {
-    var base = faroIdx(state.artiglio.sospiri);
+    var base = faroIdx(faroSospiri());
     return bumpAttivo() ? Math.min(3, base + 1) : base;
   }
   function faroState() { return FARO[faroIdxEff()]; }
@@ -277,6 +288,8 @@
 
     faro: faroState,
     faroIdx: function () { return faroIdxEff(); },
+    patto: pattoAttivo,          // Patto del Teschio attivo?
+    faroSospiri: faroSospiri,    // Sospiri reali + 1 se Patto attivo (valore del Faro)
     subscribe: function (cb) { if (typeof cb === 'function') listeners.push(cb); },
     cd: cd
   };

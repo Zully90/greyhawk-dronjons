@@ -109,6 +109,31 @@ senza sapere perché (mistero preservato: la causa non risale mai all'Artiglio).
 - **Toast**: le notifiche si attivano solo su ingest *esterno* (confronto `eco.nonce`
   con l'ultimo visto); al load l'eco corrente è marcata come già vista.
 
+### Patto del Teschio (sessione 88)
+
+Dronjons ha toccato il petto di Rui Jin con l'Artiglio mentre ardeva un teschio di
+brace di Wee Jas: il teschio è entrato nel guanto e ne ha marchiato il dorso.
+Flag nello slice `artiglio`: `patto` (default `true`) e `vistaUsata` (cooldown di
+*Vista condivisa*, 1/giorno). Effetti:
+
+- **Rui intoccabile**: l'Artiglio non può più nutrirsi di Rui (niente fame, niente
+  danno da contatto).
+- **Catture intercettate → ricordi integri**: la modalità 3 (Manifestazione
+  intercettata) porta spiriti con ricordi INTEGRI, non più frammentati/cosmici.
+- **Vista condivisa** (1/giorno, 1 min): col guanto sul petto di Rui, Dronjons vede
+  ciò che vede il vuoto di Rui (porte nascoste, presenze, tracce magiche).
+- **Faro +1**: con `patto` attivo Rui vale **+1 Sospiro ai soli fini del Faro**.
+  In `core.js`, `faroSospiri()` = Sospiri reali + 1 e alimenta `faroIdx`/`faroIdxEff`;
+  i Sospiri reali (overflow, catture, azioni rapide) non cambiano. `index.html` mostra
+  sia «Sospiri: X» sia «Faro: X+1». `spawn.html` usa il valore del Faro per il **Tiro 1**
+  e il **Tiro 2** (interruttore «Patto del Teschio attivo», default ON, scrive `artiglio.patto`),
+  ma l'**overflow** resta calcolato sui Sospiri reali.
+
+La scheda **Vuoto di Rui** in `index.html` è nota narrativa statica (non legge lo slice
+`ruth`): Argine di Wee Jas dalla s.88, la bisaccia (Vecna) che trattiene, «ciò che dorme
+sotto il tempio» che attira. Meccaniche dell'arco: **DA DEFINIRE con Marcello** (nessun
+numero inventato).
+
 ### CD dinamiche
 
 Le difficoltà non sono più costanti: `Grimorio.cd` le calcola da **livello + stato
