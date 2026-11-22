@@ -168,6 +168,12 @@ footer {
 </style>
 </head>
 <body>
+<style>
+  #toast-wrap{position:fixed;left:0;right:0;bottom:18px;display:flex;flex-direction:column;align-items:center;gap:8px;z-index:9999;pointer-events:none;padding:0 16px;}
+  .toast{max-width:440px;background:var(--bg2);border:.5px solid var(--border2);border-left:3px solid var(--ruth-condanna, #c04040);border-radius:10px;padding:11px 14px;color:var(--t1);font-size:13.5px;line-height:1.45;box-shadow:0 8px 28px rgba(0,0,0,.5);opacity:0;transform:translateY(12px);transition:opacity .35s,transform .35s;font-style:italic;}
+  .toast.show{opacity:1;transform:translateY(0);}
+</style>
+<div id="toast-wrap" aria-live="polite"></div>
 <div class="wrap">
 
 <div class="page-header">
@@ -227,6 +233,12 @@ footer {
         <button class="btn-life" onclick="cV('grazia',1)" aria-label="Aggiungi grazia" style="height:26px;"><i class="ti ti-heart" style="font-size:13px;vertical-align:-2px;" aria-hidden="true"></i> LIFE</button>
         <button class="btn-life" onclick="cV('grazia',-1)" style="width:26px;height:26px;padding:0;display:flex;align-items:center;justify-content:center;flex:none;" aria-label="Rimuovi grazia"><i class="ti ti-minus" style="font-size:12px;" aria-hidden="true"></i></button>
       </div>
+    </div>
+
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:9px;padding-top:9px;border-top:.5px solid var(--border);">
+      <span style="flex-basis:100%;font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;">Risuona con l'Artiglio</span>
+      <button class="btn-death" onclick="azSpirito()" style="height:26px;font-size:12px;"><i class="ti ti-ghost" style="font-size:13px;vertical-align:-2px;" aria-hidden="true"></i> DEATH · spirito/non-morto</button>
+      <button class="btn-life" onclick="azProtesta()" style="height:26px;font-size:12px;"><i class="ti ti-heart" style="font-size:13px;vertical-align:-2px;" aria-hidden="true"></i> LIFE · su una preda</button>
     </div>
 
     <div id="warn-bilancio" style="display:none;align-items:center;gap:6px;font-size:13px;margin-top:8px;">
@@ -789,6 +801,9 @@ function go() {
       const cinput=document.getElementById('cic');
       cinput.value=Math.min(10,(+cinput.value||0)+1);
       go();
+      Grimorio.risonanza('sacrificio');          // Faro +1 stato per 1 ora
+      updateFaroLive();
+      toast('Il Dono della Pietà risuona: il Faro dell\'Artiglio arde oltre il suo peso.');
     }, canDo:()=>grazie>=3},
     {lbl:'Giudizio Finale −tutto', minLv:17, fn:()=>{grazie=0;condanne=0;go();}, canDo:()=>grazie+condanne>=5},
   ];
@@ -892,6 +907,39 @@ function saveRuth() {
     livello: +document.getElementById('lvl').value || 1,
     sag: +document.getElementById('sag').value || 1,
   });
+}
+
+/* --- Azioni che risuonano con l'Artiglio (mediate da core.js) ---
+   Ruth NON legge i dati di Dronjons: invoca Grimorio.risonanza() e riceve al
+   massimo il bit { risuonato } per decidere la propria ricompensa in Grazia. */
+function azSpirito() {
+  cV('condanna', 1);                            // DEATH: +1 Condanna
+  const r = Grimorio.risonanza('morte-spirito');
+  if (r && r.risuonato) {
+    cV('grazia', 1);                            // era un Sospiro di Dronjons → +1 Grazia
+    toast('Hai strappato un Sospiro all\'Artiglio. La Signora concede +1 Grazia.');
+  } else {
+    toast('Hai ucciso lo spirito con DEATH. Nessun Sospiro di Dronjons vi risuonava.');
+  }
+  updateFaroLive();
+}
+function azProtesta() {
+  cV('grazia', 1);                              // LIFE: +1 Grazia
+  Grimorio.risonanza('protesta');
+  updateFaroLive();
+  toast('Hai risparmiato una preda dell\'Artiglio. Il Guanto di Dronjons protesta.');
+}
+
+/* Toast effimero, coerente col tema. */
+function toast(txt) {
+  const c = document.getElementById('toast-wrap');
+  if (!c) return;
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = txt;
+  c.appendChild(t);
+  requestAnimationFrame(() => t.classList.add('show'));
+  setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 400); }, 5200);
 }
 
 function updateFaroLive() {
