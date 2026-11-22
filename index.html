@@ -207,6 +207,96 @@ footer {
     <span id="bbadge" style="font-size:11px;padding:2px 8px;border-radius:4px;margin-left:auto;"></span>
   </div>
   <div id="bdesc" style="font-size:13px;line-height:1.5;"></div>
+  <div id="bsub" style="display:none;font-size:11px;color:var(--t3);margin-top:6px;padding-top:6px;border-top:.5px solid rgba(255,255,255,0.06);"></div>
+</div>
+
+<!-- Patto del Teschio (sessione 88) -->
+<div class="card" style="margin-bottom:.875rem;border-color:#5a2020;">
+  <div class="sh" style="cursor:default;">
+    <i class="ti ti-skull" style="font-size:19px;color:#d85a5a;filter:drop-shadow(0 0 5px rgba(216,90,90,.45));" aria-hidden="true"></i>
+    <div style="flex:1;min-width:0;">
+      <div style="font-size:14px;font-weight:500;color:var(--t1);">Patto del Teschio</div>
+      <div style="font-size:11px;color:var(--t3);margin-top:1px;">Brace di Wee Jas marchiata sul dorso del guanto · sessione 88</div>
+    </div>
+    <button id="pattoTgl" onclick="togPatto()" style="height:26px;font-size:11px;flex:none;"></button>
+  </div>
+  <div style="padding:2px 14px 14px;">
+
+    <div style="padding:9px 11px;border-radius:var(--border-radius-md);border:.5px solid var(--border);background:var(--bg2);margin-bottom:8px;">
+      <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px;">
+        <i class="ti ti-shield-half" style="font-size:15px;color:#d85a5a;" aria-hidden="true"></i>
+        <span style="font-size:13px;font-weight:500;color:var(--t1);">Rui è intoccabile</span>
+      </div>
+      <div style="font-size:13px;color:var(--t2);line-height:1.5;">L'Artiglio non può più nutrirsi di Rui: niente fame verso di lui, niente danno da contatto. Il costo del contatto con Rui è <strong style="color:#d85a5a;">annullato</strong> dal Patto.</div>
+    </div>
+
+    <div style="padding:9px 11px;border-radius:var(--border-radius-md);border:.5px solid var(--border);background:var(--bg2);margin-bottom:8px;">
+      <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px;">
+        <i class="ti ti-ripple" style="font-size:15px;color:#BA7517;" aria-hidden="true"></i>
+        <span style="font-size:13px;font-weight:500;color:var(--t1);">Catture intercettate · ricordi integri</span>
+      </div>
+      <div style="font-size:13px;color:var(--t2);line-height:1.5;">Gli spiriti che usano il Marchio di Rui come tramite entrano nell'Artiglio con <strong style="color:#BA7517;">ricordi INTEGRI</strong>, non più frammentati o cosmici. <em>Interrogare il Catturato</em> ha accesso completo. (Vedi modalità 3 in «Come catturare i Sospiri».)</div>
+    </div>
+
+    <div style="padding:9px 11px;border-radius:var(--border-radius-md);border:.5px solid var(--border);background:var(--bg2);margin-bottom:8px;">
+      <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px;flex-wrap:wrap;">
+        <i class="ti ti-eye-bolt" style="font-size:15px;color:#7ab8f0;" aria-hidden="true"></i>
+        <span style="font-size:13px;font-weight:500;color:var(--t1);">Vista condivisa</span>
+        <span class="atag" style="color:#7ab8f0;background:#7ab8f020;">1 / giorno · 1 minuto</span>
+      </div>
+      <div style="font-size:13px;color:var(--t2);line-height:1.5;">Col guanto premuto sul petto di Rui, Dronjons vede ciò che vede il vuoto di Rui: porte nascoste, presenze, tracce magiche.</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap;">
+        <span style="font-size:13px;color:var(--t2);">Usi oggi: <strong id="vistaUsi">0</strong>/1</span>
+        <button id="vistaBtn" onclick="usaVista()" style="height:26px;font-size:12px;">Usa</button>
+        <button onclick="resetVista()" style="height:26px;font-size:12px;">Nuovo giorno</button>
+      </div>
+    </div>
+
+    <div style="padding:9px 11px;border-radius:var(--border-radius-md);border:.5px solid var(--border);background:var(--bg2);">
+      <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px;">
+        <i class="ti ti-broadcast" style="font-size:15px;color:#f5c06a;" aria-hidden="true"></i>
+        <span style="font-size:13px;font-weight:500;color:var(--t1);">Il Faro pesa Rui</span>
+      </div>
+      <div style="font-size:13px;color:var(--t2);line-height:1.5;">Rui conta come <strong style="color:#f5c06a;">+1 Sospiro</strong> ai soli fini del Faro. Il Faro arde sempre un gradino oltre i Sospiri che porti davvero.</div>
+    </div>
+
+    <div style="margin-top:10px;padding:8px 10px;border-radius:var(--border-radius-md);background:var(--bg2);border-left:3px solid #6a6762;">
+      <div style="font-size:12px;color:var(--t3);line-height:1.5;font-style:italic;"><i class="ti ti-wind" style="font-size:12px;vertical-align:-1px;" aria-hidden="true"></i> Lo Spirito del Corno (Sospiro #1) non smette di chiedere una cosa: <em>vuole sentire suonare il corno del tempio</em>.</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Vuoto di Rui (nota narrativa — l'Artiglio lo percepisce dal Patto) -->
+<div style="border-radius:var(--border-radius-lg);border:.5px solid var(--border);margin-bottom:.875rem;overflow:hidden;">
+  <div onclick="var b=document.getElementById('vuotobody');b.style.display=b.style.display==='none'?'block':'none';var c=document.getElementById('vuotochev');c.style.transform=c.style.transform==='rotate(180deg)'?'':'rotate(180deg)';" style="display:flex;align-items:center;gap:8px;padding:11px 14px;background:var(--bg2);cursor:pointer;user-select:none;">
+    <i class="ti ti-circle-dashed" style="font-size:16px;color:#b08fd8;" aria-hidden="true"></i>
+    <span style="font-size:14px;font-weight:500;color:var(--t1);">Vuoto di Rui</span>
+    <i class="ti ti-chevron-down" id="vuotochev" style="font-size:15px;color:var(--t3);margin-left:auto;transition:transform .2s;" aria-hidden="true"></i>
+  </div>
+  <div id="vuotobody" style="display:none;padding:12px 14px;">
+    <p style="font-size:13px;color:var(--t2);line-height:1.6;margin-bottom:10px;">Dal Patto, l'Artiglio percepisce l'energia negativa che abita l'arco e l'occhio di Rui — un vuoto che vorrebbe espandersi.</p>
+
+    <div style="padding:8px 10px;border-radius:var(--border-radius-md);background:#120e1a;border:.5px solid #b08fd855;margin-bottom:8px;">
+      <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#b08fd8;margin-bottom:3px;">Argine di Wee Jas</div>
+      <div style="font-size:13px;color:var(--t2);line-height:1.5;">Dalla sessione 88 il vuoto ha un argine: non dilaga più liberamente.</div>
+    </div>
+
+    <div style="display:grid;gap:8px;">
+      <div style="padding:8px 10px;border-radius:var(--border-radius-md);border:.5px solid var(--border);background:var(--bg2);">
+        <div style="font-size:13px;font-weight:500;color:var(--t1);margin-bottom:2px;"><i class="ti ti-lock" style="font-size:13px;color:#7ab8f0;vertical-align:-1px;" aria-hidden="true"></i> La bisaccia trattiene</div>
+        <div style="font-size:13px;color:var(--t2);line-height:1.5;">Un legame di Vecna fa da contenitore: finché regge, il vuoto resta compresso.</div>
+      </div>
+      <div style="padding:8px 10px;border-radius:var(--border-radius-md);border:.5px solid var(--border);background:var(--bg2);">
+        <div style="font-size:13px;font-weight:500;color:var(--t1);margin-bottom:2px;"><i class="ti ti-arrow-down-circle" style="font-size:13px;color:#d85a5a;vertical-align:-1px;" aria-hidden="true"></i> Ciò che dorme sotto il tempio attira</div>
+        <div style="font-size:13px;color:var(--t2);line-height:1.5;">Qualcosa, sotto il tempio, tira il vuoto verso il basso. Un richiamo da tracciare.</div>
+      </div>
+    </div>
+
+    <div style="margin-top:10px;padding:8px 10px;border-radius:var(--border-radius-md);background:var(--bg2);border-left:3px solid #b08fd8;">
+      <div style="font-size:12.5px;color:var(--t2);line-height:1.5;font-style:italic;"><i class="ti ti-skull" style="font-size:12px;color:#d85a5a;vertical-align:-1px;" aria-hidden="true"></i> Il Guanto non conosce la misura del vuoto — ne sente solo la pressione. Quando preme sull'argine, il teschio si scalda e il Faro arde più in alto.</div>
+    </div>
+  </div>
 </div>
 
 <div style="border-radius:var(--border-radius-lg);border:.5px solid var(--border);margin-bottom:.875rem;overflow:hidden;">
@@ -248,6 +338,7 @@ footer {
         </div>
         <div style="font-size:12px;color:var(--t3);margin-bottom:4px;font-style:italic;">Trigger: uno spirito tenta di manifestarsi attraverso il Marchio di Rui Jin</div>
         <div style="font-size:13px;color:var(--t2);line-height:1.5;">Nessuna prova richiesta. Il Marchio agisce da trappola — lo spirito si avvicina da solo cercando un vettore, e l'Artiglio è lì ad aspettarlo. Dronjons non deve fare nulla: è il bambino a fare da esca.</div>
+        <div style="margin-top:7px;padding:7px 9px;border-radius:var(--border-radius-md);background:#1a0f0f;border-left:3px solid #d85a5a;font-size:12.5px;color:var(--t2);line-height:1.5;"><i class="ti ti-skull" style="font-size:12px;color:#d85a5a;vertical-align:-1px;" aria-hidden="true"></i> <strong style="color:#d85a5a;">Patto del Teschio:</strong> gli spiriti intercettati tramite il Marchio ora entrano con <strong>ricordi INTEGRI</strong>, non più frammentati né cosmici. <em>Interrogare il Catturato</em> accede a tutto ciò che sapevano.</div>
       </div>
 
     </div>
@@ -400,9 +491,30 @@ function go(){
   const bb=document.getElementById('bbadge');
   bb.style.background=b.tcol;
   bb.style.color='#111';
-  bb.textContent=sN+' Sospiro'+(sN!==1?'i':'');
+  const patto=!!(a0&&a0.patto);
+  const faroN=sN+(patto?1:0);
+  bb.textContent=patto?('Faro '+faroN):(sN+' Sospiro'+(sN!==1?'i':''));
   document.getElementById('bdesc').textContent=b.d;
   document.getElementById('bdesc').style.color=b.tcol;
+  const bsub=document.getElementById('bsub');
+  if(bsub){
+    if(patto){
+      bsub.style.display='block';
+      bsub.innerHTML=`<i class="ti ti-skull" style="font-size:11px;color:#d85a5a;vertical-align:-1px;" aria-hidden="true"></i> Sospiri reali: <strong style="color:var(--t2);">${sN}</strong> · Faro: <strong style="color:var(--t2);">${faroN}</strong> <span style="color:var(--t3);">(+1 Patto del Teschio)</span>`;
+    } else { bsub.style.display='none'; }
+  }
+  // Patto del Teschio: toggle + contatore Vista condivisa
+  const pTgl=document.getElementById('pattoTgl');
+  if(pTgl){
+    pTgl.textContent=patto?'Attivo':'Sospeso';
+    pTgl.style.color=patto?'#6fcf6f':'var(--t3)';
+    pTgl.style.borderColor=patto?'#2a5a2a':'var(--border2)';
+  }
+  const vistaUsata=!!(a0&&a0.vistaUsata);
+  const vUsi=document.getElementById('vistaUsi');
+  if(vUsi)vUsi.textContent=vistaUsata?'1':'0';
+  const vBtn=document.getElementById('vistaBtn');
+  if(vBtn){ vBtn.disabled=vistaUsata; vBtn.textContent=vistaUsata?'Usata':'Usa'; }
   const qa=document.getElementById('qa');
   qa.innerHTML='';
   const acts=[
@@ -466,12 +578,28 @@ function checkEco(a){
   const msg = eco.k==='sospiro-svanito' ? 'Un Sospiro si è dissolto dal Guanto. Non sai come.'
             : eco.k==='protesta'        ? 'Il Guanto freme — qualcosa contesta la tua presa. Non sai cosa.'
             : eco.k==='faro-arde'       ? 'Il Faro arde oltre il suo peso. Non sai perché.'
+            : eco.k==='vuoto'           ? 'Il teschio sul dorso del Guanto si scalda: qualcosa preme contro un argine lontano.'
             : null;
   if(msg) toast(msg);
 }
 
 function scuotiTurbamento(){
   Grimorio.patch('artiglio', { turbato:false });   // Dronjons azzera il PROPRIO flag
+  go();
+}
+
+/* --- Patto del Teschio (sessione 88) --- */
+function togPatto(){
+  const a=Grimorio.get('artiglio');
+  Grimorio.patch('artiglio', { patto: !(a&&a.patto) });
+  go();
+}
+function usaVista(){
+  Grimorio.patch('artiglio', { vistaUsata:true });
+  go();
+}
+function resetVista(){
+  Grimorio.patch('artiglio', { vistaUsata:false });
   go();
 }
 

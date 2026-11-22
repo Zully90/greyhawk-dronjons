@@ -489,6 +489,17 @@ button:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
         <span id="faro-text"></span>
       </div>
 
+      <label id="patto-toggle" style="display:flex;align-items:center;gap:9px;padding:8px 12px;border-radius:7px;background:var(--bg3);border:.5px solid var(--border);font-size:13px;color:var(--t2);margin-bottom:14px;cursor:pointer;user-select:none;">
+        <input type="checkbox" id="chk-patto" checked style="width:16px;height:16px;accent-color:#d85a5a;cursor:pointer;">
+        <i class="ti ti-skull" style="font-size:15px;color:#d85a5a;" aria-hidden="true"></i>
+        <span>Patto del Teschio attivo <span style="color:var(--t3);font-size:12px;">— Rui conta +1 Sospiro al Faro (Tiro 1 e 2). L'overflow resta sui Sospiri reali.</span></span>
+      </label>
+
+      <div id="cong-warn" style="display:none;align-items:center;gap:8px;padding:8px 12px;border-radius:7px;background:var(--danger-bg);border:.5px solid #5a2020;color:var(--danger-fg);font-size:13px;margin-bottom:14px;">
+        <i class="ti ti-circle-dashed" style="font-size:15px;flex:none;" aria-hidden="true"></i>
+        <span><strong>Congiunzione</strong> — il Vuoto di Rui è in Breccia: la notte parte <strong>un gradino peggio</strong> (+1 al Faro per Tiro 1 e 2). <span id="cong-sev" style="color:var(--t3);font-size:12px;"></span></span>
+      </div>
+
       <div id="overflow-warn" style="display:none;padding:8px 12px;border-radius:7px;background:var(--warn-bg);border:0.5px solid var(--warn-border);color:var(--warn-fg);font-size:13px;margin-bottom:12px;">
         <i class="ti ti-alert-triangle" style="vertical-align:middle;margin-right:5px;" aria-hidden="true"></i>
         <strong>Overflow:</strong> Sospiri &gt; Mod. DES — soglia 4+, automatico su 1–3
@@ -992,19 +1003,46 @@ function loadFromStorage() {
 
 // ── UI updates ───────────────────────────────────────────────────────────────
 
+// Patto del Teschio: l'interruttore applica il +1 Sospiro al Faro (Tiro 1 e 2).
+function pattoOn()   { return Grimorio.patto(); }
+// Congiunzione: Breccia del Vuoto di Rui (scritta da core.js → artiglio.congiunzione).
+function congiunzione() {
+  const a = Grimorio.get('artiglio');
+  return a && a.congiunzione ? a.congiunzione : null;
+}
+function faroSospiriInput() {
+  const s = parseInt(document.getElementById('inp-sospiri').value) || 0;
+  return s + (pattoOn() ? 1 : 0) + (congiunzione() ? 1 : 0);
+}
+// "3+1 Patto+1 Congiunzione" — null se il Faro coincide coi Sospiri reali
+function faroBreakdown(s) {
+  const p = [String(s)];
+  if (pattoOn()) p.push('1 Patto');
+  if (congiunzione()) p.push('1 Congiunzione');
+  return p.length > 1 ? p.join('+') : null;
+}
+
 function updateFaro() {
+  document.getElementById('chk-patto').checked = pattoOn();
   const sospiri    = parseInt(document.getElementById('inp-sospiri').value) || 0;
   const des        = parseInt(document.getElementById('inp-des').value)     || 0;
-  const isOverflow = sospiri > des && sospiri > 0;
+  const faroS      = faroSospiriInput();            // Sospiri + 1 se Patto attivo
+  const isOverflow = sospiri > des && sospiri > 0;  // overflow SEMPRE sui Sospiri reali
 
-  const info = faroInfo(sospiri);
+  const info = faroInfo(faroS);
   const dot  = document.getElementById('faro-dot');
   const text = document.getElementById('faro-text');
   dot.style.background = info.color;
-  dot.style.boxShadow  = sospiri > 0 ? `0 0 6px ${info.color}88` : 'none';
-  text.innerHTML = `<strong style="color:${info.color}">${info.label}</strong> — <span style="color:var(--t3);font-size:12px;">${info.hint}</span>`;
+  dot.style.boxShadow  = faroS > 0 ? `0 0 6px ${info.color}88` : 'none';
+  const bd = faroBreakdown(sospiri);
+  const pattoNota = bd ? ` <span style="color:#d85a5a;font-size:11px;">· Faro ${faroS} (${bd})</span>` : '';
+  text.innerHTML = `<strong style="color:${info.color}">${info.label}</strong> — <span style="color:var(--t3);font-size:12px;">${info.hint}</span>${pattoNota}`;
 
   document.getElementById('overflow-warn').style.display = isOverflow ? 'block' : 'none';
+
+  const cong = congiunzione();
+  document.getElementById('cong-warn').style.display = cong ? 'flex' : 'none';
+  document.getElementById('cong-sev').textContent = cong ? `Breccia +${cong.sev} oltre l'Argine.` : '';
 }
 
 // ── Roll engine ──────────────────────────────────────────────────────────────
@@ -1020,20 +1058,22 @@ async function eseguiRoll() {
   const sospiri = parseInt(document.getElementById('inp-sospiri').value) || 0;
   const des     = parseInt(document.getElementById('inp-des').value)     || 0;
   const livello = parseInt(document.getElementById('inp-lv').value)      || 1;
+  const faroS   = faroSospiriInput();          // valore del Faro (Tiro 1 e 2): +Patto +Congiunzione
+  const faroBd  = faroBreakdown(sospiri);
 
   const area = document.getElementById('results-area');
   area.innerHTML = '';
 
   // ── Step 1: Il Velo si assottiglia? ─────────────────────────────────────
 
-  if (sospiri === 0) {
+  if (faroS === 0) {
     area.innerHTML = tranquilloHTML("Faro Silente", "Nessun Sospiro, nessun rischio. Il Velo resta intatto. Il gruppo dorme tranquillo.");
     finish();
     return;
   }
 
-  const isOverflow = sospiri > des;
-  const soglia     = getSoglia(sospiri, isOverflow);
+  const isOverflow = sospiri > des;              // overflow SEMPRE sui Sospiri reali
+  const soglia     = getSoglia(faroS, isOverflow);
   const d20_1      = rand(20);
   const disturbo   = isOverflow && d20_1 <= 3 ? true : d20_1 >= soglia.min;
 
@@ -1050,10 +1090,10 @@ async function eseguiRoll() {
 
   await delay(700);
   const d10            = rand(10);
-  const totaleIntensita = d10 + sospiri;
+  const totaleIntensita = d10 + faroS;
   const grado          = getGrado(totaleIntensita);
 
-  await showStep(area, 2, "Intensità", buildStep2HTML(d10, sospiri, totaleIntensita, grado), 0);
+  await showStep(area, 2, "Intensità", buildStep2HTML(d10, faroS, totaleIntensita, grado, faroBd), 0);
 
   // ── Step 3: Manifestazione ──────────────────────────────────────────────
 
@@ -1115,7 +1155,10 @@ function buildStep1HTML(d20, soglia, disturbo, isOverflow) {
     ${outcome}`;
 }
 
-function buildStep2HTML(d10, sospiri, totale, grado) {
+function buildStep2HTML(d10, faroS, totale, grado, breakdown) {
+  const faroLbl = breakdown
+    ? `${faroS} Faro <span style="color:#d85a5a;">(${breakdown})</span>`
+    : `${faroS} Sospiri`;
   return `
     <div class="dice-row">
       <div class="die-box">
@@ -1123,7 +1166,7 @@ function buildStep2HTML(d10, sospiri, totale, grado) {
         <span class="die-label">d10</span>
       </div>
       <div class="dice-vs">
-        <div class="threshold">${d10} + ${sospiri} Sospiri = <strong>${totale}</strong></div>
+        <div class="threshold">${d10} + ${faroLbl} = <strong>${totale}</strong></div>
         <div style="font-size:12px;color:var(--t3);">scala 1–3 Eco · 4–6 Banale · 7–9 Minore · 10–12 Grave · 13–15 Letale · 16+ Catastrofico</div>
       </div>
     </div>
@@ -1318,7 +1361,7 @@ function togDM() {
 function cdCtx() {
   return {
     livello: +document.getElementById('inp-lv').value || 1,
-    faro: Grimorio.cd.faroIdx(+document.getElementById('inp-sospiri').value || 0)
+    faro: Grimorio.cd.faroIdx(faroSospiriInput())
   };
 }
 function interpCD(t) { return Grimorio.cd.interpola(t, cdCtx()); }
@@ -1345,9 +1388,11 @@ function aggiornaRisonanza() {
     const sospiriEl = document.getElementById('dm-sospiri');
     if (artiglio) {
       const s = artiglio.sospiri || 0;
-      const st = FARO_STATI.find(x => s >= x.min && s <= x.max) || FARO_STATI[FARO_STATI.length-1];
-      faroEl.innerHTML = `<strong style="color:${st.col}">${st.lbl}</strong>`;
-      sospiriEl.textContent = `${s} Sospiri · Lv ${artiglio.livello||'?'} · DES ${artiglio.des||'?'}`;
+      const patto = !!artiglio.patto;
+      const faroS = s + (patto ? 1 : 0);
+      const st = FARO_STATI.find(x => faroS >= x.min && faroS <= x.max) || FARO_STATI[FARO_STATI.length-1];
+      faroEl.innerHTML = `<strong style="color:${st.col}">${st.lbl}</strong>${patto ? ' <span style="color:#d85a5a;font-size:11px;">· Patto</span>' : ''}`;
+      sospiriEl.textContent = `${s} Sospiri${patto ? ` · Faro ${faroS}` : ''} · Lv ${artiglio.livello||'?'} · DES ${artiglio.des||'?'}`;
     } else {
       faroEl.textContent = 'Nessun dato';
       sospiriEl.textContent = 'Apri index.html nello stesso browser';
@@ -1362,7 +1407,8 @@ function aggiornaRisonanza() {
       const bilTxt = bil > 0 ? `+${bil}` : `${bil}`;
       const bilCol = bil > 0 ? '#98C090' : bil < 0 ? '#f09595' : '#6a6762';
       ruthEl.innerHTML = `<span style="color:#d4c4a8">${g}G</span> / <span style="color:#c04040">${c}C</span> · Bilancio <strong style="color:${bilCol}">${bilTxt}</strong>`;
-      ruthSubEl.textContent = `Lv ${ruth.livello||'?'} · SAG ${ruth.sag||'?'} · ${ruth.cicatrici||0} Cicatric${(ruth.cicatrici||0)===1?'e':'i'}`;
+      const vst = Grimorio.vuoto.stato();
+      ruthSubEl.innerHTML = `Lv ${ruth.livello||'?'} · SAG ${ruth.sag||'?'} · ${ruth.cicatrici||0} Cicatric${(ruth.cicatrici||0)===1?'e':'i'}<br>Vuoto <strong style="color:${vst.col}">${Grimorio.vuoto.val()}/${Grimorio.vuoto.argine()} · ${vst.lbl}</strong> · Richiamo ${ruth.richiamo||0} · Bisaccia ${ruth.bisaccia===false?'ceduta':'intatta'}`;
     } else {
       ruthEl.textContent = 'Nessun dato';
       ruthSubEl.textContent = 'Apri ruth.html nello stesso browser';
@@ -1376,19 +1422,29 @@ function aggiornaRisonanza() {
       if (s >= 5 && c >= 3) notes.push('⚠ Faro Ardente + Condanne alte: notte ad alto rischio.');
       if (c >= 3) notes.push(`Soglia spawn +1 step per Portale del Marchio (Condanne: ${c}).`);
       if (ruth.cicatrici >= 1) notes.push(`Cicatrici: ${ruth.cicatrici} — ricorda il −${ruth.cicatrici>=3?'1':'0'} al tiro per colpire di Rui Jin.`);
+      const vIdx = Grimorio.vuoto.idx();
+      if (vIdx === 2) notes.push('Vuoto Teso: Faro dell\'Artiglio +1 stato; prossimo Verdetto di Rui costa +1.');
+      if (vIdx === 3) notes.push(`Vuoto in Breccia (+${Grimorio.vuoto.sev()}): Congiunzione attiva sullo spawn; TS Volontà CD ${Grimorio.cd.vuoto(ruth.livello||1, Grimorio.vuoto.sev())} per Rui. Valuta Richiamo +1.`);
       if (notes.length === 0) notes.push('Nessuna risonanza attiva al momento.');
     }
     noteEl.textContent = notes.join(' ');
   } catch(e) {}
 }
 
-Grimorio.init({ scope:'dm', onChange: aggiornaRisonanza });
+Grimorio.init({ scope:'dm', onChange: () => { aggiornaRisonanza(); updateFaro(); } });
 loadFromStorage();
 updateFaro();
 aggiornaRisonanza();
 
 document.getElementById('inp-sospiri').addEventListener('input', updateFaro);
 document.getElementById('inp-des').addEventListener('input', updateFaro);
+// L'interruttore del Patto è anche il canale del DM: scrive lo stato condiviso,
+// così index.html (Dronjons) vede il Faro cambiare di conseguenza.
+document.getElementById('chk-patto').addEventListener('change', function () {
+  Grimorio.patch('artiglio', { patto: this.checked });
+  updateFaro();
+  aggiornaRisonanza();
+});
 
 document.getElementById('btn-roll').addEventListener('click', eseguiRoll);
 document.getElementById('btn-ritira').addEventListener('click', () => {

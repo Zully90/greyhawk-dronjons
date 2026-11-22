@@ -109,6 +109,78 @@ senza sapere perché (mistero preservato: la causa non risale mai all'Artiglio).
 - **Toast**: le notifiche si attivano solo su ingest *esterno* (confronto `eco.nonce`
   con l'ultimo visto); al load l'eco corrente è marcata come già vista.
 
+### Patto del Teschio (sessione 88)
+
+Dronjons ha toccato il petto di Rui Jin con l'Artiglio mentre ardeva un teschio di
+brace di Wee Jas: il teschio è entrato nel guanto e ne ha marchiato il dorso.
+Flag nello slice `artiglio`: `patto` (default `true`) e `vistaUsata` (cooldown di
+*Vista condivisa*, 1/giorno). Effetti:
+
+- **Rui intoccabile**: l'Artiglio non può più nutrirsi di Rui (niente fame, niente
+  danno da contatto).
+- **Catture intercettate → ricordi integri**: la modalità 3 (Manifestazione
+  intercettata) porta spiriti con ricordi INTEGRI, non più frammentati/cosmici.
+- **Vista condivisa** (1/giorno, 1 min): col guanto sul petto di Rui, Dronjons vede
+  ciò che vede il vuoto di Rui (porte nascoste, presenze, tracce magiche).
+- **Faro +1**: con `patto` attivo Rui vale **+1 Sospiro ai soli fini del Faro**.
+  In `core.js`, `faroSospiri()` = Sospiri reali + 1 e alimenta `faroIdx`/`faroIdxEff`;
+  i Sospiri reali (overflow, catture, azioni rapide) non cambiano. `index.html` mostra
+  sia «Sospiri: X» sia «Faro: X+1». `spawn.html` usa il valore del Faro per il **Tiro 1**
+  e il **Tiro 2** (interruttore «Patto del Teschio attivo», default ON, scrive `artiglio.patto`),
+  ma l'**overflow** resta calcolato sui Sospiri reali.
+
+La scheda **Vuoto di Rui** in `index.html` è nota narrativa statica (non legge lo slice
+`ruth`): Argine di Wee Jas dalla s.88, la bisaccia (Vecna) che trattiene, «ciò che dorme
+sotto il tempio» che attira. La meccanica viva sta in `ruth.html` (vedi sotto).
+
+### Vuoto di Rui (meccanica derivata, `ruth.html`)
+
+Nessun contatore manuale: il Vuoto si **deriva** dallo slice `ruth`.
+
+```
+Vuoto  = max(0, Condanne + Cicatrici + Richiamo − Grazie)
+Argine = bisaccia intatta ? 4 : 2          (Argine di Wee Jas)
+```
+
+Leve DM nello slice `ruth`: `richiamo` (0–3, «ciò che dorme sotto il tempio», per luogo)
+e `bisaccia` (bool, il contenitore di Vecna). Motore in `core.js`: `Grimorio.vuoto.{val,
+argine,sev,idx,stato}` (lo scope `artiglio` riceve sempre «Quiescente») e token `{{cdVuoto}}`
+= `14 + livello + (Vuoto − Argine)`.
+
+| Stato | Condizione | Rui | Riversato sull'Artiglio (`Grimorio.vuotoSync`) |
+|-------|-----------|-----|------------------------------------------------|
+| Quiescente | 0 | — | — |
+| Sommesso | 1 … Argine−1 | percepisce morti/morenti (rafforza Vedere il Confine) | — |
+| Teso | = Argine | prossimo Verdetto della scena costa +1 | `artiglio.vuotoStato` (Faro +1 stato) + `eco:'vuoto'` alla salita |
+| Breccia | > Argine | TS Volontà `{{cdVuoto}}` o Drained 1 al riposo; DM valuta Richiamo +1 | come Teso + `artiglio.congiunzione={sev}` → `spawn.html` +1 al Faro per Tiro 1 e 2 |
+
+`vuotoSync` è chiamato da `ruth.html` a ogni render: scrive solo se lo stato cambia
+(`artiglio.vuotoStato` ricorda l'ultimo applicato), l'eco parte solo in **salita**, la
+Congiunzione si azzera nello stato condiviso sotto la Breccia. Sotto Teso il Faro perde
+il bonus del Vuoto. Il bonus temporaneo del Dono della Pietà ha una durata indipendente
+e i due bonus non si sommano. L'escalation del Richiamo resta manuale.
+
+### Backlog — da tarare insieme
+
+- [ ] **Numeri del Vuoto provvisori**: Argine 4/2, Richiamo 0–3, pesi 1:1 di
+  Condanne/Cicatrici/Grazie. Verificare che reggano a ogni Soglia (a Lv alti le Condanne
+  crescono: il Vuoto rischia di stare sempre in Breccia?). Valutare Argine scalato su
+  livello o Mod. SAG.
+- [ ] **`cdVuoto` = 14 + livello + sev**: confrontare con le CD per livello PF2e
+  (tabella DC-by-level) e con le altre CD del motore (`cdLiv`, `faro`, `protesta`).
+- [ ] **Effetto Teso** («prossimo Verdetto costa +1») e **Breccia** (Drained 1): confermare
+  intensità e durata; deciderne il tracciamento (oggi solo testo).
+- [ ] **Congiunzione** = +1 piatto al Faro dello spawn: valutare se scalare con `sev`.
+- [ ] Interazione col drawback *Il Portale del Marchio* (Soglia III, anch'esso +1 step
+  spawn): cumulabili?
+- [ ] **Sovrapposizione con la Risonanza del Bilancio** (`RISONANZA_DATA` in `ruth.html`):
+  entrambe leggono Grazie/Condanne, quindi con molte Condanne Rui paga due volte
+  (L'Esecutore → Drained 1, La Sentenza Incarnata → Drained 2, L'Angelo Exterminans →
+  Drained 3, **più** Drained 1 dalla Breccia del Vuoto). Decidere se i Drained si
+  sommano o se vale il più alto, oppure differenziare i ruoli: la Risonanza come
+  effetto in combattimento, il Vuoto come pressione sull'Argine e sul mondo (Faro,
+  spawn, Richiamo).
+
 ### CD dinamiche
 
 Le difficoltà non sono più costanti: `Grimorio.cd` le calcola da **livello + stato
@@ -380,7 +452,7 @@ Condizioni aggiuntive proposte, in attesa di design:
 - **Cicatrici di Ruth ≥5** → +1 step Faro per una notte.
 
 ### Stato (via `Grimorio`, vedi sezione "Stato condiviso")
-- Scrive: slice `ruth` → `{ grazie, condanne, cicatrici, livello, sag, runaAttiva }`
+- Scrive: slice `ruth` → `{ grazie, condanne, cicatrici, livello, sag, runaAttiva, richiamo, bisaccia }`
 - Legge: `ruth` + `Grimorio.faro()` — **mostra lo stato del Faro dell'Artiglio** (indicatore
   live "L'Arco percepisce l'Artiglio"). Non legge i numeri grezzi dell'Artiglio.
 - spawn.html legge `ruth` per il pannello DM Risonanza
