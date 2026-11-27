@@ -267,6 +267,26 @@ footer {
   </div>
 </div>
 
+<!-- Ciò che il Guanto sa: segreto di Dronjons su Rui (stato = promemoria, nessun effetto automatico) -->
+<div class="card" style="margin-bottom:.875rem;border-color:#3a2a4a;">
+  <div class="sh" style="cursor:default;">
+    <i class="ti ti-eye-off" style="font-size:18px;color:#b08fd8;" aria-hidden="true"></i>
+    <div style="flex:1;min-width:0;">
+      <div style="font-size:14px;font-weight:500;color:var(--t1);">Ciò che il Guanto sa</div>
+      <div style="font-size:11px;color:var(--t3);margin-top:1px;">Un segreto su Rui · il potere sta nel quando</div>
+    </div>
+  </div>
+  <div style="padding:2px 14px 14px;">
+    <div style="font-size:13px;color:var(--t2);line-height:1.55;margin-bottom:10px;">La Vista condivisa ti ha mostrato cosa tiene chiuso il vuoto di Rui: <strong style="color:#b08fd8;">la bisaccia</strong>. Lui non lo sa.</div>
+    <div id="segretoSel" role="group" aria-label="Stato del segreto" style="display:flex;gap:6px;flex-wrap:wrap;">
+      <button data-seg="custodito" onclick="setSegreto('custodito')" style="height:28px;font-size:12px;">Custodito</button>
+      <button data-seg="rui" onclick="setSegreto('rui')" style="height:28px;font-size:12px;">Rivelato a Rui</button>
+      <button data-seg="altri" onclick="setSegreto('altri')" style="height:28px;font-size:12px;">Rivelato ad altri</button>
+    </div>
+    <div id="segretoNota" style="font-size:12px;color:var(--t3);line-height:1.5;margin-top:8px;font-style:italic;"></div>
+  </div>
+</div>
+
 <!-- Vuoto di Rui (nota narrativa — l'Artiglio lo percepisce dal Patto) -->
 <div style="border-radius:var(--border-radius-lg);border:.5px solid var(--border);margin-bottom:.875rem;overflow:hidden;">
   <div onclick="var b=document.getElementById('vuotobody');b.style.display=b.style.display==='none'?'block':'none';var c=document.getElementById('vuotochev');c.style.transform=c.style.transform==='rotate(180deg)'?'':'rotate(180deg)';" style="display:flex;align-items:center;gap:8px;padding:11px 14px;background:var(--bg2);cursor:pointer;user-select:none;">
@@ -515,6 +535,17 @@ function go(){
   if(vUsi)vUsi.textContent=vistaUsata?'1':'0';
   const vBtn=document.getElementById('vistaBtn');
   if(vBtn){ vBtn.disabled=vistaUsata; vBtn.textContent=vistaUsata?'Usata':'Usa'; }
+  // Ciò che il Guanto sa: evidenzia lo stato del segreto
+  const seg=(a0&&SEGRETO_NOTE[a0.segreto])?a0.segreto:'custodito';
+  document.querySelectorAll('#segretoSel [data-seg]').forEach(b=>{
+    const on=b.getAttribute('data-seg')===seg;
+    b.style.color=on?'#b08fd8':'var(--t3)';
+    b.style.borderColor=on?'#6a4a8a':'var(--border2)';
+    b.style.background=on?'#1e1628':'var(--bg3)';
+    b.setAttribute('aria-pressed',on?'true':'false');
+  });
+  const sNota=document.getElementById('segretoNota');
+  if(sNota)sNota.textContent=SEGRETO_NOTE[seg];
   const qa=document.getElementById('qa');
   qa.innerHTML='';
   const acts=[
@@ -578,7 +609,7 @@ function checkEco(a){
   const msg = eco.k==='sospiro-svanito' ? 'Un Sospiro si è dissolto dal Guanto. Non sai come.'
             : eco.k==='protesta'        ? 'Il Guanto freme — qualcosa contesta la tua presa. Non sai cosa.'
             : eco.k==='faro-arde'       ? 'Il Faro arde oltre il suo peso. Non sai perché.'
-            : eco.k==='vuoto'           ? 'Il teschio sul dorso del Guanto si scalda: qualcosa preme contro un argine lontano.'
+            : eco.k==='vuoto'           ? 'Il teschio si scalda: ciò che tiene chiuso il vuoto di Rui sta cedendo.'
             : null;
   if(msg) toast(msg);
 }
@@ -600,6 +631,17 @@ function usaVista(){
 }
 function resetVista(){
   Grimorio.patch('artiglio', { vistaUsata:false });
+  go();
+}
+
+/* --- Ciò che il Guanto sa: stato del segreto (solo promemoria) --- */
+const SEGRETO_NOTE={
+  custodito:'Solo tu lo sai. Quando parlerai conta quanto ciò che dirai.',
+  rui:'Rui ora sa cosa lo tiene chiuso.',
+  altri:'Altri ora sanno cosa tiene chiuso il vuoto di Rui.',
+};
+function setSegreto(v){
+  Grimorio.patch('artiglio', { segreto:v });
   go();
 }
 

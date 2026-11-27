@@ -29,7 +29,7 @@
     return {
       // patto: Patto del Teschio (sessione 88) — Rui conta +1 Sospiro ai soli
       //        fini del Faro. vistaUsata: cooldown di "Vista condivisa" (1/giorno).
-      artiglio: { sospiri: 0, des: 4, livello: 5, patto: true, vistaUsata: false },
+      artiglio: { sospiri: 0, des: 4, livello: 5, patto: true, vistaUsata: false, segreto: 'custodito' },
       // richiamo: "ciò che dorme sotto il tempio" (0–3, leva DM per luogo).
       // bisaccia: contenitore di Vecna intatto → Argine 4; se cede → Argine 2.
       ruth: { grazie: 0, condanne: 0, cicatrici: 0, livello: 8, sag: 4, runaAttiva: 'grigia', richiamo: 0, bisaccia: true },
